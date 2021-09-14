@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package format="2">
+	<name>drone_planner</name>
+	<version>0.0.0</version>
+	<description>TODO</description>
+
+	<maintainer email="todo@todo.todo">TODO</maintainer>
+
+	<license>TODO</license>
+
+	<depend>roscpp</depend>
+	<depend>mrs_msgs</depend>
+	<depend>message_generation</depend>
+	<depend>message_runtime</depend>
+	<buildtool_depend>catkin</buildtool_depend>
+
+	<export>
+	</export>
+</package>
