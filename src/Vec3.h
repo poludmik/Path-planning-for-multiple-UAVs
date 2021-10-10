@@ -10,15 +10,19 @@
 
 class Vec3 {
 public:
-    std::vector<double> coords;
+    double x = 0.0;
+    double y = 0.0;
+    double z = 0.0;
     
-    Vec3(double x, double y, double z, bool c);
+    explicit Vec3() = default;
     
-    explicit Vec3(bool random=false, double range_a=-1.0, double range_b=1.0);
+    Vec3(double x, double y, double z);
     
-    Vec3 operator +(Vec3 &obj);
+    Vec3 operator +(Vec3 &obj) const;
     
     Vec3(const Vec3& pt);
     
-    Vec3& operator = (const Vec3 &pt);
+    Vec3 &operator=(const Vec3 &pt) = default;
+    
+    static Vec3 random_vec3(double range_a, double range_b);
 };

@@ -36,6 +36,6 @@ public:
 private:
     
     static void fill_out_default_marker(visualization_msgs::Marker& marker,
-                                        uint8_t const id,
+                                        uint8_t id,
                                         const Object &obj);
 };

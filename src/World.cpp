@@ -50,7 +50,7 @@ World::~World() {
 }
 
 void World::fill_out_default_marker(visualization_msgs::Marker &marker,
-                                    const uint8_t id, const Object &obj) {
+				    uint8_t id, const Object &obj) {
 	const Vec3 &given_coords = obj.coords;
 	double const size = obj.radius;
 	const std::string &name = obj.name;
@@ -61,9 +61,9 @@ void World::fill_out_default_marker(visualization_msgs::Marker &marker,
 	marker.id = id;
 	marker.type = visualization_msgs::Marker::SPHERE;
 	marker.action = visualization_msgs::Marker::ADD;
-	marker.pose.position.x = given_coords.coords[0];
-	marker.pose.position.y = given_coords.coords[1];
-	marker.pose.position.z = given_coords.coords[2];
+	marker.pose.position.x = given_coords.x;
+	marker.pose.position.y = given_coords.y;
+	marker.pose.position.z = given_coords.z;
 	marker.pose.orientation.x = 0.0;
 	marker.pose.orientation.y = 0.0;
 	marker.pose.orientation.z = 0.0;

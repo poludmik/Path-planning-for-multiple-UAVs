@@ -6,9 +6,9 @@
 
 void Object::print_out_info() const {
 	std::cout << "name: " << name << std::endl;
-	std::cout << "x: " << coords.coords[0] << std::endl; // TODO, ask vanya, tupo vyglyadit
-	std::cout << "y: " << coords.coords[1] << std::endl;
-	std::cout << "z: " << coords.coords[2] << std::endl;
+	std::cout << "x: " << coords.x << std::endl; // TODO, ask vanya, tupo vyglyadit
+	std::cout << "y: " << coords.y << std::endl;
+	std::cout << "z: " << coords.z << std::endl;
 	std::cout << "\n";
 }
 
