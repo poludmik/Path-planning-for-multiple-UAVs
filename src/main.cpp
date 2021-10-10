@@ -2,6 +2,7 @@
 #include <mrs_msgs/VelocityReferenceStamped.h>
 #include <visualization_msgs/Marker.h>
 #include <vector>
+#include <random>
 
 #include <thread>
 #include <ros/ros.h>
@@ -25,53 +26,101 @@ void setDefaultLineMarker(visualization_msgs::Marker& marker,
 
 class World;
 class Object;
+class vec3;
+
+class vec3{
+public:
+    
+    std::vector<double> coords;
+    
+    vec3(double x, double y, double z, bool c){ // vector point // TODO separate ambiguos constructors
+	    coords.reserve(3);
+	    coords[0] = x;
+	    coords[1] = y;
+	    coords[2] = z;
+    }
+    
+    explicit vec3(bool random=false, double range_a=-1.0, double range_b=1.0){ // random or zero vector point
+	    coords.reserve(3);
+	    if (random) {
+		    std::random_device rd;  // Will be used to obtain a seed for the random number engine
+		    std::mt19937 generator(rd()); // Standard mersenne_twister_engine seeded with rd()
+		    std::uniform_real_distribution<> distribution(range_a, range_b);
+		    
+		    for (int i = 0; i < 3; ++i) {
+			    coords[i] = distribution(generator);
+		    }
+	    } else {
+		    coords[0] = 0.0;
+		    coords[1] = 0.0;
+		    coords[2] = 0.0;
+	    }
+    }
+    
+    vec3 operator +(vec3 &obj)
+    {
+	    vec3 x;  //create another object
+	    
+	    for (int i = 0; i < 3; ++i) {
+		    x.coords[i] = this->coords[i] + obj.coords[i];
+	    }
+	    return (x); //return object
+    }
+    
+    vec3(const vec3& pt) { // copy constructor //TODO nachren on nuzen
+	    this->coords[0] = pt.coords[0];
+	    this->coords[1] = pt.coords[1];
+	    this->coords[2] = pt.coords[2];
+    }
+    
+    vec3& operator = (const vec3 &pt) {
+	    coords[0] = pt.coords[0];
+	    coords[1] = pt.coords[1];
+	    coords[2] = pt.coords[2];
+	    return *this;
+    }
+    
+    ~vec3()=default;
+    
+};
 
 class Object{
 public:
     
     std::string name;
     double radius;
-    double x;
-    double y;
-    double z;
+    vec3 coords;
     
     void print_out_info() const{
 	    std::cout << "name: " << name << std::endl;
-	    std::cout << "x: " << x << std::endl;
-	    std::cout << "y: " << y << std::endl;
-	    std::cout << "z: " << z << std::endl;
+	    std::cout << "x: " << coords.coords[0] << std::endl; // TODO, ask vanya, tupo vyglyadit
+	    std::cout << "y: " << coords.coords[1] << std::endl;
+	    std::cout << "z: " << coords.coords[2] << std::endl;
+	    std::cout << "\n";
     }
     
     Object(World* pBigWorld, const std::string &name, double radius,
-           double x,
-           double y,
-           double z) {
+           const vec3 &given_coords) {
 	    this->pBigWorld = pBigWorld;
 	    this->name = name;
 	    this->radius = radius;
-	    this->x = x;
-	    this->y = y;
-	    this->z = z;
-	    std::cout << "Object '" << name << "' has been created." << std::endl;
+	    this->coords = given_coords;
+	    std::cout << "Object '" << name << "' has been created.\n" << std::endl;
     }
     
-    Object(World* pBigWorld, double radius, double x, double y, double z) {
+    Object(World* pBigWorld, double radius, const vec3 &given_coords) {
 	    this->pBigWorld = pBigWorld;
 	    this->name = "obj";
 	    this->radius = radius;
-	    this->x = x;
-	    this->y = y;
-	    this->z = z;
-	    std::cout << "Object '" << "obj" << "' has been created." << std::endl;
+	    this->coords = given_coords;
+	    std::cout << "Object '" << "obj" << "' has been created.\n" << std::endl;
     }
     
     Object (const Object& obj) { // copy constructor
 	    pBigWorld = obj.pBigWorld;
 	    name = obj.name;
 	    radius = obj.radius;
-	    x = obj.x;
-	    y = obj.y;
-	    z = obj.z;
+	    coords = obj.coords;
     }
     
     ~Object() {
@@ -89,12 +138,12 @@ public:
     // Data Members
     std::vector<Object> obstacles;
     
-    void add_object(const std::string &name, double radius, double x, double y, double z){
-	    obstacles.emplace_back(this, name, radius, x, y, z);
+    void add_object(const std::string &name, double radius, const vec3 &given_coords){
+	    obstacles.emplace_back(this, name, radius, given_coords);
     }
     
-    void add_object(double radius, double x, double y, double z){
-	    obstacles.emplace_back(this, radius, x, y, z);
+    void add_object(double radius, const vec3 &given_coords){
+	    obstacles.emplace_back(this, radius, given_coords);
     }
     
     void print_out_objects(){
@@ -107,12 +156,11 @@ public:
     
     void publish_world(ros::Publisher &publisher){
 	    int count = 0;
-	    float size = 0.5;
 
 	    std::cout << std::endl;
 	    for (auto ptr = obstacles.begin(); ptr < obstacles.end(); ptr++){
 		    visualization_msgs::Marker localMarker;
-		    fill_out_default_marker(localMarker, count, ptr->x, ptr->y, ptr->z, size, ptr->name);
+		    fill_out_default_marker(localMarker, count, ptr->coords, ptr->radius, ptr->name);
 		    ++count;
 //		    std::cout << "publishing " << ptr->name << " "<< count << " marker\n";
 		    while (publisher.getNumSubscribers() < 1)
@@ -131,9 +179,7 @@ public:
     
     static void fill_out_default_marker(visualization_msgs::Marker& marker,
 			                        uint8_t const id,
-                                                double const x,
-                                                double const y,
-                                                double const z,
+			                        const vec3 &given_coords,
                                                 double const size,
                                                 const std::string &name){
 	    marker.header.frame_id = "map"; // "uav1/local_origin";
@@ -142,9 +188,9 @@ public:
 	    marker.id = id;
 	    marker.type = visualization_msgs::Marker::SPHERE;
 	    marker.action = visualization_msgs::Marker::ADD;
-	    marker.pose.position.x = x;
-	    marker.pose.position.y = y;
-	    marker.pose.position.z = z;
+	    marker.pose.position.x = given_coords.coords[0];
+	    marker.pose.position.y = given_coords.coords[1];
+	    marker.pose.position.z = given_coords.coords[2];
 	    marker.pose.orientation.x = 0.0;
 	    marker.pose.orientation.y = 0.0;
 	    marker.pose.orientation.z = 0.0;
@@ -156,12 +202,10 @@ public:
 	    marker.color.r = 1.0;
 	    marker.color.g = 0.0;
 	    marker.color.b = 0.0;
-	    marker.lifetime = ros::Duration(100);
+	    marker.lifetime = ros::Duration(20);
 	    }
     
-    World() { // constructor
-	    // object initialization
-    }
+    World()=default;
     
     ~World() {
 	    std::cout << "World instance destroyed." << std::endl;
@@ -196,12 +240,18 @@ int main(int argc, char **argv)
 	        ("visualization_marker", 10);
 
 	World my_world;
-	int num = 3;
+	
+//	vec3 pt1(1.0, 0.0, 0.0);
+//	vec3 pt2;
+//	vec3 pt3 = pt1 + pt2;
+	
+	int num = 15;
 	my_world.obstacles.reserve(num);
 
 	for (int i = 0; i < num; ++i) {
 		std::string s = "name" + std::to_string(i);
-		my_world.add_object(s, (double) i, (double) i, ((double) i )/ 2, 0.0);
+		my_world.add_object(s, 0.3, vec3(true, -2, 2));
+		my_world.obstacles[i].print_out_info();
 	}
 
 	my_world.publish_world(vis_pub);
