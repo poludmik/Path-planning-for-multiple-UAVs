@@ -83,3 +83,13 @@ void World::fill_out_default_marker(visualization_msgs::Marker &marker,
 	}
 	marker.lifetime = ros::Duration(20);
 }
+
+static std::vector<Object>
+World::RRT_search(const double range_x[2], const double range_y[2],
+                  const double range_z[2], Object &start_point,
+                  Object &goal_point) {
+	
+	std::vector<Object> found_path;
+	
+	return found_path;
+}

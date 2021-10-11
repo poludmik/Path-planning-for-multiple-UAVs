@@ -49,18 +49,30 @@ int main(int argc, char **argv)
 //	Vec3 pt2;
 //	Vec3 pt3 = pt1 + pt2;
 	
-	int num = 15;
-	my_world.obstacles.reserve(num);
+//	int num = 15;
+//	my_world.obstacles.reserve(num);
+//
+//	for (int i = 0; i < num; ++i) {
+//		std::string s = "name" + std::to_string(i);
+//		my_world.add_object(s, 0.3, Vec3::random_vec3(-2, 2));
+//		my_world.obstacles[i].print_out_info();
+//	}
+//
+//	my_world.add_object("Goal", 1, Vec3(2, 2, 2));
+//	auto k = my_world.obstacles.size();
+//	my_world.obstacles[k - 1].set_as_a_goal();
 
-	for (int i = 0; i < num; ++i) {
-		std::string s = "name" + std::to_string(i);
-		my_world.add_object(s, 0.3, Vec3::random_vec3(-2, 2));
-		my_world.obstacles[i].print_out_info();
-	}
+
+//	my_world.add_object("First", 0.6, Vec3(1, 0, 1));
+//	my_world.add_object("Second", 1.8, Vec3(1.5, 0, 0));
+//	my_world.add_object("Third", 2, Vec3(3, 0, 1));
+//	auto k = my_world.obstacles.size();
+//	my_world.obstacles[k - 1].set_as_a_goal();
 	
-	my_world.add_object("Goal", 1, Vec3(2, 2, 2));
-	auto k = my_world.obstacles.size();
-	my_world.obstacles[k - 1].set_as_a_goal();
+//	std::cout << Object::are_intersecting(my_world.obstacles[k-1], my_world.obstacles[1]) << std::endl;
+//	std::cout << Object::are_intersecting(my_world.obstacles[1], my_world.obstacles[0]) << std::endl;
+
+
 	
 	my_world.publish_world(vis_pub);
 	

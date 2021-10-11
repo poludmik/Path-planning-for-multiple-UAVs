@@ -6,7 +6,7 @@
 
 void Object::print_out_info() const {
 	std::cout << "name: " << name << std::endl;
-	std::cout << "x: " << coords.x << std::endl; // TODO, ask vanya, tupo vyglyadit
+	std::cout << "x: " << coords.x << std::endl;
 	std::cout << "y: " << coords.y << std::endl;
 	std::cout << "z: " << coords.z << std::endl;
 	std::cout << "\n";
@@ -38,4 +38,15 @@ Object::Object(const Object &obj) { // copy constructor
 
 Object::~Object() {
 	std::cout << "Object '" << name << "' has been destroyed." << std::endl;
+}
+
+bool Object::are_intersecting(const Object &obj1, const Object &obj2) {
+	if (Object::distance_between_two_centers(obj1, obj2) <= (obj1.radius/2 + obj2.radius/2))
+	{ return true; } else { return false; }
+}
+
+double Object::distance_between_two_centers(const Object &obj1, const Object &obj2) {
+	return sqrt(pow(obj1.coords.x - obj2.coords.x, 2) +
+		            pow(obj1.coords.y - obj2.coords.y, 2) +
+			    pow(obj1.coords.z - obj2.coords.z, 2));
 }

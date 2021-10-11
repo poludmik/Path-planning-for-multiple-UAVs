@@ -7,6 +7,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <math.h>
 #include "Vec3.h"
 #include "World.h"
 
@@ -18,12 +19,17 @@ public:
     double radius;
     Vec3 coords;
     bool is_goal = false;
+    bool is_start = false;
     
     void print_out_info() const;
     
     void set_as_a_goal(){ is_goal = true; }
     
+    void set_as_a_start(){ is_start = true; }
+    
     void finish_being_goal(){ is_goal = false; }
+    
+    static bool are_intersecting(const Object &obj1, const Object &obj2);
     
     Object(const World* pBigWorld, const std::string &name, double radius,
            const Vec3 &given_coords);
@@ -36,4 +42,6 @@ public:
 
 private:
     const World* pBigWorld;
+    
+    static double distance_between_two_centers(const Object &obj1, const Object &obj2);
 };

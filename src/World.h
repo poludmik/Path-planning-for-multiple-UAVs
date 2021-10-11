@@ -29,6 +29,13 @@ public:
     
     void publish_world(ros::Publisher &publisher);
     
+    static std::vector<Object> RRT_search(const double range_x[2],
+				   const double range_y[2],
+				   const double range_z[2],
+				   Object &start_point,
+				   Object &goal_point
+				   );
+    
     World()=default;
     
     ~World();;
