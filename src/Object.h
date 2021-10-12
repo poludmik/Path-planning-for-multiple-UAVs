@@ -7,7 +7,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
-#include <math.h>
+#include <cmath>
 #include "Vec3.h"
 #include "World.h"
 

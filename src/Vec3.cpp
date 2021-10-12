@@ -34,3 +34,9 @@ Vec3 Vec3::random_vec3(double range_a, double range_b) {
 	
 	return {distribution(generator), distribution(generator), distribution(generator)};
 }
+
+double Vec3::distance_between_two_vec3(const Vec3 &pt1, const Vec3 &pt2) {
+	return sqrt(pow(pt1.x - pt2.x, 2) +
+	            pow(pt1.y - pt2.y, 2) +
+	            pow(pt1.z - pt2.z, 2));
+}

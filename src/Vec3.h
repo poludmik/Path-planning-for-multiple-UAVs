@@ -7,6 +7,7 @@
 #include <vector>
 #include <random>
 #include <iostream>
+#include <cmath>
 
 class Vec3 {
 public:
@@ -25,4 +26,6 @@ public:
     Vec3 &operator=(const Vec3 &pt) = default;
     
     static Vec3 random_vec3(double range_a, double range_b);
+    
+    static double distance_between_two_vec3(const Vec3 &pt1, const Vec3 &pt2);
 };
