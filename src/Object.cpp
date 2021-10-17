@@ -50,3 +50,5 @@ double Object::distance_between_two_centers(const Object &obj1, const Object &ob
 		            pow(obj1.coords.y - obj2.coords.y, 2) +
 			    pow(obj1.coords.z - obj2.coords.z, 2));
 }
+
+

@@ -20,19 +20,27 @@ Vec3 Vec3::operator+(Vec3 &obj) const {
 	return (a); //return object
 }
 
+Vec3 Vec3::operator/(double number) const {
+	return {x/number, y/number, z/number};
+}
+
 Vec3::Vec3(const Vec3 &pt) { // copy constructor
 	this->x = pt.x;
 	this->y = pt.y;
 	this->z = pt.z;
 }
 
-Vec3 Vec3::random_vec3(double range_a, double range_b) {
+Vec3 Vec3::random_vec3(double range_ax, double range_bx,
+                       double range_ay, double range_by,
+                       double range_az, double range_bz) {
 	
 	std::random_device rd;  // Will be used to obtain a seed for the random number engine
 	std::mt19937 generator(rd()); // Standard mersenne_twister_engine seeded with rd()
-	std::uniform_real_distribution<> distribution(range_a, range_b);
+	std::uniform_real_distribution<> distributionX(range_ax, range_bx);
+	std::uniform_real_distribution<> distributionY(range_ay, range_by);
+	std::uniform_real_distribution<> distributionZ(range_az, range_bz);
 	
-	return {distribution(generator), distribution(generator), distribution(generator)};
+	return {distributionX(generator), distributionY(generator), distributionZ(generator)};
 }
 
 double Vec3::distance_between_two_vec3(const Vec3 &pt1, const Vec3 &pt2) {
@@ -40,3 +48,4 @@ double Vec3::distance_between_two_vec3(const Vec3 &pt1, const Vec3 &pt2) {
 	            pow(pt1.y - pt2.y, 2) +
 	            pow(pt1.z - pt2.z, 2));
 }
+

@@ -19,38 +19,38 @@ void Node::add_child(Vec3 &point) {
 }
 
 void Node::print_out_all_children() {
-	std::cout << "\nPrinting out all children of " << coords.x << ", " << coords.y << ", " << coords.z << std::endl;;
+	std::cout << "\nPrinting out all children of " << coords.x << ", " << coords.y << ", " << coords.z  << ":" << std::endl;;
 	for (auto & i : children){
 		std::cout << i->coords.x << ", " << i->coords.y << ", " << i->coords.z << std::endl;
 	}
+	std::cout << "finish\n";
 }
 
-std::shared_ptr<Node> Node::find_the_closest_node(Vec3 &point, Node *root_node) {
+Node* Node::find_the_closest_node(Vec3 &point, Node *root_node) {
+	auto nearest_node_p = root_node;
+	double min_distance = std::numeric_limits<double>::max();
+	std::queue<Node*> my_queue;
 	
-	double min_distance = 9999999999999.0;
-	std::shared_ptr<Node> nearest_node_p = std::make_shared<Node>(*root_node);
-	
-	std::queue<std::shared_ptr<Node>> my_queue;
-	
-	min_distance = std::min(min_distance, Vec3::distance_between_two_vec3(root_node->coords, point));
-	
-	for (auto & i : root_node->children){
-		my_queue.push(i);
-	}
+	my_queue.push(root_node);
 	
 	while (!my_queue.empty()) {
-		std::shared_ptr<Node> current = my_queue.front();
+		auto current = my_queue.front();
+		my_queue.pop();
+		
 		double tmp_dist = Vec3::distance_between_two_vec3(current->coords, point);
-		if (tmp_dist < min_distance){
+		if (tmp_dist < min_distance) {
 			min_distance = tmp_dist;
 			nearest_node_p = current;
 		}
-		my_queue.pop();
-		for (auto & i : current->children){
-			my_queue.push(i);
+		for (const auto & i : current->children) {
+			my_queue.push(i.get());
 		}
 	}
-	
+
 	return nearest_node_p;
+}
+
+void Node::set_as_final() {
+	inside_the_goal = true;
 }
 

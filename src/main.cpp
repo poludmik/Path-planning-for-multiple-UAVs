@@ -10,6 +10,7 @@
 #include "World.h"
 #include "Object.h"
 #include "Node.h"
+#include "RRT_tree.h"
 
 bool ready = false;
 mrs_msgs::UavState::ConstPtr uav_state;
@@ -46,6 +47,15 @@ int main(int argc, char **argv)
 
 	World my_world;
 	
+	Vec3 pt_start(0, 0, 0);
+	Vec3 pt_goal(5.0, 0,0);
+	
+	std::vector<Vec3> path = RRT_tree::find_path_to_goal(&my_world, pt_start, pt_goal);
+	
+	std::cout << "started in main:\n";
+	for (const auto& point : path)
+		printf("%lf %lf %lf\n", point.x, point.y, point.z);
+	
 //	Vec3 pt1(1.0, 0.0, 0.0);
 //	Vec3 pt2;
 //	Vec3 pt3 = pt1 + pt2;
@@ -72,28 +82,30 @@ int main(int argc, char **argv)
 //	std::cout << Object::are_intersecting(my_world.obstacles[k-1], my_world.obstacles[1]) << std::endl;
 //	std::cout << Object::are_intersecting(my_world.obstacles[1], my_world.obstacles[0]) << std::endl;
 	
-	Vec3 coords(0, 0, 0);
-	Node root = Node(coords);
-	
-	coords = Vec3(1, 0, 0);
-	root.add_child(coords);
-	
-	coords = Vec3(2, 0, 0);
-	root.add_child(coords);
-	
-	coords = Vec3(3, 0, 0);
-	root.children[1]->add_child(coords);
-	
-	root.print_out_all_children();
-	root.children[0]->print_out_all_children();
-	root.children[1]->print_out_all_children();
-	
-	coords = Vec3(0, 1, 5);
-	std::shared_ptr<Node> closest = Node::find_the_closest_node(coords, &root);
-	
-	std::cout << "Found " << closest->coords.x << std::endl;
-	
+//	Vec3 coords(0, 0, 0);
+//	Node root = Node(coords);
+//
+//	coords = Vec3(1, 0, 0);
+//	root.add_child(coords);
+//
+//	coords = Vec3(2, 0, 0);
+//	root.add_child(coords);
+//
+//	coords = Vec3(3, 1, 5);
+//	root.children[1]->add_child(coords);
+//
+//	root.print_out_all_children();
+//	root.children[0]->print_out_all_children();
+//	root.children[1]->print_out_all_children();
+//
+//	coords = Vec3(2, 1, 5);
+//	auto closest = Node::find_the_closest_node(coords, &root);
+//
+//	std::cout << "Found closest: " << closest->coords.x <<  closest->coords.y << closest->coords.z << std::endl;
 
+
+
+	
 //	my_world.publish_world(vis_pub);
 	
 	while(ros::ok())
