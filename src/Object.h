@@ -20,12 +20,15 @@ public:
     Vec3 coords;
     bool is_goal = false;
     bool is_start = false;
+    bool is_obstacle = false;
     
     void print_out_info() const;
     
     void set_as_a_goal();
     
     void set_as_a_start();
+
+    void set_as_an_obstacle();
     
     void finish_being_goal(){ is_goal = false; }
     

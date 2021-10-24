@@ -49,6 +49,10 @@ int main(int argc, char **argv)
 	
 	Vec3 pt_start(0, 0, 0);
 	Vec3 pt_goal(10.0, 0,5);
+
+    Vec3 rock(5.0, 0.0, 1.0);
+    my_world.add_obstacle(3.0, rock);
+
     double goal_radius = 1.0;
 
 	std::vector<Vec3> path = RRT_tree::find_path_to_goal(&my_world, pt_start, pt_goal, goal_radius);
@@ -56,41 +60,44 @@ int main(int argc, char **argv)
 	std::cout << "started in main:\n";
 	for (const auto& point : path) {
         printf("%lf %lf %lf\n", point.x, point.y, point.z);
-        my_world.add_object(0.3, point);
+        my_world.add_object(0.2, point);
     }
+
     my_world.add_object(goal_radius, pt_goal);
     my_world.add_object(1.0, pt_start);
-    auto k = my_world.obstacles.size();
-    my_world.obstacles[k - 2].set_as_a_goal();
-    my_world.obstacles[k - 1].set_as_a_start();
+    auto k = my_world.objects.size();
+    my_world.objects[k - 3].set_as_a_goal();
+    my_world.objects[k - 2].set_as_a_goal();
+    my_world.objects[k - 1].set_as_a_start();
     my_world.publish_world(vis_pub);
     World::publish_path(vis_pub, path);
+
 
 //	Vec3 pt1(1.0, 0.0, 0.0);
 //	Vec3 pt2;
 //	Vec3 pt3 = pt1 + pt2;
 	
 //	int num = 15;
-//	my_world.obstacles.reserve(num);
+//	my_world.objects.reserve(num);
 //
 //	for (int i = 0; i < num; ++i) {
 //		std::string s = "name" + std::to_string(i);
 //		my_world.add_object(s, 0.3, Vec3::random_vec3(-2, 2));
-//		my_world.obstacles[i].print_out_info();
+//		my_world.objects[i].print_out_info();
 //	}
 //
 //	my_world.add_object("Goal", 1, Vec3(2, 2, 2));
-//	auto k = my_world.obstacles.size();
-//	my_world.obstacles[k - 1].set_as_a_goal();
+//	auto k = my_world.objects.size();
+//	my_world.objects[k - 1].set_as_a_goal();
 
 //	my_world.add_object("First", 0.6, Vec3(1, 0, 1));
 //	my_world.add_object("Second", 1.8, Vec3(1.5, 0, 0));
 //	my_world.add_object("Third", 2, Vec3(3, 0, 1));
-//	auto k = my_world.obstacles.size();
-//	my_world.obstacles[k - 1].set_as_a_goal();
+//	auto k = my_world.objects.size();
+//	my_world.objects[k - 1].set_as_a_goal();
 	
-//	std::cout << Object::are_intersecting(my_world.obstacles[k-1], my_world.obstacles[1]) << std::endl;
-//	std::cout << Object::are_intersecting(my_world.obstacles[1], my_world.obstacles[0]) << std::endl;
+//	std::cout << Object::are_intersecting(my_world.objects[k-1], my_world.objects[1]) << std::endl;
+//	std::cout << Object::are_intersecting(my_world.objects[1], my_world.objects[0]) << std::endl;
 	
 //	Vec3 coords(0, 0, 0);
 //	Node root = Node(coords);

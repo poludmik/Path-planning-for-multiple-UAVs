@@ -37,7 +37,7 @@ Object::Object(const Object &obj) { // copy constructor
 }
 
 Object::~Object() {
-	std::cout << "Object '" << name << "' has been destroyed." << std::endl;
+//	std::cout << "Object '" << name << "' has been destroyed." << std::endl;
 }
 
 bool Object::are_intersecting(const Object &obj1, const Object &obj2) {
@@ -54,5 +54,7 @@ double Object::distance_between_two_centers(const Object &obj1, const Object &ob
 void Object::set_as_a_start() { is_start = true;}
 
 void Object::set_as_a_goal() { is_goal = true; }
+
+void Object::set_as_an_obstacle() { is_obstacle = true; }
 
 

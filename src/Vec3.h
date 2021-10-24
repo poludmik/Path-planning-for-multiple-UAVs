@@ -32,4 +32,6 @@ public:
                             double range_az, double range_bz);
     
     static double distance_between_two_vec3(const Vec3 &pt1, const Vec3 &pt2);
+
+    static bool line_intersects_sphere(const Vec3 &p1, const Vec3 &p2, const Vec3 &center, double radius);
 };
