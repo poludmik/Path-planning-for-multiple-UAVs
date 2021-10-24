@@ -23,7 +23,7 @@ public:
     
     [[nodiscard]] static std::vector<Vec3> find_way_from_goal_to_root(Node* last_goal_p) ; // TODO what is it
     
-    static std::vector<Vec3> find_path_to_goal(World *world_ptr, Vec3& start_point, Vec3& goal_point);
+    static std::vector<Vec3> find_path_to_goal(World *world_ptr, Vec3& start_point, Vec3& goal_point, double goal_radius);
 };
 
 

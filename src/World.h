@@ -16,6 +16,7 @@
 class Object;
 
 class World{
+
 public:
     
     // Data Members
@@ -28,20 +29,15 @@ public:
     void print_out_objects();
     
     void publish_world(ros::Publisher &publisher);
-    
-//    static std::vector<Object> RRT_search(const double range_x[2],
-//				   const double range_y[2],
-//				   const double range_z[2],
-//				   Object &start_point,
-//				   Object &goal_point
-//				   );
+
+    static void publish_path(ros::Publisher &publisher, const std::vector<Vec3>& points);
     
     World()=default;
     
     ~World();;
 
 private:
-    
+
     static void fill_out_default_marker(visualization_msgs::Marker& marker,
                                         uint8_t id,
                                         const Object &obj);

@@ -23,9 +23,9 @@ public:
     
     void print_out_info() const;
     
-    void set_as_a_goal(){ is_goal = true; }
+    void set_as_a_goal();
     
-    void set_as_a_start(){ is_start = true; }
+    void set_as_a_start();
     
     void finish_being_goal(){ is_goal = false; }
     

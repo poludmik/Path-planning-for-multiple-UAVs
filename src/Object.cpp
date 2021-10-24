@@ -18,7 +18,7 @@ Object::Object(const World *pBigWorld, const std::string &name, double radius,
 	this->name = name;
 	this->radius = radius;
 	this->coords = given_coords;
-	std::cout << "Object '" << name << "' has been created.\n" << std::endl;
+//	std::cout << "Object '" << name << "' has been created.\n" << std::endl;
 }
 
 Object::Object(const World *pBigWorld, double radius, const Vec3 &given_coords) {
@@ -26,7 +26,7 @@ Object::Object(const World *pBigWorld, double radius, const Vec3 &given_coords) 
 	this->name = "obj";
 	this->radius = radius;
 	this->coords = given_coords;
-	std::cout << "Object '" << "obj" << "' has been created.\n" << std::endl;
+//	std::cout << "Object '" << "obj" << "' has been created.\n" << std::endl;
 }
 
 Object::Object(const Object &obj) { // copy constructor
@@ -50,5 +50,9 @@ double Object::distance_between_two_centers(const Object &obj1, const Object &ob
 		            pow(obj1.coords.y - obj2.coords.y, 2) +
 			    pow(obj1.coords.z - obj2.coords.z, 2));
 }
+
+void Object::set_as_a_start() { is_start = true;}
+
+void Object::set_as_a_goal() { is_goal = true; }
 
 

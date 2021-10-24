@@ -48,14 +48,24 @@ int main(int argc, char **argv)
 	World my_world;
 	
 	Vec3 pt_start(0, 0, 0);
-	Vec3 pt_goal(5.0, 0,0);
-	
-	std::vector<Vec3> path = RRT_tree::find_path_to_goal(&my_world, pt_start, pt_goal);
-	
+	Vec3 pt_goal(10.0, 0,5);
+    double goal_radius = 1.0;
+
+	std::vector<Vec3> path = RRT_tree::find_path_to_goal(&my_world, pt_start, pt_goal, goal_radius);
+
 	std::cout << "started in main:\n";
-	for (const auto& point : path)
-		printf("%lf %lf %lf\n", point.x, point.y, point.z);
-	
+	for (const auto& point : path) {
+        printf("%lf %lf %lf\n", point.x, point.y, point.z);
+        my_world.add_object(0.3, point);
+    }
+    my_world.add_object(goal_radius, pt_goal);
+    my_world.add_object(1.0, pt_start);
+    auto k = my_world.obstacles.size();
+    my_world.obstacles[k - 2].set_as_a_goal();
+    my_world.obstacles[k - 1].set_as_a_start();
+    my_world.publish_world(vis_pub);
+    World::publish_path(vis_pub, path);
+
 //	Vec3 pt1(1.0, 0.0, 0.0);
 //	Vec3 pt2;
 //	Vec3 pt3 = pt1 + pt2;
@@ -103,9 +113,6 @@ int main(int argc, char **argv)
 //
 //	std::cout << "Found closest: " << closest->coords.x <<  closest->coords.y << closest->coords.z << std::endl;
 
-
-
-	
 //	my_world.publish_world(vis_pub);
 	
 	while(ros::ok())
@@ -115,7 +122,7 @@ int main(int argc, char **argv)
 		if (ready)
 		{
 			std::lock_guard<std::mutex> lock(uav_state_mutex);
-			cur_uav_state = uav_state;
+//			cur_uav_state = uav_state;
 //			ROS_INFO("I heard: [%f]", cur_uav_state->pose.position.x);
 		}
 		
