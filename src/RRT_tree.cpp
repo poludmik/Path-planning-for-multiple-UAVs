@@ -40,25 +40,29 @@ std::vector<Vec3> RRT_tree::find_path_to_goal(World *world_ptr, Vec3& start_poin
 
         bool is_inside_an_obstacle = false;
 
-        for (const auto& obst : world_ptr->obstacles) {
-//            std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAA\n";
-            if (Vec3::distance_between_two_vec3(rnd_point, obst.coords) <= obst.radius) {
-                is_inside_an_obstacle = true;
-                break;
-            }
-        }
-        if (is_inside_an_obstacle) continue;
-
-		auto closest = Node::find_the_closest_node(rnd_point, tree.root.get());
-
 //        for (const auto& obst : world_ptr->obstacles) {
-//            if (Vec3::line_intersects_sphere(rnd_point, closest->coords, obst.coords, obst.radius)){
+//            if (Vec3::distance_between_two_vec3(rnd_point, obst.coords) <= obst.radius) {
 //                is_inside_an_obstacle = true;
 //                break;
 //            }
 //        }
 //        if (is_inside_an_obstacle) continue;
 
+		auto closest = Node::find_the_closest_node(rnd_point, tree.root.get());
+
+
+        for (const auto& obst : world_ptr->obstacles) {
+            if (Vec3::DoesLineSegmentIntersectSphere(closest->coords,rnd_point,
+                                                     obst.coords, obst.radius)){
+//                std::cout << rnd_point.x << " " << rnd_point.y << " "<< rnd_point.z << "\n";
+//                std::cout << closest->coords.x << " " << closest->coords.y << " " << closest->coords.z << " " << "\n\n";
+                is_inside_an_obstacle = true;
+                break;
+            }
+        }
+        if (is_inside_an_obstacle) continue;
+
+//        std::cout << "A\n";
         if (Vec3::distance_between_two_vec3(rnd_point, closest->coords) > 1.0) continue;
 		closest->add_child(rnd_point);
 //		closest->print_out_all_children();

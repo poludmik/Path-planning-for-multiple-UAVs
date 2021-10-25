@@ -10,7 +10,7 @@ Vec3::Vec3(double x, double y, double z) { // vector point // TODO separate ambi
 	this->z = z;
 }
 
-Vec3 Vec3::operator+(Vec3 &obj) const {
+Vec3 Vec3::operator+(const Vec3 &obj) const {
 	Vec3 a;  //create another object
 	
 	a.x = this->x + obj.x;
@@ -19,6 +19,17 @@ Vec3 Vec3::operator+(Vec3 &obj) const {
 	
 	return (a); //return object
 }
+
+Vec3 Vec3::operator-(const Vec3 &obj) const {
+    Vec3 a;  //create another object
+
+    a.x = this->x - obj.x;
+    a.y = this->y - obj.y;
+    a.z = this->z - obj.z;
+
+    return (a); //return object
+}
+
 
 Vec3 Vec3::operator/(double number) const {
 	return {x/number, y/number, z/number};
@@ -60,4 +71,51 @@ bool Vec3::line_intersects_sphere(const Vec3 &p1, const Vec3 &p2, const Vec3 &ce
     if (determinant < 0.0) { // if > 0 => 2 points of intersection, is == 0 => 1 point.
         return false;
     } else return true;
+}
+
+double Vec3::operator|(const Vec3 &V) const {
+    return x*V.x + y*V.y + z*V.z;
+}
+
+Vec3 Vec3::operator*(double number) const {
+    Vec3 a;
+    a.x = this->x * number;
+    a.y = this->y * number;
+    a.z = this->z * number;
+    return (a);
+}
+
+bool Vec3::DoesLineSegmentIntersectSphere(Vec3 &LinePointStart,
+                                          Vec3 &LinePointEnd,
+                                          const Vec3 &SphereCenter,
+                                          double SphereRadius) {
+    const Vec3 LineDiffVect = LinePointEnd - LinePointStart;
+//    std::cout << "LineDiffVect: " << LineDiffVect.x << " " << LineDiffVect.y << " " << LineDiffVect.z << "\n";
+    const Vec3& copy = LineDiffVect;
+    const double lineSegSqrLength = LineDiffVect | copy;
+
+    const Vec3 LineToPointVect = SphereCenter - LinePointStart;
+//    std::cout << "LineToPointVect: " << LineToPointVect.x << " " << LineToPointVect.y << " " << LineToPointVect.z << "\n";
+    const double dotProduct = LineDiffVect | LineToPointVect;
+//    std::cout << "dotProduct: " << dotProduct << "\n";
+
+    double percAlongLine = dotProduct / lineSegSqrLength;
+//    std::cout << "percAlongLine: " << percAlongLine << "\n";
+
+    if ( percAlongLine < 0.0l )
+    {
+        percAlongLine = 0.0l;
+    }
+    else if ( percAlongLine > 1.0l )
+    {
+        percAlongLine = 1.0l;
+    }
+
+    const Vec3 IntersectionPt = ((LinePointEnd - LinePointStart) * percAlongLine) + LinePointStart;
+//    std::cout << "IntersectionPt(closest to center?): " << IntersectionPt.x << " " << IntersectionPt.y << " " << IntersectionPt.z << "\n";
+    const Vec3 SpherePtToIntersect = IntersectionPt - SphereCenter;
+    const Vec3& copy2 = SpherePtToIntersect;
+    const double SqrLengSphereToLine = SpherePtToIntersect | copy2;
+
+    return (SqrLengSphereToLine <= pow(SphereRadius, 2));
 }

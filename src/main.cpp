@@ -47,11 +47,32 @@ int main(int argc, char **argv)
 
 	World my_world;
 	
-	Vec3 pt_start(0, 0, 0);
-	Vec3 pt_goal(10.0, 0,5);
+	Vec3 pt_start(-3, 0, 0);
+	Vec3 pt_goal(8.0, 0,0);
 
-    Vec3 rock(5.0, 0.0, 1.0);
+    Vec3 rock(2.0, -4.0, 0.0);
     my_world.add_obstacle(3.0, rock);
+    Vec3 rock1(2.0, 4.0, 0.0);
+    my_world.add_obstacle(3.5, rock1);
+    Vec3 rock2(2.0, -4.0, 4.0);
+    my_world.add_obstacle(3.0, rock2);
+    Vec3 rock3(2.0, 4.0, 4.0);
+    my_world.add_obstacle(3.5, rock3);
+    Vec3 rock4(2.0, -4.0, -4.0);
+    my_world.add_obstacle(3.0, rock4);
+    Vec3 rock5(2.0, 4.0, -4.0);
+    my_world.add_obstacle(3.5, rock5);
+
+    Vec3 rock6(2.0, 0.0, 4.0);
+    my_world.add_obstacle(3.0, rock6);
+    Vec3 rock7(2.0, 0.0, -4.0);
+    my_world.add_obstacle(3.5, rock7);
+
+    Vec3 pt_medium(0.0, 0.0, 0.0);
+    Vec3 pt_side(0.0, 5.0, 0.0);
+    std::cout << Vec3::DoesLineSegmentIntersectSphere(pt_start, pt_goal, rock, 3.0) << "\n";
+    std::cout << Vec3::DoesLineSegmentIntersectSphere(pt_start, pt_medium, rock, 3.0) << "\n";
+    std::cout << Vec3::DoesLineSegmentIntersectSphere(pt_start, pt_side, rock, 3.0) << "\n";
 
     double goal_radius = 1.0;
 

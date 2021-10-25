@@ -19,9 +19,15 @@ public:
     
     Vec3(double x, double y, double z);
     
-    Vec3 operator +(Vec3 &obj) const;
+    Vec3 operator +(const Vec3 &obj) const;
+
+    Vec3 operator *(double number) const;
+
+    Vec3 operator -(const Vec3 &obj) const;
     
     Vec3 operator/(double number) const;
+
+    double operator|(const Vec3 &V) const;
     
     Vec3(const Vec3& pt);
     
@@ -34,4 +40,10 @@ public:
     static double distance_between_two_vec3(const Vec3 &pt1, const Vec3 &pt2);
 
     static bool line_intersects_sphere(const Vec3 &p1, const Vec3 &p2, const Vec3 &center, double radius);
+
+    static bool DoesLineSegmentIntersectSphere(Vec3& LinePointStart,
+                                        Vec3& LinePointEnd,
+                                        const Vec3& SphereCenter,
+                                        double SphereRadius);
+
 };
