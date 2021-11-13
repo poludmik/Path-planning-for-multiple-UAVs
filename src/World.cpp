@@ -57,7 +57,7 @@ void World::fill_out_default_marker(visualization_msgs::Marker &marker,
 	const std::string &name = obj.name;
     const bool tmp_start = obj.is_start;
 	
-	marker.header.frame_id = "map"; // "uav1/local_origin";
+	marker.header.frame_id = "uav1/fcu"; // "map"  uav1/local_origin;
 	marker.header.stamp = ros::Time::now();
 	marker.ns = name;
 	marker.id = id;
@@ -91,13 +91,13 @@ void World::fill_out_default_marker(visualization_msgs::Marker &marker,
         marker.color.g = 0.0;
         marker.color.b = 0.0;
     }
-	marker.lifetime = ros::Duration(20);
+	marker.lifetime = ros::Duration(60);
 }
 
 void World::publish_path(ros::Publisher &publisher, const std::vector<Vec3>& points) {
 
     visualization_msgs::Marker line_strip;
-    line_strip.header.frame_id = "map"; // "uav1/local_origin";
+    line_strip.header.frame_id = "uav1/fcu"; // "map";
     line_strip.ns = "path";
     line_strip.header.stamp = ros::Time::now();
     line_strip.type = visualization_msgs::Marker::LINE_STRIP;
@@ -114,7 +114,7 @@ void World::publish_path(ros::Publisher &publisher, const std::vector<Vec3>& poi
         p.z = point.z;
         line_strip.points.push_back(p);
     }
-    line_strip.lifetime = ros::Duration(20);
+    line_strip.lifetime = ros::Duration(60);
     while (publisher.getNumSubscribers() < 1) {
         if (!ros::ok()) {
             std::cout << "Cannot publish, !ros::ok.\n";

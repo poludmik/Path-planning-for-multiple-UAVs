@@ -119,3 +119,7 @@ bool Vec3::DoesLineSegmentIntersectSphere(Vec3 &LinePointStart,
 
     return (SqrLengSphereToLine <= pow(SphereRadius, 2));
 }
+
+double Vec3::norm() const {
+    return sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
+}

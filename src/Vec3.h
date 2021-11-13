@@ -32,6 +32,8 @@ public:
     Vec3(const Vec3& pt);
     
     Vec3 &operator=(const Vec3 &pt) = default;
+
+    double norm() const;
     
     static Vec3 random_vec3(double range_ax, double range_bx,
                             double range_ay, double range_by,

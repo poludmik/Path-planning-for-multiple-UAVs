@@ -11,6 +11,7 @@
 #include "Object.h"
 #include "Node.h"
 #include "RRT_tree.h"
+#include "VelocityControllerP.h"
 
 bool ready = false;
 mrs_msgs::UavState::ConstPtr uav_state;
@@ -18,6 +19,12 @@ std::mutex uav_state_mutex;
 
 
 void odomCallback(const mrs_msgs::UavState::ConstPtr &msg);
+
+void go_to_point(const Vec3& point,
+                 mrs_msgs::VelocityReferenceStamped cmd,
+                 const ros::Publisher& vel_pub);
+
+double clip(double n, double lower, double upper);
 
 int main(int argc, char **argv)
 {
@@ -47,38 +54,25 @@ int main(int argc, char **argv)
 
 	World my_world;
 	
-	Vec3 pt_start(-3, 0, 0);
-	Vec3 pt_goal(8.0, 0,0);
+	Vec3 pt_start(0, 0, 0);
+	Vec3 pt_goal(8.0, -3,4);
 
-    Vec3 rock(2.0, -4.0, 0.0);
-    my_world.add_obstacle(3.0, rock);
-    Vec3 rock1(2.0, 4.0, 0.0);
-    my_world.add_obstacle(3.5, rock1);
-    Vec3 rock2(2.0, -4.0, 4.0);
-    my_world.add_obstacle(3.0, rock2);
-    Vec3 rock3(2.0, 4.0, 4.0);
-    my_world.add_obstacle(3.5, rock3);
-    Vec3 rock4(2.0, -4.0, -4.0);
-    my_world.add_obstacle(3.0, rock4);
-    Vec3 rock5(2.0, 4.0, -4.0);
-    my_world.add_obstacle(3.5, rock5);
+    Vec3 rock(4.0, 0, 0.0);
+    my_world.add_obstacle(2, rock);
 
-    Vec3 rock6(2.0, 0.0, 4.0);
-    my_world.add_obstacle(3.0, rock6);
-    Vec3 rock7(2.0, 0.0, -4.0);
-    my_world.add_obstacle(3.5, rock7);
+    Vec3 rock2(4.0, 0, 2.0);
+    my_world.add_obstacle(2, rock2);
 
-    Vec3 pt_medium(0.0, 0.0, 0.0);
-    Vec3 pt_side(0.0, 5.0, 0.0);
-    std::cout << Vec3::DoesLineSegmentIntersectSphere(pt_start, pt_goal, rock, 3.0) << "\n";
-    std::cout << Vec3::DoesLineSegmentIntersectSphere(pt_start, pt_medium, rock, 3.0) << "\n";
-    std::cout << Vec3::DoesLineSegmentIntersectSphere(pt_start, pt_side, rock, 3.0) << "\n";
+    Vec3 rock3(4.0, -2, 0.0);
+    my_world.add_obstacle(2, rock3);
+
+    Vec3 rock4(4.0, -5, 3);
+    my_world.add_obstacle(2, rock4);
 
     double goal_radius = 1.0;
 
 	std::vector<Vec3> path = RRT_tree::find_path_to_goal(&my_world, pt_start, pt_goal, goal_radius);
 
-	std::cout << "started in main:\n";
 	for (const auto& point : path) {
         printf("%lf %lf %lf\n", point.x, point.y, point.z);
         my_world.add_object(0.2, point);
@@ -87,81 +81,104 @@ int main(int argc, char **argv)
     my_world.add_object(goal_radius, pt_goal);
     my_world.add_object(1.0, pt_start);
     auto k = my_world.objects.size();
-    my_world.objects[k - 3].set_as_a_goal();
     my_world.objects[k - 2].set_as_a_goal();
     my_world.objects[k - 1].set_as_a_start();
     my_world.publish_world(vis_pub);
     World::publish_path(vis_pub, path);
 
 
-//	Vec3 pt1(1.0, 0.0, 0.0);
-//	Vec3 pt2;
-//	Vec3 pt3 = pt1 + pt2;
-	
-//	int num = 15;
-//	my_world.objects.reserve(num);
-//
-//	for (int i = 0; i < num; ++i) {
-//		std::string s = "name" + std::to_string(i);
-//		my_world.add_object(s, 0.3, Vec3::random_vec3(-2, 2));
-//		my_world.objects[i].print_out_info();
-//	}
-//
-//	my_world.add_object("Goal", 1, Vec3(2, 2, 2));
-//	auto k = my_world.objects.size();
-//	my_world.objects[k - 1].set_as_a_goal();
+    Vec3 start_position(0,0,0);
+    while (ros::ok()) {
+        mrs_msgs::UavState::ConstPtr cur_uav_state;
+        if (ready) {
+            std::lock_guard<std::mutex> lock(uav_state_mutex);
+            cur_uav_state = uav_state;
+            start_position = Vec3(cur_uav_state->pose.position.x, cur_uav_state->pose.position.y,
+                                                           cur_uav_state->pose.position.z);
+            break;
+        }
+        ros::spinOnce();
+        rate.sleep();
+    }
 
-//	my_world.add_object("First", 0.6, Vec3(1, 0, 1));
-//	my_world.add_object("Second", 1.8, Vec3(1.5, 0, 0));
-//	my_world.add_object("Third", 2, Vec3(3, 0, 1));
-//	auto k = my_world.objects.size();
-//	my_world.objects[k - 1].set_as_a_goal();
-	
-//	std::cout << Object::are_intersecting(my_world.objects[k-1], my_world.objects[1]) << std::endl;
-//	std::cout << Object::are_intersecting(my_world.objects[1], my_world.objects[0]) << std::endl;
-	
-//	Vec3 coords(0, 0, 0);
-//	Node root = Node(coords);
-//
-//	coords = Vec3(1, 0, 0);
-//	root.add_child(coords);
-//
-//	coords = Vec3(2, 0, 0);
-//	root.add_child(coords);
-//
-//	coords = Vec3(3, 1, 5);
-//	root.children[1]->add_child(coords);
-//
-//	root.print_out_all_children();
-//	root.children[0]->print_out_all_children();
-//	root.children[1]->print_out_all_children();
-//
-//	coords = Vec3(2, 1, 5);
-//	auto closest = Node::find_the_closest_node(coords, &root);
-//
-//	std::cout << "Found closest: " << closest->coords.x <<  closest->coords.y << closest->coords.z << std::endl;
+    for (auto& point : path) {
+        point = point + start_position;
+    }
 
-//	my_world.publish_world(vis_pub);
-	
-	while(ros::ok())
-	{
-		// get state
-		mrs_msgs::UavState::ConstPtr cur_uav_state;
-		if (ready)
-		{
-			std::lock_guard<std::mutex> lock(uav_state_mutex);
-//			cur_uav_state = uav_state;
-//			ROS_INFO("I heard: [%f]", cur_uav_state->pose.position.x);
-		}
-		
-//		std::cout << cur_uav_state->pose.position.x << std::endl;
+    bool first_iter = true;
+
+    for (const auto& point : path) {
+
+        std::cout << "next_goal = " << point.x << " " << point.y << "\n";
+
+        while (ros::ok()) {
+            mrs_msgs::UavState::ConstPtr cur_uav_state;
+            if (ready) {
+
+                std::lock_guard<std::mutex> lock(uav_state_mutex);
+                cur_uav_state = uav_state;
+
+                if (first_iter) {
+                    first_iter = false;
+                }
+
+                Vec3 curr_position = Vec3(cur_uav_state->pose.position.x, cur_uav_state->pose.position.y,
+                                         cur_uav_state->pose.position.z);
+
+                Vec3 error = point - curr_position;
+
+                if (error.norm() > 0.2) {
+//                    std::cout << uav_state->pose.position.x << "\n";
+                    cmd.reference.velocity.x = error.x * 0.2;
+                    cmd.reference.velocity.y = error.y * 0.2;
+                    cmd.reference.velocity.z = error.z * 0.2;
+
+                    vel_pub.publish(cmd);
+                } else {
+                    break;
+                }
+
+//            ROS_INFO("I heard: [%f]", cur_uav_state->pose.position.x);
+//            VelocityControllerP::go_to_point(pt_goal + curr_position, uav_state, cmd, vel_pub);
+//            go_to_point(pt_goal + curr_position, cmd, vel_pub);
+
+            }
+
+//		std::cout << uav_state->pose.position.x << std::endl;
 //		std::cout << "publishing: [" << ros::Time::now().toSec() << "] " << cmd.reference.velocity.x << ", " << cmd.reference.velocity.y  << std::endl;
 //		vis_pub.publish(marker0);
 
-		ros::spinOnce();
-		rate.sleep();
-	}
-	return EXIT_SUCCESS;
+            ros::spinOnce();
+            rate.sleep();
+        }
+    }
+
+    return EXIT_SUCCESS;
+}
+
+void go_to_point(const Vec3& point,
+                 mrs_msgs::VelocityReferenceStamped cmd,
+                 const ros::Publisher& vel_pub){
+
+    Vec3 e = point - Vec3(uav_state->pose.position.x, uav_state->pose.position.y, uav_state->pose.position.z);
+    ros::Rate rate(10);
+    while (e.norm() > 0.2) {
+
+        std::cout << uav_state->pose.position.x << "\n";
+        cmd.reference.velocity.x = e.x * 0.1;
+        cmd.reference.velocity.y = e.y * 0.1;
+        cmd.reference.velocity.z = e.z * 0.1;
+
+        vel_pub.publish(cmd);
+
+        e = point - Vec3(uav_state->pose.position.x, uav_state->pose.position.y, uav_state->pose.position.z);
+
+        rate.sleep();
+    }
+}
+
+double clip(double n, double lower, double upper) {
+    return std::max(lower, std::min(n, upper));
 }
 
 //mrs_msgs::VelocityReferenceStamped &cmd,

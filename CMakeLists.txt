@@ -24,7 +24,7 @@ catkin_package(
 	CATKIN_DEPENDS message_runtime
 )
 
-add_executable(planner src/main.cpp src/Vec3.cpp src/Vec3.h src/Object.cpp src/Object.h src/World.cpp src/World.h src/Node.cpp src/Node.h src/RRT_tree.cpp src/RRT_tree.h)
+add_executable(planner src/main.cpp src/Vec3.cpp src/Vec3.h src/Object.cpp src/Object.h src/World.cpp src/World.h src/Node.cpp src/Node.h src/RRT_tree.cpp src/RRT_tree.h src/VelocityControllerP.cpp src/VelocityControllerP.h)
 
 target_link_libraries(planner
 	PRIVATE
