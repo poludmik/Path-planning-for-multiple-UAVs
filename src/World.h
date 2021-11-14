@@ -31,17 +31,16 @@ public:
 
     void add_obstacle(double radius, const Vec3 &given_coords);
     
-    void print_out_objects();
-    
-    void publish_world(ros::Publisher &publisher);
+    void publish_world(const ros::Publisher &publisher) const;
 
-    static void publish_path(ros::Publisher &publisher, const std::vector<Vec3>& points);
+    static void publish_path(const ros::Publisher &publisher, const std::vector<Vec3>& points);
     
     World()=default;
     
-    ~World();;
+    ~World();
 
 private:
+//    static void publish_one_array(const ros::Publisher &publisher, const std::vector<Object> &array);
 
     static void fill_out_default_marker(visualization_msgs::Marker& marker,
                                         uint8_t id,

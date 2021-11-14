@@ -30,7 +30,7 @@ public:
 
     void set_as_an_obstacle();
     
-    void finish_being_goal(){ is_goal = false; }
+    void finish_being_goal();
     
     static bool are_intersecting(const Object &obj1, const Object &obj2);
     

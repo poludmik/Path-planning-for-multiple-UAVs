@@ -85,8 +85,8 @@ Vec3 Vec3::operator*(double number) const {
     return (a);
 }
 
-bool Vec3::DoesLineSegmentIntersectSphere(Vec3 &LinePointStart,
-                                          Vec3 &LinePointEnd,
+bool Vec3::DoesLineSegmentIntersectSphere(const Vec3 &LinePointStart,
+                                          const Vec3 &LinePointEnd,
                                           const Vec3 &SphereCenter,
                                           double SphereRadius) {
     const Vec3 LineDiffVect = LinePointEnd - LinePointStart;

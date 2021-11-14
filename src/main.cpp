@@ -13,6 +13,11 @@
 #include "RRT_tree.h"
 #include "VelocityControllerP.h"
 
+
+#include "Algorithm.h"
+#include "RRTAlgorithm.h"
+#include "RRTStarAlgorithm.h"
+
 bool ready = false;
 mrs_msgs::UavState::ConstPtr uav_state;
 std::mutex uav_state_mutex;
@@ -55,25 +60,27 @@ int main(int argc, char **argv)
 	World my_world;
 	
 	Vec3 pt_start(0, 0, 0);
-	Vec3 pt_goal(8.0, -3,4);
+	Vec3 pt_goal(8.0, 0,0);
 
     Vec3 rock(4.0, 0, 0.0);
     my_world.add_obstacle(2, rock);
 
-    Vec3 rock2(4.0, 0, 2.0);
-    my_world.add_obstacle(2, rock2);
 
-    Vec3 rock3(4.0, -2, 0.0);
-    my_world.add_obstacle(2, rock3);
-
-    Vec3 rock4(4.0, -5, 3);
-    my_world.add_obstacle(2, rock4);
+//    Vec3 rock2(4.0, 0, 2.0);
+//    my_world.add_obstacle(2, rock2);
+//    Vec3 rock3(4.0, -2, 0.0);
+//    my_world.add_obstacle(2, rock3);
+//    Vec3 rock4(4.0, -5, 3);
+//    my_world.add_obstacle(2, rock4);
 
     double goal_radius = 1.0;
 
-	std::vector<Vec3> path = RRT_tree::find_path_to_goal(&my_world, pt_start, pt_goal, goal_radius);
+//	std::vector<Vec3> path = RRT_tree::find_path_to_goal_RRT(&my_world, pt_start, pt_goal, goal_radius, 2);
 
-	for (const auto& point : path) {
+    RRT_tree tree(pt_start, &my_world, 2);
+    std::vector<Vec3> path = tree.find_path(RRTAlgorithm(), pt_goal, goal_radius);
+
+    for (const auto& point : path) {
         printf("%lf %lf %lf\n", point.x, point.y, point.z);
         my_world.add_object(0.2, point);
     }
@@ -85,6 +92,13 @@ int main(int argc, char **argv)
     my_world.objects[k - 1].set_as_a_start();
     my_world.publish_world(vis_pub);
     World::publish_path(vis_pub, path);
+
+
+    // to go without flying
+    while (ros::ok()) {
+        ros::spinOnce();
+        rate.sleep();
+    }
 
 
     Vec3 start_position(0,0,0);
@@ -137,11 +151,6 @@ int main(int argc, char **argv)
                 } else {
                     break;
                 }
-
-//            ROS_INFO("I heard: [%f]", cur_uav_state->pose.position.x);
-//            VelocityControllerP::go_to_point(pt_goal + curr_position, uav_state, cmd, vel_pub);
-//            go_to_point(pt_goal + curr_position, cmd, vel_pub);
-
             }
 
 //		std::cout << uav_state->pose.position.x << std::endl;
