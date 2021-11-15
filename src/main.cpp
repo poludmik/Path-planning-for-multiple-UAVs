@@ -137,11 +137,6 @@ int main(int argc, char **argv)
                 } else {
                     break;
                 }
-
-//            ROS_INFO("I heard: [%f]", cur_uav_state->pose.position.x);
-//            VelocityControllerP::go_to_point(pt_goal + curr_position, uav_state, cmd, vel_pub);
-//            go_to_point(pt_goal + curr_position, cmd, vel_pub);
-
             }
 
 //		std::cout << uav_state->pose.position.x << std::endl;
@@ -175,10 +170,6 @@ void go_to_point(const Vec3& point,
 
         rate.sleep();
     }
-}
-
-double clip(double n, double lower, double upper) {
-    return std::max(lower, std::min(n, upper));
 }
 
 //mrs_msgs::VelocityReferenceStamped &cmd,
