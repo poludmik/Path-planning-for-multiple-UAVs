@@ -59,11 +59,11 @@ int main(int argc, char **argv)
 
 	World my_world;
 	
-	Vec3 pt_start(0, 0, 0);
-	Vec3 pt_goal(8.0, 0,0);
+	Vec3 pt_start(-5, 0, 0);
+	Vec3 pt_goal(5.0, 0,0);
 
-    Vec3 rock(4.0, 0, 0.0);
-    my_world.add_obstacle(2, rock);
+//    Vec3 rock(4.0, 0, 0.0);
+//    my_world.add_obstacle(2, rock);
 
 
 //    Vec3 rock2(4.0, 0, 2.0);
@@ -75,10 +75,11 @@ int main(int argc, char **argv)
 
     double goal_radius = 1.0;
 
-//	std::vector<Vec3> path = RRT_tree::find_path_to_goal_RRT(&my_world, pt_start, pt_goal, goal_radius, 2);
+//	std::vector<Vec3> path = RRT_tree::find_path_to_goal_RRT(&my_world, pt_start, pt_goal, goal_radius, 3);
 
-    RRT_tree tree(pt_start, &my_world, 2);
-    std::vector<Vec3> path = tree.find_path(RRTAlgorithm(), pt_goal, goal_radius);
+    RRT_tree tree(pt_start, &my_world, 4);
+    std::vector<Vec3> path = tree.find_path(RRTStarAlgorithm(), pt_goal, goal_radius);
+
 
     for (const auto& point : path) {
         printf("%lf %lf %lf\n", point.x, point.y, point.z);
@@ -92,6 +93,9 @@ int main(int argc, char **argv)
     my_world.objects[k - 1].set_as_a_start();
     my_world.publish_world(vis_pub);
     World::publish_path(vis_pub, path);
+
+
+
 
 
     // to go without flying
@@ -123,7 +127,7 @@ int main(int argc, char **argv)
 
     for (const auto& point : path) {
 
-        std::cout << "next_goal = " << point.x << " " << point.y << "\n";
+//        std::cout << "next_goal = " << point.x << " " << point.y << "\n";
 
         while (ros::ok()) {
             mrs_msgs::UavState::ConstPtr cur_uav_state;

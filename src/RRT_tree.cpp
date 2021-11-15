@@ -5,9 +5,10 @@
 #include "RRT_tree.h"
 
 RRT_tree::RRT_tree(Vec3 &coords, World *ptr_to_world, double neighbor_radius) {
-    neighbor_radius = neighbor_radius;
+
 	root = std::make_shared<Node>(coords);
 	world_p = ptr_to_world;
+    this->neighbor_radius = neighbor_radius;
 }
 
 std::vector<Vec3> RRT_tree::find_way_from_goal_to_root(Node* last_goal_p) {

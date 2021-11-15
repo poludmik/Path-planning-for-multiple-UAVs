@@ -26,8 +26,14 @@ public:
     void set_as_final();
     
     void add_child(const Vec3 &coords);
+
+    void change_parent(Node *new_parent);
     
     void print_out_all_children() const;
     
     static Node* find_the_closest_node(const Vec3 &point, Node *root_node);
+
+    static std::vector<Node *> get_neighbors_in_radius(Node *root,
+                                                       const Vec3& point,
+                                                       double radius);
 };

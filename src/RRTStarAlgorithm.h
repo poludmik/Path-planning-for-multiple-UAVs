@@ -13,8 +13,6 @@ class RRTStarAlgorithm : public Algorithm {
                                                  const Vec3 &start_point,
                                                  const Vec3 &goal_point,
                                                  double goal_radius,
-                                                 double neighbor_radius) const override {
-
-    };
+                                                 double neighbor_radius) const override;
 
 };
