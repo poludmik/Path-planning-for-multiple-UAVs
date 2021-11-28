@@ -4,9 +4,11 @@
 
 #include "RRT_tree.h"
 
-RRT_tree::RRT_tree(Vec3 &coords, World *ptr_to_world) {
+RRT_tree::RRT_tree(Vec3 &coords, World *ptr_to_world, double neighbor_radius) {
+
 	root = std::make_shared<Node>(coords);
 	world_p = ptr_to_world;
+    this->neighbor_radius = neighbor_radius;
 }
 
 std::vector<Vec3> RRT_tree::find_way_from_goal_to_root(Node* last_goal_p) {
@@ -22,73 +24,84 @@ std::vector<Vec3> RRT_tree::find_way_from_goal_to_root(Node* last_goal_p) {
 	return way;
 }
 
+void RRT_tree::write_tree_structure_to_json_file(Node *root,
+                                                 const std::string& tree_name,
+                                                 const std::string& filename,
+                                                 const std::vector<Vec3> &path,
+                                                 const Vec3 &goal,
+                                                 const double goal_radius,
+                                                 const std::vector<Object> &obstacles) {
+    std::queue<Node *> my_queue;
 
-std::vector<Vec3> RRT_tree::find_path_to_goal(World *world_ptr, Vec3& start_point, Vec3& goal_point, double goal_radius) {
-	RRT_tree tree(start_point, world_ptr);
-	
-	Vec3 center = (start_point + goal_point) / 2.0;
-	
-	double dist_to_goal = Vec3::distance_between_two_vec3(start_point, goal_point);
+    my_queue.push(root);
 
-    bool is_inside_an_obstacle = false;
+    nlohmann::json j_structure;
 
-    // if there is a straight line solution to the goal from the start
-    for (const auto& obst : world_ptr->obstacles) {
-        if (Vec3::DoesLineSegmentIntersectSphere(goal_point, start_point,
-                                                 obst.coords, obst.radius)){
-            is_inside_an_obstacle = true;
-            break;
+    std::ofstream o(filename);
+
+    size_t idx = 1;
+    while (!my_queue.empty()) {
+        // front() returns reference, after that we are calling pop,
+        // so we need to dereference and take a new pointer to prevent invalid reference
+        auto current = &(*my_queue.front());
+        my_queue.pop();
+
+        for (const auto &i: current->children) {
+
+//            std::cout << idx << "\n";
+            std::vector<double> line_sector;
+
+            line_sector.push_back(current->coords.x);
+            line_sector.push_back(current->coords.y);
+            line_sector.push_back(current->coords.z);
+
+            line_sector.push_back(i->coords.x);
+            line_sector.push_back(i->coords.y);
+            line_sector.push_back(i->coords.z);
+
+            j_structure["tree" + std::to_string(idx)] = line_sector;
+
+            line_sector.clear();
+
+            my_queue.push(i.get());
+            ++idx;
         }
     }
-    if (!is_inside_an_obstacle) {
-        auto closest = Node::find_the_closest_node(goal_point, tree.root.get());
-        closest->add_child(goal_point);
-        return tree.find_way_from_goal_to_root(closest->children.back().get());
+    j_structure["tree_size"] = idx;
+
+    j_structure["start"] = {root->coords.x, root->coords.y, root->coords.z};
+    j_structure["goal"] = {goal.x, goal.y, goal.z};
+    idx = 1;
+    for (const auto &i : path){
+        std::vector<double> path_point;
+
+        path_point.push_back(i.x);
+        path_point.push_back(i.y);
+        path_point.push_back(i.z);
+
+        j_structure["path" + std::to_string(idx)] = path_point;
+        path_point.clear();
+        ++idx;
     }
+    j_structure["path_size"] = idx;
 
+    j_structure["goal_radius"] = goal_radius;
 
-	while (true) {
+    // Write obstacles
+    idx = 1;
+    for (const auto &x : obstacles){
+        std::vector<double> one_obstacle;
+        one_obstacle.push_back(x.radius);
+        one_obstacle.push_back(x.coords.x);
+        one_obstacle.push_back(x.coords.y);
+        one_obstacle.push_back(x.coords.z);
+        j_structure["obstacle" + std::to_string(idx)] = one_obstacle;
+        one_obstacle.clear();
+        ++idx;
+    }
+    j_structure["obstacles_number"] = idx;
 
-		Vec3 rnd_point = Vec3::random_vec3(center.x - dist_to_goal, center.x + dist_to_goal,
-                                           center.y - dist_to_goal, center.y + dist_to_goal,
-                                           center.z - dist_to_goal, center.z + dist_to_goal);
+    j_structure["graph_name"] = tree_name;
 
-        is_inside_an_obstacle = false;
-
-		auto closest = Node::find_the_closest_node(rnd_point, tree.root.get());
-
-        if (Vec3::distance_between_two_vec3(rnd_point, closest->coords) > 2.0) continue;
-
-        for (const auto& obst : world_ptr->obstacles) {
-            if (Vec3::DoesLineSegmentIntersectSphere(closest->coords,rnd_point,
-                                                     obst.coords, obst.radius)){
-                is_inside_an_obstacle = true;
-                break;
-            }
-        }
-        if (is_inside_an_obstacle) continue;
-        is_inside_an_obstacle = false;
-
-		closest->add_child(rnd_point);
-
-        // if there is a straight line solution to the goal from newly added point
-        for (const auto& obst : world_ptr->obstacles) {
-            if (Vec3::DoesLineSegmentIntersectSphere(goal_point, rnd_point,
-                                                     obst.coords, obst.radius)){
-                is_inside_an_obstacle = true;
-                break;
-            }
-        }
-        if (is_inside_an_obstacle) {
-            if (Vec3::distance_between_two_vec3(rnd_point, goal_point) < goal_radius) {
-                return tree.find_way_from_goal_to_root(closest->children.back().get());
-            }
-        }
-        else {
-            closest->children.back()->add_child(goal_point);
-            return tree.find_way_from_goal_to_root(closest->children.back()->children.back().get());
-        }
-	}
+    o << std::setw(8) << j_structure << std::endl;
 }
-
-

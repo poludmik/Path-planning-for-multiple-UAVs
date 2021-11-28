@@ -57,4 +57,6 @@ void Object::set_as_a_goal() { is_goal = true; }
 
 void Object::set_as_an_obstacle() { is_obstacle = true; }
 
+void Object::finish_being_goal() { is_goal = false; }
+
 

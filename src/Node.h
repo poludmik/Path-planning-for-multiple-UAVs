@@ -17,16 +17,23 @@ public:
     Node *parent = nullptr;
     bool inside_the_goal = false;
     std::vector<std::shared_ptr<Node>> children;
+    double cost;
     
-    Node(Vec3 &coords, Node *parent);
+    Node(const Vec3 &coords, Node *parent);
     
-    explicit Node(Vec3 &coords);
+    explicit Node(const Vec3 &coords);
     
     void set_as_final();
     
-    void add_child(Vec3 &coords);
+    void add_child(const Vec3 &coords);
+
+    void change_parent(Node *new_parent);
     
-    void print_out_all_children();
+    void print_out_all_children() const;
     
-    static Node* find_the_closest_node(Vec3 &point, Node *root_node);
+    static Node* find_the_closest_node(const Vec3 &point, Node *root_node);
+
+    static std::vector<Node *> get_neighbors_in_radius(Node *root,
+                                                       const Vec3& point,
+                                                       double radius);
 };

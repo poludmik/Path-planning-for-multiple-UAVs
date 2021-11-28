@@ -24,7 +24,40 @@ catkin_package(
 	CATKIN_DEPENDS message_runtime
 )
 
-add_executable(planner src/main.cpp src/Vec3.cpp src/Vec3.h src/Object.cpp src/Object.h src/World.cpp src/World.h src/Node.cpp src/Node.h src/RRT_tree.cpp src/RRT_tree.h src/VelocityControllerP.cpp src/VelocityControllerP.h)
+include(FetchContent)
+
+FetchContent_Declare(json
+		GIT_REPOSITORY https://github.com/ArthurSonzogni/nlohmann_json_cmake_fetchcontent
+		GIT_TAG v3.10.4)
+
+FetchContent_GetProperties(json)
+if(NOT json_POPULATED)
+	FetchContent_Populate(json)
+	add_subdirectory(${json_SOURCE_DIR} ${json_BINARY_DIR} EXCLUDE_FROM_ALL)
+endif()
+
+
+add_executable(planner src/main.cpp
+		src/Vec3.cpp
+		src/Vec3.h
+		src/Object.cpp
+		src/Object.h
+		src/World.cpp
+		src/World.h
+		src/Node.cpp
+		src/Node.h
+		src/RRT_tree.cpp
+		src/RRT_tree.h
+		src/VelocityControllerP.cpp
+		src/VelocityControllerP.h
+		src/Algorithm.h
+		src/RRTStarAlgorithm.cpp
+		src/RRTStarAlgorithm.h
+		src/RRTAlgorithm.cpp
+		src/RRTAlgorithm.h
+		)
+
+target_link_libraries(planner PRIVATE nlohmann_json::nlohmann_json)
 
 target_link_libraries(planner
 	PRIVATE

@@ -14,17 +14,8 @@ void World::add_object(double radius, const Vec3 &given_coords) {
 	objects.emplace_back(this, radius, given_coords);
 }
 
-void World::print_out_objects() {
-	std::cout << std::endl;
-	for (auto & obstacle : objects){
-		std::cout << obstacle.name << std::endl;
-	}
-	std::cout << std::endl;
-}
-
-void World::publish_world(ros::Publisher &publisher) {
-
-    auto publish_one_array = [&publisher](std::vector<Object> &array) {
+void World::publish_world(const ros::Publisher &publisher) const {
+    auto publish_one_array = [&publisher](const std::vector<Object> &array) {
         int count = 0;
         for (auto ptr = array.begin(); ptr < array.end(); ptr++){
             visualization_msgs::Marker localMarker;
@@ -57,7 +48,7 @@ void World::fill_out_default_marker(visualization_msgs::Marker &marker,
 	const std::string &name = obj.name;
     const bool tmp_start = obj.is_start;
 	
-	marker.header.frame_id = "uav1/fcu"; // "map"  uav1/local_origin;
+	marker.header.frame_id = "map"; // "uav1/fcu"; // "map"  uav1/local_origin;
 	marker.header.stamp = ros::Time::now();
 	marker.ns = name;
 	marker.id = id;
@@ -78,7 +69,7 @@ void World::fill_out_default_marker(visualization_msgs::Marker &marker,
 		marker.color.r = 0.0;
 		marker.color.g = 0.0;
 		marker.color.b = 1.0;
-	} else if (obj.is_goal) {
+	} else if (obj.is_start) {
 		marker.color.r = 0.0;
 		marker.color.g = 1.0;
 		marker.color.b = 0.0;
@@ -94,11 +85,11 @@ void World::fill_out_default_marker(visualization_msgs::Marker &marker,
 	marker.lifetime = ros::Duration(60);
 }
 
-void World::publish_path(ros::Publisher &publisher, const std::vector<Vec3>& points) {
+void World::publish_path(const ros::Publisher &publisher, const std::vector<Vec3>& points) {
 
     visualization_msgs::Marker line_strip;
-    line_strip.header.frame_id = "uav1/fcu"; // "map";
-    line_strip.ns = "path";
+    line_strip.header.frame_id = "map"; //"uav1/fcu"; // ;
+    line_strip.ns = "path1";
     line_strip.header.stamp = ros::Time::now();
     line_strip.type = visualization_msgs::Marker::LINE_STRIP;
     line_strip.action = visualization_msgs::Marker::ADD;
@@ -106,6 +97,9 @@ void World::publish_path(ros::Publisher &publisher, const std::vector<Vec3>& poi
     line_strip.scale.x = 0.1;
     line_strip.color.g = 1.0;
     line_strip.color.a = 0.5;
+    line_strip.pose.position.x = 0;
+    line_strip.pose.position.y = 0;
+    line_strip.pose.position.z = 0;
     for (const auto & point : points)
     {
         geometry_msgs::Point p;
@@ -132,4 +126,22 @@ void World::add_obstacle(double radius, const Vec3 &given_coords) {
 void World::add_obstacle(const std::string &name, double radius, const Vec3 &given_coords) {
     obstacles.emplace_back(this, name, radius, given_coords);
 }
+
+//void World::publish_one_array(const ros::Publisher &publisher, const std::vector<Object> &array) {
+//    int count = 0;
+//    for (auto ptr = array.begin(); ptr < array.end(); ptr++){
+//        visualization_msgs::Marker localMarker;
+//        fill_out_default_marker(localMarker, count, array[count]);
+//        std::cout << count << "\n";
+//        while (publisher.getNumSubscribers() < 1) {
+//            if (!ros::ok()) {
+//                std::cout << "Cannot publish, !ros::ok.\n";
+//            }
+//            ROS_WARN_ONCE("Waiting for at least one single sub.");
+//            sleep(1);
+//        }
+//        publisher.publish(localMarker);
+//    }
+//    std::cout << std::endl;
+//}
 
