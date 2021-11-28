@@ -55,7 +55,7 @@ add_executable(planner src/main.cpp
 		src/RRTStarAlgorithm.h
 		src/RRTAlgorithm.cpp
 		src/RRTAlgorithm.h
-		)
+        src/AvoidanceAlgorithm.h src/BinarySearchIntersection.cpp src/BinarySearchIntersection.h src/LinearAlgebraIntersetion.cpp src/LinearAlgebraIntersetion.h)
 
 target_link_libraries(planner PRIVATE nlohmann_json::nlohmann_json)
 

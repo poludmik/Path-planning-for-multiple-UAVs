@@ -14,6 +14,7 @@
 #include "Object.h"
 #include "World.h"
 #include "Algorithm.h"
+#include "AvoidanceAlgorithm.h"
 #include <string>
 
 #include<nlohmann/json.hpp>
@@ -26,9 +27,9 @@ public:
     World *world_p;
     double neighbor_radius;
 
-    std::vector<Vec3> find_path(const Algorithm &alg, const Vec3 &goal_point, double goal_radius) {
-        return alg.find_path_according_to_alg(world_p, root.get(), root->coords, goal_point, goal_radius,
-                                              neighbor_radius);
+    std::vector<Vec3> find_path(const Algorithm &alg, const AvoidanceAlgorithm &avoid_alg, const Vec3 &goal_point, double goal_radius, double drone_radius) {
+        return alg.find_path_according_to_alg(world_p, avoid_alg, root.get(), root->coords, goal_point, goal_radius,
+                                              neighbor_radius, drone_radius);
     };
 
     explicit RRT_tree(Vec3 &coords, World *ptr_to_world, double neighbor_radius);

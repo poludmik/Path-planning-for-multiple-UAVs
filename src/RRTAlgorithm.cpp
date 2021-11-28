@@ -6,11 +6,13 @@
 #include "RRT_tree.h"
 
 std::vector<Vec3> RRTAlgorithm::find_path_according_to_alg(const World *world_ptr,
+                                                           const AvoidanceAlgorithm &avoid_alg,
                                                            Node *root,
                                                            const Vec3 &start_point,
                                                            const Vec3 &goal_point,
                                                            double goal_radius,
-                                                           double neighbor_radius) const {
+                                                           double neighbor_radius,
+                                                           double droneRadius) const {
 
 //    RRT_tree tree(start_point, world_ptr, neighbor_radius);
 
@@ -46,9 +48,11 @@ std::vector<Vec3> RRTAlgorithm::find_path_according_to_alg(const World *world_pt
 
         if (Vec3::distance_between_two_vec3(rnd_point, closest->coords) > 1.5) continue;
 
+
+
         for (const auto& obst : world_ptr->obstacles) {
-            if (Vec3::DoesLineSegmentIntersectSphere(closest->coords,rnd_point,
-                                                     obst.coords, obst.radius)){
+            if (avoid_alg.ThereIsIntersectionAlongThePath(closest->coords,rnd_point,
+                                                     obst.coords, droneRadius, obst.radius)){
                 is_inside_an_obstacle = true;
                 break;
             }

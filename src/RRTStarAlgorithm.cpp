@@ -8,11 +8,13 @@
 #include <algorithm>
 
 std::vector<Vec3> RRTStarAlgorithm::find_path_according_to_alg(const World *world_ptr,
-                                             Node *root,
-                                             const Vec3 &start_point,
-                                             const Vec3 &goal_point,
-                                             double goal_radius,
-                                             double neighbor_radius) const {
+                                                                const AvoidanceAlgorithm &avoid_alg,
+                                                                Node *root,
+                                                                const Vec3 &start_point,
+                                                                const Vec3 &goal_point,
+                                                                double goal_radius,
+                                                                double neighbor_radius,
+                                                                double droneRadius) const {
 
     Vec3 center = (start_point + goal_point) / 2.0;
 
@@ -65,8 +67,8 @@ std::vector<Vec3> RRTStarAlgorithm::find_path_according_to_alg(const World *worl
 
                 // Check potential best neighbors
                 for (const auto& obst : world_ptr->obstacles) {
-                    if (Vec3::DoesLineSegmentIntersectSphere(neighbor->coords,rnd_point,
-                                                             obst.coords, obst.radius)){
+                    if (avoid_alg.ThereIsIntersectionAlongThePath(neighbor->coords,rnd_point,
+                                                             obst.coords, droneRadius, obst.radius)){
                         is_inside_an_obstacle = true;
                         break;
                     }
@@ -89,8 +91,8 @@ std::vector<Vec3> RRTStarAlgorithm::find_path_according_to_alg(const World *worl
 
             // Check closest
             for (const auto& obst : world_ptr->obstacles) {
-                if (Vec3::DoesLineSegmentIntersectSphere(closest->coords,rnd_point,
-                                                         obst.coords, obst.radius)){
+                if (avoid_alg.ThereIsIntersectionAlongThePath(closest->coords,rnd_point,
+                                                         obst.coords, droneRadius, obst.radius)){
                     is_inside_an_obstacle = true;
                     break;
                 }
@@ -109,8 +111,8 @@ std::vector<Vec3> RRTStarAlgorithm::find_path_according_to_alg(const World *worl
 
                 // Check neighbor and new_node/rnd_point
                 for (const auto& obst : world_ptr->obstacles) {
-                    if (Vec3::DoesLineSegmentIntersectSphere(neighbor->coords,rnd_point,
-                                                             obst.coords, obst.radius)){
+                    if (avoid_alg.ThereIsIntersectionAlongThePath(neighbor->coords,rnd_point,
+                                                             obst.coords, droneRadius, obst.radius)){
                         is_inside_an_obstacle = true;
                         break;
                     }
@@ -145,19 +147,17 @@ std::vector<Vec3> RRTStarAlgorithm::find_path_according_to_alg(const World *worl
 
         neighbors.clear();
 
-        if (i < 1000) continue;
+        if (i < 2000) continue;
 
         if (Vec3::distance_between_two_vec3(rnd_point, goal_point) < goal_radius) {
 
-            if  (best_neighbor != nullptr) {
+            if (best_neighbor != nullptr) {
 //                std::cout <<"a\n";
                 return Algorithm::find_way_from_goal_to_root(best_neighbor->children.back().get());
             }
 //            std::cout <<"b\n";
             return Algorithm::find_way_from_goal_to_root(closest->children.back().get());
         }
-
-
     }
 }
 

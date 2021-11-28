@@ -22,6 +22,9 @@
 #include "RRTAlgorithm.h"
 #include "RRTStarAlgorithm.h"
 
+#include "AvoidanceAlgorithm.h"
+#include "LinearAlgebraIntersetion.h"
+#include "BinarySearchIntersection.h"
 
 bool ready = false;
 mrs_msgs::UavState::ConstPtr uav_state;
@@ -65,7 +68,7 @@ int main(int argc, char **argv)
 	World my_world;
 	
 	Vec3 pt_start(-5, 0, 0);
-	Vec3 pt_goal(5, 0,0);
+	Vec3 pt_goal(5.5, 0,0);
 
     Vec3 rock(0, 0.2, 0.0);
     my_world.add_obstacle(1, rock);
@@ -99,14 +102,19 @@ int main(int argc, char **argv)
 
     double goal_radius = 0.8;
 
+    Vec3 drone_center(0, 0, 0);
+    Vec3 obj_center(-3, 1, 0);
+//    std::cout << AvoidanceAlgorithm::DoesIntersectByBinaryAvoidance(pt_start, pt_goal, 0.5, obj_center, 0.6) << "\n";
+
 //	std::vector<Vec3> path = RRT_tree::find_path_to_goal_RRT(&my_world, pt_start, pt_goal, goal_radius, 3);
 
     float neighbor_radius = 3;
+    float drone_radius = 1;
     RRT_tree tree(pt_start, &my_world, neighbor_radius);
-    std::vector<Vec3> path = tree.find_path(RRTAlgorithm(), pt_goal, goal_radius);
+    std::vector<Vec3> path = tree.find_path(RRTStarAlgorithm(), BinarySearchIntersection(), pt_goal, goal_radius, drone_radius);
 
 //    std::string tree_name = "RRT* with multiple obstacles and neighbor radius:" + std::to_string(neighbor_radius);
-    std::string tree_name = "RRT with multiple obstacles";
+    std::string tree_name = "RRT with multiple obstacles and binarySearchAvoidance";
     RRT_tree::write_tree_structure_to_json_file(tree.root.get(), tree_name,
                                                 "Created_file.json", path, pt_goal, goal_radius, my_world.obstacles);
 
@@ -123,16 +131,14 @@ int main(int argc, char **argv)
     my_world.publish_world(vis_pub);
     World::publish_path(vis_pub, path);
 
-    // to go without flying
     return EXIT_SUCCESS;
-//    while (ros::ok()) {
-//        ros::spinOnce();
-//        rate.sleep();
-//    }
+
+
 
 
 
     Vec3 start_position(0,0,0);
+
     while (ros::ok()) {
         mrs_msgs::UavState::ConstPtr cur_uav_state;
         if (ready) {
