@@ -69,7 +69,7 @@ void World::fill_out_default_marker(visualization_msgs::Marker &marker,
 		marker.color.r = 0.0;
 		marker.color.g = 0.0;
 		marker.color.b = 1.0;
-	} else if (obj.is_goal) {
+	} else if (obj.is_start) {
 		marker.color.r = 0.0;
 		marker.color.g = 1.0;
 		marker.color.b = 0.0;
@@ -89,7 +89,7 @@ void World::publish_path(const ros::Publisher &publisher, const std::vector<Vec3
 
     visualization_msgs::Marker line_strip;
     line_strip.header.frame_id = "map"; //"uav1/fcu"; // ;
-    line_strip.ns = "path";
+    line_strip.ns = "path1";
     line_strip.header.stamp = ros::Time::now();
     line_strip.type = visualization_msgs::Marker::LINE_STRIP;
     line_strip.action = visualization_msgs::Marker::ADD;
@@ -97,6 +97,9 @@ void World::publish_path(const ros::Publisher &publisher, const std::vector<Vec3
     line_strip.scale.x = 0.1;
     line_strip.color.g = 1.0;
     line_strip.color.a = 0.5;
+    line_strip.pose.position.x = 0;
+    line_strip.pose.position.y = 0;
+    line_strip.pose.position.z = 0;
     for (const auto & point : points)
     {
         geometry_msgs::Point p;

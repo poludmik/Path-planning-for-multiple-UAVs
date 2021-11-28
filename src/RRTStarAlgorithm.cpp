@@ -7,8 +7,7 @@
 #include "Vec3.h"
 #include <algorithm>
 
-std::vector<Vec3>
-RRTStarAlgorithm::find_path_according_to_alg(const World *world_ptr,
+std::vector<Vec3> RRTStarAlgorithm::find_path_according_to_alg(const World *world_ptr,
                                              Node *root,
                                              const Vec3 &start_point,
                                              const Vec3 &goal_point,
@@ -42,23 +41,14 @@ RRTStarAlgorithm::find_path_according_to_alg(const World *world_ptr,
 
         Vec3 rnd_point = Vec3::random_vec3(center.x - dist_to_goal, center.x + dist_to_goal,
                                            center.y - dist_to_goal, center.y + dist_to_goal,
-                                           0, 0);
+                                           0,0);
 
         is_inside_an_obstacle = false;
 
         auto closest = Node::find_the_closest_node(rnd_point, root);
 
         double distance_to_closest = Vec3::distance_between_two_vec3(rnd_point, closest->coords);
-        if (distance_to_closest > 1.0) continue;
-
-////        for (const auto& obst : world_ptr->obstacles) {
-////            if (Vec3::DoesLineSegmentIntersectSphere(closest->coords,rnd_point,
-////                                                     obst.coords, obst.radius)){
-////                is_inside_an_obstacle = true;
-////                break;
-////            }
-////        }
-////        if (is_inside_an_obstacle) continue;
+        if (distance_to_closest > 1.5) continue;
 
         std::vector<Node *> neighbors = Node::get_neighbors_in_radius(root, rnd_point, neighbor_radius);
 
@@ -73,14 +63,15 @@ RRTStarAlgorithm::find_path_according_to_alg(const World *world_ptr,
             current_cost = neighbor->cost + Vec3::distance_between_two_vec3(rnd_point, neighbor->coords);
             if (current_cost < best_cost_to_new_node) {
 
-////                for (const auto& obst : world_ptr->obstacles) {
-////                    if (Vec3::DoesLineSegmentIntersectSphere(neighbor->coords,rnd_point,
-////                                                             obst.coords, obst.radius)){
-////                        is_inside_an_obstacle = true;
-////                        break;
-////                    }
-////                }
-////                if (is_inside_an_obstacle) continue;
+                // Check potential best neighbors
+                for (const auto& obst : world_ptr->obstacles) {
+                    if (Vec3::DoesLineSegmentIntersectSphere(neighbor->coords,rnd_point,
+                                                             obst.coords, obst.radius)){
+                        is_inside_an_obstacle = true;
+                        break;
+                    }
+                }
+                if (is_inside_an_obstacle) continue;
 
                 best_cost_to_new_node = current_cost;
                 best_neighbor = neighbor;
@@ -89,53 +80,44 @@ RRTStarAlgorithm::find_path_according_to_alg(const World *world_ptr,
 
         is_inside_an_obstacle = false;
 
+
         std::shared_ptr<Node> new_node;
         if (best_neighbor != nullptr) {
             best_neighbor->add_child(rnd_point);
-            //delete parent from neighbors
-//            for (auto x = neighbors.begin(); x < neighbors.end(); ++x){
-//                if ((*x) == best_neighbor) {
-//                    neighbors.erase(x);
-//                    break;
-//                }
-//            }
             new_node = best_neighbor->children.back();
         } else {
+
+            // Check closest
+            for (const auto& obst : world_ptr->obstacles) {
+                if (Vec3::DoesLineSegmentIntersectSphere(closest->coords,rnd_point,
+                                                         obst.coords, obst.radius)){
+                    is_inside_an_obstacle = true;
+                    break;
+                }
+            }
+            if (is_inside_an_obstacle) continue;
+
             closest->add_child(rnd_point);
-//            for (auto x = neighbors.begin(); x < neighbors.end(); ++x){
-//                if (*x == closest) {
-//                    neighbors.erase(x);
-//                    break;
-//                }
-//            }
             new_node = closest->children.back();
         }
 
 
         for (auto& neighbor:neighbors){
-
             Node *parent = neighbor->parent;
-
-//            is_inside_an_obstacle = false;
+            is_inside_an_obstacle = false;
             if (new_node->cost + Vec3::distance_between_two_vec3(rnd_point, neighbor->coords) < neighbor->cost){
 
-
-                std::cout << "----------------------\nstart:\n";
-                for (auto x = parent->children.begin(); x < parent->children.end(); ++x) {
-                    std::cout << (*x)->cost << " ";
+                // Check neighbor and new_node/rnd_point
+                for (const auto& obst : world_ptr->obstacles) {
+                    if (Vec3::DoesLineSegmentIntersectSphere(neighbor->coords,rnd_point,
+                                                             obst.coords, obst.radius)){
+                        is_inside_an_obstacle = true;
+                        break;
+                    }
                 }
-                std::cout << "\n";
+                if (is_inside_an_obstacle) continue;
 
                 neighbor->change_parent(new_node.get());
-
-                std::cout << "\nend:\n";
-                for (auto x = parent->children.begin(); x < parent->children.end(); ++x) {
-                    std::cout << (*x)->cost << " ";
-                }
-                std::cout << "\n-----------------\n\n";
-//                break; //TODO
-
-//                new_node->add_child(neighbor->coords);
             }
         }
 
@@ -163,16 +145,15 @@ RRTStarAlgorithm::find_path_according_to_alg(const World *world_ptr,
 
         neighbors.clear();
 
-        if (i < 10000) continue;
+        if (i < 1000) continue;
 
         if (Vec3::distance_between_two_vec3(rnd_point, goal_point) < goal_radius) {
 
-
             if  (best_neighbor != nullptr) {
-                std::cout <<"a\n";
+//                std::cout <<"a\n";
                 return Algorithm::find_way_from_goal_to_root(best_neighbor->children.back().get());
             }
-            std::cout <<"b\n";
+//            std::cout <<"b\n";
             return Algorithm::find_way_from_goal_to_root(closest->children.back().get());
         }
 

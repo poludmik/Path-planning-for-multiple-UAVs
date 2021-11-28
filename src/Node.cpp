@@ -93,15 +93,15 @@ std::vector<Node*> Node::get_neighbors_in_radius(Node *root,
 void Node::change_parent(Node *new_parent) {
     for (auto x = this->parent->children.begin(); x < this->parent->children.end(); ++x){
         if (x->get() == this) {
-            std::cout << "here\n";
+//            std::cout << "here\n";
 
             new_parent->children.push_back(*x); // (3)
 
-            std::cout << "About to erase: " << x->get()->cost << "\n";
+//            std::cout << "About to erase: " << x->get()->cost << "\n";
 
             this->parent->children.erase(x); // (1)
 
-            std::cout << "here2\n";
+//            std::cout << "here2\n";
 
             this->parent = new_parent; // (2)
             break;

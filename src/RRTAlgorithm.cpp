@@ -38,13 +38,13 @@ std::vector<Vec3> RRTAlgorithm::find_path_according_to_alg(const World *world_pt
     while (true) {
         Vec3 rnd_point = Vec3::random_vec3(center.x - dist_to_goal, center.x + dist_to_goal,
                                            center.y - dist_to_goal, center.y + dist_to_goal,
-                                           center.z - dist_to_goal, center.z + dist_to_goal);
+                                           0, 0);
 
         is_inside_an_obstacle = false;
 
         auto closest = Node::find_the_closest_node(rnd_point, root);
 
-        if (Vec3::distance_between_two_vec3(rnd_point, closest->coords) > 2.0) continue;
+        if (Vec3::distance_between_two_vec3(rnd_point, closest->coords) > 1.5) continue;
 
         for (const auto& obst : world_ptr->obstacles) {
             if (Vec3::DoesLineSegmentIntersectSphere(closest->coords,rnd_point,

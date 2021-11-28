@@ -3,8 +3,13 @@
 #include <visualization_msgs/Marker.h>
 #include <vector>
 
+#include <string>
+
 #include <ros/ros.h>
 #include <mutex>
+
+#include<nlohmann/json.hpp>
+#include <fstream>
 
 #include "Vec3.h"
 #include "World.h"
@@ -13,10 +18,10 @@
 #include "RRT_tree.h"
 #include "VelocityControllerP.h"
 
-
 #include "Algorithm.h"
 #include "RRTAlgorithm.h"
 #include "RRTStarAlgorithm.h"
+
 
 bool ready = false;
 mrs_msgs::UavState::ConstPtr uav_state;
@@ -55,31 +60,55 @@ int main(int argc, char **argv)
 	ros::init(argc, argv, "basic_shapes");
 	ros::NodeHandle markers_node_publisher;
 	ros::Publisher vis_pub = markers_node_publisher.advertise<visualization_msgs::Marker>
-	        ("visualization_marker", 10);
+	        ("visualization_marker", 200);
 
 	World my_world;
 	
 	Vec3 pt_start(-5, 0, 0);
-	Vec3 pt_goal(5.0, 0,0);
+	Vec3 pt_goal(5, 0,0);
 
-//    Vec3 rock(4.0, 0, 0.0);
-//    my_world.add_obstacle(2, rock);
+    Vec3 rock(0, 0.2, 0.0);
+    my_world.add_obstacle(1, rock);
 
+    Vec3 rock2(0.0, 3, 0.0);
+    my_world.add_obstacle(1, rock2);
+    Vec3 rock3(0, -3, 0.0);
+    my_world.add_obstacle(1, rock3);
+    Vec3 rock4(-2, -1, 0);
+    my_world.add_obstacle(1, rock4);
+    Vec3 rock5(-2, 1.5, 0);
+    my_world.add_obstacle(1, rock5);
+    Vec3 rock6(3, 1, 0);
+    my_world.add_obstacle(1, rock6);
+    Vec3 rock7(3, -2, 0);
+    my_world.add_obstacle(2, rock7);
+    Vec3 rock8(0.3, -6, 0);
+    my_world.add_obstacle(1.1, rock8);
+    Vec3 rock9(-0.1, 6, 0);
+    my_world.add_obstacle(1.1, rock9);
+    Vec3 rock10(-5, -5.6, 0);
+    my_world.add_obstacle(2.3, rock10);
+    Vec3 rock11(-5.1, -2, 0);
+    my_world.add_obstacle(0.7, rock11);
+    Vec3 rock12(4.8, 4.8, 0);
+    my_world.add_obstacle(1.2, rock12);
+    Vec3 rock13(-6, 4.7, 0);
+    my_world.add_obstacle(1.5, rock13);
+    Vec3 rock14(-7, 2.4, 0);
+    my_world.add_obstacle(0.95, rock14);
 
-//    Vec3 rock2(4.0, 0, 2.0);
-//    my_world.add_obstacle(2, rock2);
-//    Vec3 rock3(4.0, -2, 0.0);
-//    my_world.add_obstacle(2, rock3);
-//    Vec3 rock4(4.0, -5, 3);
-//    my_world.add_obstacle(2, rock4);
-
-    double goal_radius = 1.0;
+    double goal_radius = 0.8;
 
 //	std::vector<Vec3> path = RRT_tree::find_path_to_goal_RRT(&my_world, pt_start, pt_goal, goal_radius, 3);
 
-    RRT_tree tree(pt_start, &my_world, 4);
-    std::vector<Vec3> path = tree.find_path(RRTStarAlgorithm(), pt_goal, goal_radius);
+    float neighbor_radius = 3;
+    RRT_tree tree(pt_start, &my_world, neighbor_radius);
+    std::vector<Vec3> path = tree.find_path(RRTAlgorithm(), pt_goal, goal_radius);
 
+//    std::string tree_name = "RRT* with multiple obstacles and neighbor radius:" + std::to_string(neighbor_radius);
+    std::string tree_name = "RRT with multiple obstacles";
+    RRT_tree::write_tree_structure_to_json_file(tree.root.get(), tree_name,
+                                                "Created_file.json", path, pt_goal, goal_radius, my_world.obstacles);
 
     for (const auto& point : path) {
         printf("%lf %lf %lf\n", point.x, point.y, point.z);
@@ -94,15 +123,13 @@ int main(int argc, char **argv)
     my_world.publish_world(vis_pub);
     World::publish_path(vis_pub, path);
 
-
-
-
-
     // to go without flying
-    while (ros::ok()) {
-        ros::spinOnce();
-        rate.sleep();
-    }
+    return EXIT_SUCCESS;
+//    while (ros::ok()) {
+//        ros::spinOnce();
+//        rate.sleep();
+//    }
+
 
 
     Vec3 start_position(0,0,0);
