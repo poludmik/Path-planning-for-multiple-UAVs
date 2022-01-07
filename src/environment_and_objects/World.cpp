@@ -4,6 +4,7 @@
 
 #include "World.h"
 #include "Object.h"
+#include <visualization_msgs/MarkerArray.h>
 
 void World::add_object(const std::string &name, double radius,
                        const Vec3 &given_coords) {
@@ -15,10 +16,13 @@ void World::add_object(double radius, const Vec3 &given_coords) {
 }
 
 void World::publish_world(const ros::Publisher &publisher) const {
-    auto publish_one_array = [&publisher](const std::vector<Object> &array) {
+    auto publish_one_array = [&](const std::vector<Object> &array) {
         int count = 0;
+        visualization_msgs::MarkerArray markerArray;
+        ros::Rate rate(10);
         for (auto ptr = array.begin(); ptr < array.end(); ptr++){
             visualization_msgs::Marker localMarker;
+            array[count].print_out_info();
             fill_out_default_marker(localMarker, count, array[count]);
             ++count;
             while (publisher.getNumSubscribers() < 1) {
@@ -28,13 +32,20 @@ void World::publish_world(const ros::Publisher &publisher) const {
                 ROS_WARN_ONCE("Waiting for at least one single sub.");
                 sleep(1);
             }
-            publisher.publish(localMarker);
+            markerArray.markers.push_back(localMarker);
+            //publisher.publish(localMarker);
+            //ros::spinOnce();
+            //rate.sleep();
         }
         std::cout << std::endl;
+        publisher.publish(markerArray);
     };
 
-    publish_one_array(objects);
-    publish_one_array(obstacles);
+    //publish_one_array(objects);
+    //publish_one_array(obstacles);
+    std::vector<Object> vector1 = obstacles;
+    vector1.insert(vector1.end(), objects.begin(), objects.end());
+    publish_one_array(vector1);
 }
 
 World::~World() {
@@ -48,7 +59,7 @@ void World::fill_out_default_marker(visualization_msgs::Marker &marker,
 	const std::string &name = obj.name;
     const bool tmp_start = obj.is_start;
 	
-	marker.header.frame_id = "map"; // "uav1/fcu"; // "map"  uav1/local_origin;
+	marker.header.frame_id = "uav1/fcu"; // "map"  uav1/local_origin;
 	marker.header.stamp = ros::Time::now();
 	marker.ns = name;
 	marker.id = id;
@@ -74,26 +85,26 @@ void World::fill_out_default_marker(visualization_msgs::Marker &marker,
 		marker.color.g = 1.0;
 		marker.color.b = 0.0;
     } else if (obj.is_obstacle){
-        marker.color.r = 0.0;
-        marker.color.g = 0.5;
-        marker.color.b = 0.5;
+        marker.color.r = 1.0;
+        marker.color.g = 0.0;
+        marker.color.b = 0.0;
 	} else {
         marker.color.r = 1.0;
         marker.color.g = 0.0;
         marker.color.b = 0.0;
     }
-	marker.lifetime = ros::Duration(60);
+	marker.lifetime = ros::Duration(40);
 }
 
 void World::publish_path(const ros::Publisher &publisher, const std::vector<Vec3>& points) {
 
     visualization_msgs::Marker line_strip;
-    line_strip.header.frame_id = "map"; //"uav1/fcu"; // ;
+    line_strip.header.frame_id = "uav1/fcu"; // "map";
     line_strip.ns = "path1";
     line_strip.header.stamp = ros::Time::now();
     line_strip.type = visualization_msgs::Marker::LINE_STRIP;
     line_strip.action = visualization_msgs::Marker::ADD;
-    line_strip.id = 0;
+    line_strip.id = 200;
     line_strip.scale.x = 0.1;
     line_strip.color.g = 1.0;
     line_strip.color.a = 0.5;
@@ -108,7 +119,7 @@ void World::publish_path(const ros::Publisher &publisher, const std::vector<Vec3
         p.z = point.z;
         line_strip.points.push_back(p);
     }
-    line_strip.lifetime = ros::Duration(60);
+    line_strip.lifetime = ros::Duration(40);
     while (publisher.getNumSubscribers() < 1) {
         if (!ros::ok()) {
             std::cout << "Cannot publish, !ros::ok.\n";
@@ -126,22 +137,4 @@ void World::add_obstacle(double radius, const Vec3 &given_coords) {
 void World::add_obstacle(const std::string &name, double radius, const Vec3 &given_coords) {
     obstacles.emplace_back(this, name, radius, given_coords);
 }
-
-//void World::publish_one_array(const ros::Publisher &publisher, const std::vector<Object> &array) {
-//    int count = 0;
-//    for (auto ptr = array.begin(); ptr < array.end(); ptr++){
-//        visualization_msgs::Marker localMarker;
-//        fill_out_default_marker(localMarker, count, array[count]);
-//        std::cout << count << "\n";
-//        while (publisher.getNumSubscribers() < 1) {
-//            if (!ros::ok()) {
-//                std::cout << "Cannot publish, !ros::ok.\n";
-//            }
-//            ROS_WARN_ONCE("Waiting for at least one single sub.");
-//            sleep(1);
-//        }
-//        publisher.publish(localMarker);
-//    }
-//    std::cout << std::endl;
-//}
 

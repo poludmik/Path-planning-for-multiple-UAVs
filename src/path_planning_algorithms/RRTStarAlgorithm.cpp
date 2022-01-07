@@ -3,8 +3,8 @@
 //
 
 #include "RRTStarAlgorithm.h"
-#include "RRT_tree.h"
-#include "Vec3.h"
+#include "../tree_structure/RRT_tree.h"
+#include "../math/Vec3.h"
 #include <algorithm>
 
 std::vector<Vec3> RRTStarAlgorithm::find_path_according_to_alg(const World *world_ptr,
@@ -43,8 +43,9 @@ std::vector<Vec3> RRTStarAlgorithm::find_path_according_to_alg(const World *worl
 
         Vec3 rnd_point = Vec3::random_vec3(center.x - dist_to_goal, center.x + dist_to_goal,
                                            center.y - dist_to_goal, center.y + dist_to_goal,
-                                           0,0);
+                                           center.z - dist_to_goal, center.z + dist_to_goal);
 
+        //center.z - 1, center.z + 1);
         is_inside_an_obstacle = false;
 
         auto closest = Node::find_the_closest_node(rnd_point, root);

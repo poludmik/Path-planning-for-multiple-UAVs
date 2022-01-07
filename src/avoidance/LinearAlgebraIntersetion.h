@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "Object.h"
+#include "../environment_and_objects/Object.h"
 #include "AvoidanceAlgorithm.h"
 
 class LinearAlgebraIntersection : public AvoidanceAlgorithm {

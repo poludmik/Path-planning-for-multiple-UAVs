@@ -5,7 +5,7 @@
 #pragma once
 
 #include "Algorithm.h"
-#include "Object.h"
+#include "../environment_and_objects/Object.h"
 
 class RRTAlgorithm : public Algorithm {
     std::vector<Vec3> find_path_according_to_alg(const World *world_ptr,

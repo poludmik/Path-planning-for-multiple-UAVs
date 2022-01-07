@@ -4,20 +4,20 @@
 
 #pragma once
 
-#include "Vec3.h"
+#include "../math/Vec3.h"
 #include <memory>
 #include <vector>
 #include <iostream>
 #include <queue>
 #include <algorithm>
 #include "Node.h"
-#include "Object.h"
-#include "World.h"
-#include "Algorithm.h"
-#include "AvoidanceAlgorithm.h"
+#include "../environment_and_objects/Object.h"
+#include "../environment_and_objects/World.h"
+#include "../path_planning_algorithms/Algorithm.h"
+#include "../avoidance/AvoidanceAlgorithm.h"
 #include <string>
 
-#include<nlohmann/json.hpp>
+#include"nlohmann/json.hpp"
 #include <fstream>
 
 

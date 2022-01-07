@@ -4,10 +4,10 @@
 
 #pragma once
 
-#include "Vec3.h"
-#include "Node.h"
-#include "World.h"
-#include "AvoidanceAlgorithm.h"
+#include "../math/Vec3.h"
+#include "../tree_structure/Node.h"
+#include "../environment_and_objects/World.h"
+#include "../avoidance/AvoidanceAlgorithm.h"
 
 
 class Algorithm {

@@ -6,6 +6,8 @@
 
 void Object::print_out_info() const {
 	std::cout << "name: " << name << std::endl;
+    std::cout << "IsGoal: " << is_goal << std::endl;
+    std::cout << "IsStart: " << is_start << std::endl;
 	std::cout << "x: " << coords.x << std::endl;
 	std::cout << "y: " << coords.y << std::endl;
 	std::cout << "z: " << coords.z << std::endl;
@@ -34,6 +36,9 @@ Object::Object(const Object &obj) { // copy constructor
 	name = obj.name;
 	radius = obj.radius;
 	coords = obj.coords;
+    is_goal = obj.is_goal;
+    is_start = obj.is_start;
+    is_obstacle = obj.is_obstacle;
 }
 
 Object::~Object() {

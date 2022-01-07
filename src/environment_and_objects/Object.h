@@ -8,7 +8,7 @@
 #include <string>
 #include <iostream>
 #include <cmath>
-#include "Vec3.h"
+#include "../math/Vec3.h"
 #include "World.h"
 
 

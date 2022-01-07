@@ -1,6 +1,7 @@
 #include <mrs_msgs/UavState.h>
 #include <mrs_msgs/VelocityReferenceStamped.h>
 #include <visualization_msgs/Marker.h>
+#include <visualization_msgs/MarkerArray.h>
 #include <vector>
 
 #include <string>
@@ -11,20 +12,20 @@
 #include<nlohmann/json.hpp>
 #include <fstream>
 
-#include "Vec3.h"
-#include "World.h"
-#include "Object.h"
-#include "Node.h"
-#include "RRT_tree.h"
+#include "math/Vec3.h"
+#include "environment_and_objects/World.h"
+#include "environment_and_objects/Object.h"
+#include "tree_structure/Node.h"
+#include "tree_structure/RRT_tree.h"
 #include "VelocityControllerP.h"
 
-#include "Algorithm.h"
-#include "RRTAlgorithm.h"
-#include "RRTStarAlgorithm.h"
+#include "path_planning_algorithms/Algorithm.h"
+#include "path_planning_algorithms/RRTAlgorithm.h"
+#include "path_planning_algorithms/RRTStarAlgorithm.h"
 
-#include "AvoidanceAlgorithm.h"
-#include "LinearAlgebraIntersetion.h"
-#include "BinarySearchIntersection.h"
+#include "avoidance/AvoidanceAlgorithm.h"
+#include "avoidance/LinearAlgebraIntersetion.h"
+#include "avoidance/BinarySearchIntersection.h"
 
 bool ready = false;
 mrs_msgs::UavState::ConstPtr uav_state;
@@ -63,42 +64,149 @@ int main(int argc, char **argv)
 	ros::init(argc, argv, "basic_shapes");
 	ros::NodeHandle markers_node_publisher;
 	ros::Publisher vis_pub = markers_node_publisher.advertise<visualization_msgs::Marker>
-	        ("visualization_marker", 200);
+	        ("visualization_marker", 100);
+
+    ros::NodeHandle markers_array_node_publisher;
+    ros::Publisher vis_array_pub = markers_array_node_publisher.advertise<visualization_msgs::MarkerArray>
+            ("visualization_marker_array", 100);
 
 	World my_world;
 	
-	Vec3 pt_start(-5, 0, 0);
-	Vec3 pt_goal(5.5, 0,0);
+	Vec3 pt_start(0, 0, 0);
+	Vec3 pt_goal(10, 0,0);
 
-    Vec3 rock(0, 0.2, 0.0);
-    my_world.add_obstacle(1, rock);
-
-    Vec3 rock2(0.0, 3, 0.0);
+    Vec3 rock(5, -0.5, -0.3);
+    my_world.add_obstacle(3, rock);
+    Vec3 rock2(5.0, 3, 0.0);
     my_world.add_obstacle(1, rock2);
-    Vec3 rock3(0, -3, 0.0);
+    Vec3 rock3(5, -3, 1.0);
     my_world.add_obstacle(1, rock3);
-    Vec3 rock4(-2, -1, 0);
+    Vec3 rock4(3, -1, 0);
     my_world.add_obstacle(1, rock4);
-    Vec3 rock5(-2, 1.5, 0);
+    Vec3 rock5(3, 1.5, -1);
     my_world.add_obstacle(1, rock5);
-    Vec3 rock6(3, 1, 0);
+    Vec3 rock6(8, 1, -3);
     my_world.add_obstacle(1, rock6);
-    Vec3 rock7(3, -2, 0);
-    my_world.add_obstacle(2, rock7);
-    Vec3 rock8(0.3, -6, 0);
+    Vec3 rock7(8, -2, 5);
+   // my_world.add_obstacle(2, rock7);
+    Vec3 rock8(5.3, -6, 0.3);
     my_world.add_obstacle(1.1, rock8);
-    Vec3 rock9(-0.1, 6, 0);
+    Vec3 rock9(4.9, 6, -1);
     my_world.add_obstacle(1.1, rock9);
-    Vec3 rock10(-5, -5.6, 0);
+    Vec3 rock10(0, -5.6, 2);
     my_world.add_obstacle(2.3, rock10);
-    Vec3 rock11(-5.1, -2, 0);
+    Vec3 rock11(-0.1, -2, 0.5);
     my_world.add_obstacle(0.7, rock11);
-    Vec3 rock12(4.8, 4.8, 0);
+    Vec3 rock12(9.8, 4.8, 0);
     my_world.add_obstacle(1.2, rock12);
-    Vec3 rock13(-6, 4.7, 0);
+    Vec3 rock13(-1, 4.7, 2);
     my_world.add_obstacle(1.5, rock13);
-    Vec3 rock14(-7, 2.4, 0);
+    Vec3 rock14(-2, 2.4, -2);
     my_world.add_obstacle(0.95, rock14);
+
+    /*
+    Vec3 rock(5, 0.2, 0.0);
+    //my_world.add_obstacle(1, rock);
+    Vec3 rock2(5.0, 3, 0.0);
+    my_world.add_obstacle(1, rock2);
+    Vec3 rock3(5, -3, 0.0);
+    my_world.add_obstacle(1, rock3);
+    Vec3 rock4(3, -1, 0);
+    //my_world.add_obstacle(1, rock4);
+    Vec3 rock5(3, 1.5, 0);
+    my_world.add_obstacle(1, rock5);
+    Vec3 rock6(8, 1, 0);
+    my_world.add_obstacle(1, rock6);
+    Vec3 rock7(8, -2, 0);
+    my_world.add_obstacle(2, rock7);
+    Vec3 rock8(5.3, -6, 0);
+    my_world.add_obstacle(1.1, rock8);
+    Vec3 rock9(4.9, 6, 0);
+    my_world.add_obstacle(1.1, rock9);
+    Vec3 rock10(0, -5.6, 0);
+    my_world.add_obstacle(2.3, rock10);
+    Vec3 rock11(-0.1, -2, 0);
+    my_world.add_obstacle(0.7, rock11);
+    Vec3 rock12(9.8, 4.8, 0);
+    my_world.add_obstacle(1.2, rock12);
+    Vec3 rock13(-1, 4.7, 0);
+    my_world.add_obstacle(1.5, rock13);
+    Vec3 rock14(-2, 2.4, 0);
+    my_world.add_obstacle(0.95, rock14);
+
+    Vec3 nrock(5, 0.2, 0.0);
+    my_world.add_obstacle(0.5, nrock);
+    Vec3 nrock2(5.0, 3, 0.0);
+    my_world.add_obstacle(0.5, nrock2);
+    Vec3 nrock3(5, -3, 0.0);
+    my_world.add_obstacle(0.5, nrock3);
+    Vec3 nrock4(3, -1, 0);
+    my_world.add_obstacle(0.5, nrock4);
+    Vec3 nrock5(3, 1.5, 0);
+    my_world.add_obstacle(0.5, nrock5);
+    Vec3 nrock6(8, 1, 0);
+    my_world.add_obstacle(0.5, nrock6);
+    Vec3 nrock7(8, -2, 0);
+    my_world.add_obstacle(1.5, nrock7);
+    Vec3 nrock8(5.3, -6, 0);
+    my_world.add_obstacle(0.6, nrock8);
+    Vec3 nrock9(4.9, 6, 0);
+    my_world.add_obstacle(0.6, nrock9);
+    Vec3 nrock10(0, -5.6, 0);
+    my_world.add_obstacle(1.8, nrock10);
+    Vec3 nrock11(-0.1, -2, 0);
+    my_world.add_obstacle(0.2, nrock11);
+    Vec3 nrock12(9.8, 4.8, 0);
+    my_world.add_obstacle(0.7, nrock12);
+    Vec3 nrock13(-1, 4.7, 0);
+    my_world.add_obstacle(1, nrock13);
+    Vec3 nrock14(-2, 2.4, 0);
+    my_world.add_obstacle(0.45, nrock14);
+*/
+
+/*
+    Vec3 rock(6, 0.2, 0.0);
+    my_world.add_obstacle(1.5, rock);
+    Vec3 rock2(3, 2.2, 0.0);
+    my_world.add_obstacle(1.5, rock2);
+    Vec3 rock3(8, -3.2, 0.0);
+    my_world.add_obstacle(1, rock3);
+    Vec3 rock4(7.7, 3.5, 0.0);
+    my_world.add_obstacle(2, rock4);
+    Vec3 rock5(2, -3, 0.0);
+    my_world.add_obstacle(2, rock5);
+    Vec3 rock6(5.2, -5.7, 0.0);
+    my_world.add_obstacle(2, rock6);
+    Vec3 rock7(-0.3, 6.7, 0.0);
+    my_world.add_obstacle(2.5, rock7);
+    Vec3 rock8(12, -7.6, 0.0);
+    my_world.add_obstacle(1.7, rock8);
+    Vec3 rock9(13, 1, 0.0);
+    my_world.add_obstacle(1.3, rock9);
+    Vec3 rock10(-2.5, -7.5, 0.0);
+    my_world.add_obstacle(1.6, rock10);
+
+    Vec3 nrock(6, 0.2, 0.0);
+    my_world.add_obstacle(1.0, nrock);
+    Vec3 nrock2(3, 2.2, 0.0);
+    my_world.add_obstacle(1.0, nrock2);
+    Vec3 nrock3(8, -3.2, 0.0);
+    my_world.add_obstacle(0.5, nrock3);
+    Vec3 nrock4(7.7, 3.5, 0.0);
+    my_world.add_obstacle(1.5, nrock4);
+    Vec3 nrock5(2, -3, 0.0);
+    my_world.add_obstacle(1.5, nrock5);
+    Vec3 nrock6(5.2, -5.7, 0.0);
+    my_world.add_obstacle(1.5, nrock6);
+    Vec3 nrock7(-0.3, 6.7, 0.0);
+    my_world.add_obstacle(2.0, nrock7);
+    Vec3 nrock8(12, -7.6, 0.0);
+    my_world.add_obstacle(1.2, nrock8);
+    Vec3 nrock9(13, 1, 0.0);
+    my_world.add_obstacle(0.8, nrock9);
+    Vec3 nrock10(-2.5, -7.5, 0.0);
+    my_world.add_obstacle(1.1, nrock10);
+   */
 
     double goal_radius = 0.8;
 
@@ -109,14 +217,18 @@ int main(int argc, char **argv)
 //	std::vector<Vec3> path = RRT_tree::find_path_to_goal_RRT(&my_world, pt_start, pt_goal, goal_radius, 3);
 
     float neighbor_radius = 3;
-    float drone_radius = 1;
+    float drone_radius = 0.6;
     RRT_tree tree(pt_start, &my_world, neighbor_radius);
     std::vector<Vec3> path = tree.find_path(RRTStarAlgorithm(), BinarySearchIntersection(), pt_goal, goal_radius, drone_radius);
 
 //    std::string tree_name = "RRT* with multiple obstacles and neighbor radius:" + std::to_string(neighbor_radius);
-    std::string tree_name = "RRT with multiple obstacles and binarySearchAvoidance";
+    std::string tree_name = "RRT, binary search with spherical UAV";
+    //std::string tree_name = "RRT*: min_N_iters = 2000,  D_max = 1.5,  R_n = " + std::to_string(int(neighbor_radius));
     RRT_tree::write_tree_structure_to_json_file(tree.root.get(), tree_name,
-                                                "Created_file.json", path, pt_goal, goal_radius, my_world.obstacles);
+                                                "Created_file.json", path,
+                                                pt_goal, goal_radius,
+                                                my_world.obstacles);
+
 
     for (const auto& point : path) {
         printf("%lf %lf %lf\n", point.x, point.y, point.z);
@@ -124,14 +236,18 @@ int main(int argc, char **argv)
     }
 
     my_world.add_object(goal_radius, pt_goal);
-    my_world.add_object(1.0, pt_start);
+    my_world.add_object(0.5, pt_start);
     auto k = my_world.objects.size();
     my_world.objects[k - 2].set_as_a_goal();
     my_world.objects[k - 1].set_as_a_start();
-    my_world.publish_world(vis_pub);
+
+
+    my_world.publish_world(vis_array_pub);
     World::publish_path(vis_pub, path);
 
     return EXIT_SUCCESS;
+
+
 
 
 

@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "Vec3.h"
+#include "../math/Vec3.h"
 #include <memory>
 #include <vector>
 #include <iostream>

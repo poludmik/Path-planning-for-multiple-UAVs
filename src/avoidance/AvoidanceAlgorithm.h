@@ -4,9 +4,9 @@
 
 #pragma once
 
-#include "Vec3.h"
-#include "Node.h"
-#include "World.h"
+#include "../math/Vec3.h"
+#include "../tree_structure/Node.h"
+#include "../environment_and_objects/World.h"
 
 class AvoidanceAlgorithm {
 public:

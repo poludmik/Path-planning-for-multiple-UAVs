@@ -2,7 +2,7 @@
 // Created by micha on 11/13/2021.
 //
 
-#include "Vec3.h"
+#include "math/Vec3.h"
 #include <ros/ros.h>
 #include <mrs_msgs/UavState.h>
 #include <mrs_msgs/VelocityReferenceStamped.h>

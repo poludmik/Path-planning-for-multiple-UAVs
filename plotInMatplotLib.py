@@ -10,7 +10,7 @@ length_path = data["path_size"]
 
 goal_radius = data["goal_radius"]
 
-circle_goal = plt.Circle((data["goal"][0], data["goal"][1]), goal_radius, color='skyblue', fill=True)
+circle_goal = plt.Circle((data["goal"][0], data["goal"][1]), goal_radius, color='purple', fill=True)
 circle_start = plt.Circle((data["start"][0], data["start"][1]), goal_radius, color='green', fill=True)
 
 fig, ax = plt.subplots()
@@ -46,7 +46,7 @@ for i in range(0, length_path - 1):
     x.append(path2D[i][0])
     y.append(path2D[i][1])
 
-ax.plot(x, y, "-o", color='crimson', linewidth=2, markersize=5)
+ax.plot(x, y, "-o", color='black', linewidth=2, markersize=5)
 ax.grid(color='k', linestyle='-', linewidth=0.2)
 ax.set_aspect('equal', adjustable='box')
 

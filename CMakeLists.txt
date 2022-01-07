@@ -38,24 +38,28 @@ endif()
 
 
 add_executable(planner src/main.cpp
-		src/Vec3.cpp
-		src/Vec3.h
-		src/Object.cpp
-		src/Object.h
-		src/World.cpp
-		src/World.h
-		src/Node.cpp
-		src/Node.h
-		src/RRT_tree.cpp
-		src/RRT_tree.h
+		src/math/Vec3.cpp
+		src/math/Vec3.h
+		src/environment_and_objects/Object.cpp
+		src/environment_and_objects/Object.h
+		src/environment_and_objects/World.cpp
+		src/environment_and_objects/World.h
+		src/tree_structure/Node.cpp
+		src/tree_structure/Node.h
+		src/tree_structure/RRT_tree.cpp
+		src/tree_structure/RRT_tree.h
 		src/VelocityControllerP.cpp
 		src/VelocityControllerP.h
-		src/Algorithm.h
-		src/RRTStarAlgorithm.cpp
-		src/RRTStarAlgorithm.h
-		src/RRTAlgorithm.cpp
-		src/RRTAlgorithm.h
-        src/AvoidanceAlgorithm.h src/BinarySearchIntersection.cpp src/BinarySearchIntersection.h src/LinearAlgebraIntersetion.cpp src/LinearAlgebraIntersetion.h)
+		src/path_planning_algorithms/Algorithm.h
+		src/path_planning_algorithms/RRTStarAlgorithm.cpp
+		src/path_planning_algorithms/RRTStarAlgorithm.h
+		src/path_planning_algorithms/RRTAlgorithm.cpp
+		src/path_planning_algorithms/RRTAlgorithm.h
+		src/avoidance/AvoidanceAlgorithm.h
+		src/avoidance/BinarySearchIntersection.cpp
+		src/avoidance/BinarySearchIntersection.h
+		src/avoidance/LinearAlgebraIntersetion.cpp
+		src/avoidance/LinearAlgebraIntersetion.h)
 
 target_link_libraries(planner PRIVATE nlohmann_json::nlohmann_json)
 

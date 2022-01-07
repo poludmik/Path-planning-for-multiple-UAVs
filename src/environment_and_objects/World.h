@@ -7,7 +7,7 @@
 
 #include <string>
 #include <ros/ros.h>
-#include "Vec3.h"
+#include "../math/Vec3.h"
 #include <vector>
 #include <mrs_msgs/UavState.h>
 #include <mrs_msgs/VelocityReferenceStamped.h>
@@ -40,7 +40,6 @@ public:
     ~World();
 
 private:
-//    static void publish_one_array(const ros::Publisher &publisher, const std::vector<Object> &array);
 
     static void fill_out_default_marker(visualization_msgs::Marker& marker,
                                         uint8_t id,
