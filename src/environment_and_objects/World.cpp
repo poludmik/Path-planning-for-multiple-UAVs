@@ -22,7 +22,7 @@ void World::publish_world(const ros::Publisher &publisher) const {
         ros::Rate rate(10);
         for (auto ptr = array.begin(); ptr < array.end(); ptr++){
             visualization_msgs::Marker localMarker;
-            array[count].print_out_info();
+            //array[count].print_out_info();
             fill_out_default_marker(localMarker, count, array[count]);
             ++count;
             while (publisher.getNumSubscribers() < 1) {

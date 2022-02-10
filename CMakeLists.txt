@@ -59,7 +59,7 @@ add_executable(planner src/main.cpp
 		src/avoidance/BinarySearchIntersection.cpp
 		src/avoidance/BinarySearchIntersection.h
 		src/avoidance/LinearAlgebraIntersetion.cpp
-		src/avoidance/LinearAlgebraIntersetion.h)
+		src/avoidance/LinearAlgebraIntersetion.h src/motion/MotionMethods.cpp src/motion/MotionMethods.h src/motion/Drone.cpp src/motion/Drone.h)
 
 target_link_libraries(planner PRIVATE nlohmann_json::nlohmann_json)
 

@@ -148,7 +148,7 @@ std::vector<Vec3> RRTStarAlgorithm::find_path_according_to_alg(const World *worl
 
         neighbors.clear();
 
-        if (i < 2000) continue;
+        if (i < 5000) continue;
 
         if (Vec3::distance_between_two_vec3(rnd_point, goal_point) < goal_radius) {
 

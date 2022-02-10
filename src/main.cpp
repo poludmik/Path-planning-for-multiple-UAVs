@@ -1,7 +1,11 @@
 #include <mrs_msgs/UavState.h>
 #include <mrs_msgs/VelocityReferenceStamped.h>
+#include <mrs_msgs/ReferenceStamped.h>
+#include <mrs_msgs/TrajectoryReference.h>
+#include <mrs_msgs/Reference.h>
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
+
 #include <vector>
 
 #include <string>
@@ -9,8 +13,10 @@
 #include <ros/ros.h>
 #include <mutex>
 
-#include<nlohmann/json.hpp>
 #include <fstream>
+
+#include <chrono>
+#include <thread>
 
 #include "math/Vec3.h"
 #include "environment_and_objects/World.h"
@@ -27,6 +33,9 @@
 #include "avoidance/LinearAlgebraIntersetion.h"
 #include "avoidance/BinarySearchIntersection.h"
 
+#include "motion/MotionMethods.h"
+#include "motion/Drone.h"
+
 bool ready = false;
 mrs_msgs::UavState::ConstPtr uav_state;
 std::mutex uav_state_mutex;
@@ -34,11 +43,6 @@ std::mutex uav_state_mutex;
 
 void odomCallback(const mrs_msgs::UavState::ConstPtr &msg);
 
-void go_to_point(const Vec3& point,
-                 mrs_msgs::VelocityReferenceStamped cmd,
-                 const ros::Publisher& vel_pub);
-
-double clip(double n, double lower, double upper);
 
 int main(int argc, char **argv)
 {
@@ -47,20 +51,23 @@ int main(int argc, char **argv)
 	// VELOCITY CONTROL
 	size_t uav_id = 1;
 	std::string vel_pub_topic  = "/uav" + std::to_string(uav_id) + "/control_manager/velocity_reference";
+    std::string reference_pub_topic  = "/uav" + std::to_string(uav_id) + "/control_manager/reference";
+    std::string trajectory_pub_topic  = "/uav" + std::to_string(uav_id) + "/control_manager/trajectory_reference";
 	std::string odom_sub_topic = "/uav" + std::to_string(uav_id) + "/odometry/uav_state";
 
 	ros::NodeHandle n;
 	ros::Subscriber odom_sub  = n.subscribe(odom_sub_topic, 100, odomCallback);
 	ros::Publisher  vel_pub   = n.advertise<mrs_msgs::VelocityReferenceStamped>(vel_pub_topic, 100);
+    ros::Publisher  goto_pub = n.advertise<mrs_msgs::ReferenceStamped>(reference_pub_topic, 100);
+    ros::Publisher  trajectory_pub = n.advertise<mrs_msgs::TrajectoryReference>(trajectory_pub_topic, 100);
 
 	ros::Rate rate(10);
 	mrs_msgs::VelocityReferenceStamped cmd;
-	std::vector<bool> direction_state{true, false, false, false}; // right, forward, left, forward
-	
-	cmd.reference.velocity.x = 0.5;
-	cmd.reference.velocity.y = 0;
-	
-	// MARKER RVIZ
+    mrs_msgs::ReferenceStamped cmd_goto;
+    mrs_msgs::TrajectoryReference cmd_traj;
+
+
+    // MARKER RVIZ
 	ros::init(argc, argv, "basic_shapes");
 	ros::NodeHandle markers_node_publisher;
 	ros::Publisher vis_pub = markers_node_publisher.advertise<visualization_msgs::Marker>
@@ -88,125 +95,6 @@ int main(int argc, char **argv)
     Vec3 rock6(8, 1, -3);
     my_world.add_obstacle(1, rock6);
     Vec3 rock7(8, -2, 5);
-   // my_world.add_obstacle(2, rock7);
-    Vec3 rock8(5.3, -6, 0.3);
-    my_world.add_obstacle(1.1, rock8);
-    Vec3 rock9(4.9, 6, -1);
-    my_world.add_obstacle(1.1, rock9);
-    Vec3 rock10(0, -5.6, 2);
-    my_world.add_obstacle(2.3, rock10);
-    Vec3 rock11(-0.1, -2, 0.5);
-    my_world.add_obstacle(0.7, rock11);
-    Vec3 rock12(9.8, 4.8, 0);
-    my_world.add_obstacle(1.2, rock12);
-    Vec3 rock13(-1, 4.7, 2);
-    my_world.add_obstacle(1.5, rock13);
-    Vec3 rock14(-2, 2.4, -2);
-    my_world.add_obstacle(0.95, rock14);
-
-    /*
-    Vec3 rock(5, 0.2, 0.0);
-    //my_world.add_obstacle(1, rock);
-    Vec3 rock2(5.0, 3, 0.0);
-    my_world.add_obstacle(1, rock2);
-    Vec3 rock3(5, -3, 0.0);
-    my_world.add_obstacle(1, rock3);
-    Vec3 rock4(3, -1, 0);
-    //my_world.add_obstacle(1, rock4);
-    Vec3 rock5(3, 1.5, 0);
-    my_world.add_obstacle(1, rock5);
-    Vec3 rock6(8, 1, 0);
-    my_world.add_obstacle(1, rock6);
-    Vec3 rock7(8, -2, 0);
-    my_world.add_obstacle(2, rock7);
-    Vec3 rock8(5.3, -6, 0);
-    my_world.add_obstacle(1.1, rock8);
-    Vec3 rock9(4.9, 6, 0);
-    my_world.add_obstacle(1.1, rock9);
-    Vec3 rock10(0, -5.6, 0);
-    my_world.add_obstacle(2.3, rock10);
-    Vec3 rock11(-0.1, -2, 0);
-    my_world.add_obstacle(0.7, rock11);
-    Vec3 rock12(9.8, 4.8, 0);
-    my_world.add_obstacle(1.2, rock12);
-    Vec3 rock13(-1, 4.7, 0);
-    my_world.add_obstacle(1.5, rock13);
-    Vec3 rock14(-2, 2.4, 0);
-    my_world.add_obstacle(0.95, rock14);
-
-    Vec3 nrock(5, 0.2, 0.0);
-    my_world.add_obstacle(0.5, nrock);
-    Vec3 nrock2(5.0, 3, 0.0);
-    my_world.add_obstacle(0.5, nrock2);
-    Vec3 nrock3(5, -3, 0.0);
-    my_world.add_obstacle(0.5, nrock3);
-    Vec3 nrock4(3, -1, 0);
-    my_world.add_obstacle(0.5, nrock4);
-    Vec3 nrock5(3, 1.5, 0);
-    my_world.add_obstacle(0.5, nrock5);
-    Vec3 nrock6(8, 1, 0);
-    my_world.add_obstacle(0.5, nrock6);
-    Vec3 nrock7(8, -2, 0);
-    my_world.add_obstacle(1.5, nrock7);
-    Vec3 nrock8(5.3, -6, 0);
-    my_world.add_obstacle(0.6, nrock8);
-    Vec3 nrock9(4.9, 6, 0);
-    my_world.add_obstacle(0.6, nrock9);
-    Vec3 nrock10(0, -5.6, 0);
-    my_world.add_obstacle(1.8, nrock10);
-    Vec3 nrock11(-0.1, -2, 0);
-    my_world.add_obstacle(0.2, nrock11);
-    Vec3 nrock12(9.8, 4.8, 0);
-    my_world.add_obstacle(0.7, nrock12);
-    Vec3 nrock13(-1, 4.7, 0);
-    my_world.add_obstacle(1, nrock13);
-    Vec3 nrock14(-2, 2.4, 0);
-    my_world.add_obstacle(0.45, nrock14);
-*/
-
-/*
-    Vec3 rock(6, 0.2, 0.0);
-    my_world.add_obstacle(1.5, rock);
-    Vec3 rock2(3, 2.2, 0.0);
-    my_world.add_obstacle(1.5, rock2);
-    Vec3 rock3(8, -3.2, 0.0);
-    my_world.add_obstacle(1, rock3);
-    Vec3 rock4(7.7, 3.5, 0.0);
-    my_world.add_obstacle(2, rock4);
-    Vec3 rock5(2, -3, 0.0);
-    my_world.add_obstacle(2, rock5);
-    Vec3 rock6(5.2, -5.7, 0.0);
-    my_world.add_obstacle(2, rock6);
-    Vec3 rock7(-0.3, 6.7, 0.0);
-    my_world.add_obstacle(2.5, rock7);
-    Vec3 rock8(12, -7.6, 0.0);
-    my_world.add_obstacle(1.7, rock8);
-    Vec3 rock9(13, 1, 0.0);
-    my_world.add_obstacle(1.3, rock9);
-    Vec3 rock10(-2.5, -7.5, 0.0);
-    my_world.add_obstacle(1.6, rock10);
-
-    Vec3 nrock(6, 0.2, 0.0);
-    my_world.add_obstacle(1.0, nrock);
-    Vec3 nrock2(3, 2.2, 0.0);
-    my_world.add_obstacle(1.0, nrock2);
-    Vec3 nrock3(8, -3.2, 0.0);
-    my_world.add_obstacle(0.5, nrock3);
-    Vec3 nrock4(7.7, 3.5, 0.0);
-    my_world.add_obstacle(1.5, nrock4);
-    Vec3 nrock5(2, -3, 0.0);
-    my_world.add_obstacle(1.5, nrock5);
-    Vec3 nrock6(5.2, -5.7, 0.0);
-    my_world.add_obstacle(1.5, nrock6);
-    Vec3 nrock7(-0.3, 6.7, 0.0);
-    my_world.add_obstacle(2.0, nrock7);
-    Vec3 nrock8(12, -7.6, 0.0);
-    my_world.add_obstacle(1.2, nrock8);
-    Vec3 nrock9(13, 1, 0.0);
-    my_world.add_obstacle(0.8, nrock9);
-    Vec3 nrock10(-2.5, -7.5, 0.0);
-    my_world.add_obstacle(1.1, nrock10);
-   */
 
     double goal_radius = 0.8;
 
@@ -245,103 +133,69 @@ int main(int argc, char **argv)
     my_world.publish_world(vis_array_pub);
     World::publish_path(vis_pub, path);
 
-    return EXIT_SUCCESS;
+
+    mrs_msgs::Reference reference;
+    reference.position.x = -5;
+    reference.position.y = -5;
+    reference.position.z = -7;
+
+    std::vector<mrs_msgs::Reference> array;
+    array.push_back(reference);
+
+    cmd_traj.points = array;
+    cmd_traj.fly_now = true;
+    cmd_traj.header.frame_id = "uav1/fcu";
+    // trajectory_pub.publish(cmd_traj);
 
 
+    cmd_goto.reference.position.x = -5.0;
+    cmd_goto.reference.position.y = -5.0;
+    cmd_goto.reference.position.z = 2.0;
+    cmd_goto.header.frame_id = "uav1/fcu";
+    cmd_goto.reference.heading = 0.0;
+    cmd_goto.header.stamp = ros::Time::now();
+    //goto_pub.publish(cmd_goto);
 
 
+    Drone drone(1);
 
+//    MotionMethods::go_to_the_point(drone, Vec3(-10, -10, -8.0));
 
-
-    Vec3 start_position(0,0,0);
+    Vec3 start_position;
+    mrs_msgs::UavState::ConstPtr cur_uav_state;
 
     while (ros::ok()) {
-        mrs_msgs::UavState::ConstPtr cur_uav_state;
-        if (ready) {
-            std::lock_guard<std::mutex> lock(uav_state_mutex);
-            cur_uav_state = uav_state;
-            start_position = Vec3(cur_uav_state->pose.position.x, cur_uav_state->pose.position.y,
-                                                           cur_uav_state->pose.position.z);
+
+        if (drone.ready) {
+            std::lock_guard<std::mutex> lock(drone.uav_state_mutex);
+            cur_uav_state = drone.uav_state;
+            start_position = Vec3(cur_uav_state->pose.position.x,
+                                  cur_uav_state->pose.position.y,
+                                  cur_uav_state->pose.position.z);
             break;
         }
         ros::spinOnce();
         rate.sleep();
     }
 
-    for (auto& point : path) {
+    std::cout << "start_position: " << start_position.x << " " << start_position.y << " " << start_position.z << "\n";
+
+    MotionMethods::go_to_the_point(drone, Vec3(5, 0, 2.0));
+
+    for (auto &point : path){
         point = point + start_position;
     }
 
-    bool first_iter = true;
-
     for (const auto& point : path) {
-
-//        std::cout << "next_goal = " << point.x << " " << point.y << "\n";
-
-        while (ros::ok()) {
-            mrs_msgs::UavState::ConstPtr cur_uav_state;
-            if (ready) {
-
-                std::lock_guard<std::mutex> lock(uav_state_mutex);
-                cur_uav_state = uav_state;
-
-                if (first_iter) {
-                    first_iter = false;
-                }
-
-                Vec3 curr_position = Vec3(cur_uav_state->pose.position.x, cur_uav_state->pose.position.y,
-                                         cur_uav_state->pose.position.z);
-
-                Vec3 error = point - curr_position;
-
-                if (error.norm() > 0.2) {
-//                    std::cout << uav_state->pose.position.x << "\n";
-                    cmd.reference.velocity.x = error.x * 0.2;
-                    cmd.reference.velocity.y = error.y * 0.2;
-                    cmd.reference.velocity.z = error.z * 0.2;
-
-                    vel_pub.publish(cmd);
-                } else {
-                    break;
-                }
-            }
-
-//		std::cout << uav_state->pose.position.x << std::endl;
-//		std::cout << "publishing: [" << ros::Time::now().toSec() << "] " << cmd.reference.velocity.x << ", " << cmd.reference.velocity.y  << std::endl;
-//		vis_pub.publish(marker0);
-
-            ros::spinOnce();
-            rate.sleep();
-        }
+        std::cout << "point: " << point.x << " " << point.y << " " << point.z << "\n";
+        std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+        MotionMethods::go_to_the_point(drone, point);
     }
 
+    std::cout << "The End." << std::endl;
     return EXIT_SUCCESS;
 }
 
-void go_to_point(const Vec3& point,
-                 mrs_msgs::VelocityReferenceStamped cmd,
-                 const ros::Publisher& vel_pub){
-
-    Vec3 e = point - Vec3(uav_state->pose.position.x, uav_state->pose.position.y, uav_state->pose.position.z);
-    ros::Rate rate(10);
-    while (e.norm() > 0.2) {
-
-        std::cout << uav_state->pose.position.x << "\n";
-        cmd.reference.velocity.x = e.x * 0.1;
-        cmd.reference.velocity.y = e.y * 0.1;
-        cmd.reference.velocity.z = e.z * 0.1;
-
-        vel_pub.publish(cmd);
-
-        e = point - Vec3(uav_state->pose.position.x, uav_state->pose.position.y, uav_state->pose.position.z);
-
-        rate.sleep();
-    }
-}
-
-//mrs_msgs::VelocityReferenceStamped &cmd,
-//cmd.reference.velocity.y = 0;
-//vel_pub.publish(cmd);
 
 void odomCallback(mrs_msgs::UavState::ConstPtr const &msg)
 {
