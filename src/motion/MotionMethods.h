@@ -28,8 +28,7 @@ public:
 
     static void go_to_the_point(Drone &drone, const Vec3& point);
 
-    static void go_through_a_trajectory(Drone &drone, const std::vector<Vec3> &path, const double dt);
+    static void go_through_a_trajectory(Drone &drone, const std::vector<Vec3> &path, double dt);
 
 };
-
 

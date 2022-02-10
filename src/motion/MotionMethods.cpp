@@ -40,6 +40,11 @@ void MotionMethods::go_to_point_proportional(Drone &drone, const Vec3& point){
 }
 
 void MotionMethods::go_to_the_point(Drone &drone, const Vec3 &point) {
+    // If needed to go along the path for some reason
+    //    for (uint32_t i = path.size(); i > 0; --i) {
+    //        path[i] = path[i] - path[i - 1];
+    //    }
+    // std::this_thread::sleep_for(std::chrono::milliseconds(3000));
 
     drone.cmd_goto.reference.position.x = point.x;
     drone.cmd_goto.reference.position.y = point.y;

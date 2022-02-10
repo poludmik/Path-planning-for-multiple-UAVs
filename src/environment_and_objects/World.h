@@ -23,11 +23,13 @@ public:
     std::vector<Object> objects;
     std::vector<Object> obstacles;
     
-    void add_object(const std::string &name, double radius, const Vec3 &given_coords);
+    void add_object(const std::string &type, double radius, const Vec3 &given_coords);
     
     void add_object(double radius, const Vec3 &given_coords);
 
-    void add_obstacle(const std::string &name, double radius, const Vec3 &given_coords);
+    void add_obstacle(const std::string &type, double radius, const Vec3 &given_coords);
+
+    void add_obstacle(const std::string &type, double radius, const Vec3 &given_coords, double height);
 
     void add_obstacle(double radius, const Vec3 &given_coords);
     

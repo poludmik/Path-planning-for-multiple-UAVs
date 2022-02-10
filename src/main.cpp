@@ -47,31 +47,22 @@ void odomCallback(const mrs_msgs::UavState::ConstPtr &msg);
 int main(int argc, char **argv)
 {
 	ros::init(argc, argv, "drone_planner");
+    // VELOCITY CONTROL
+    size_t uav_id = 1;
+    std::string vel_pub_topic  = "/uav" + std::to_string(uav_id) + "/control_manager/velocity_reference";
+    std::string odom_sub_topic = "/uav" + std::to_string(uav_id) + "/odometry/uav_state";
 
-	// VELOCITY CONTROL
-	size_t uav_id = 1;
-	std::string vel_pub_topic  = "/uav" + std::to_string(uav_id) + "/control_manager/velocity_reference";
-    std::string reference_pub_topic  = "/uav" + std::to_string(uav_id) + "/control_manager/reference";
-    std::string trajectory_pub_topic  = "/uav" + std::to_string(uav_id) + "/control_manager/trajectory_reference";
-	std::string odom_sub_topic = "/uav" + std::to_string(uav_id) + "/odometry/uav_state";
+    ros::NodeHandle n;
+    ros::Subscriber odom_sub  = n.subscribe(odom_sub_topic, 100, odomCallback);
+    ros::Publisher  vel_pub   = n.advertise<mrs_msgs::VelocityReferenceStamped>(vel_pub_topic, 100);
 
-	ros::NodeHandle n;
-	ros::Subscriber odom_sub  = n.subscribe(odom_sub_topic, 100, odomCallback);
-	ros::Publisher  vel_pub   = n.advertise<mrs_msgs::VelocityReferenceStamped>(vel_pub_topic, 100);
-    ros::Publisher  goto_pub = n.advertise<mrs_msgs::ReferenceStamped>(reference_pub_topic, 100);
-    ros::Publisher  trajectory_pub = n.advertise<mrs_msgs::TrajectoryReference>(trajectory_pub_topic, 100);
-
-	ros::Rate rate(10);
-	mrs_msgs::VelocityReferenceStamped cmd;
-    mrs_msgs::ReferenceStamped cmd_goto;
-    mrs_msgs::TrajectoryReference cmd_traj;
-
+    ros::Rate rate(10);
 
     // MARKER RVIZ
-	ros::init(argc, argv, "basic_shapes");
-	ros::NodeHandle markers_node_publisher;
-	ros::Publisher vis_pub = markers_node_publisher.advertise<visualization_msgs::Marker>
-	        ("visualization_marker", 100);
+    ros::init(argc, argv, "basic_shapes");
+    ros::NodeHandle markers_node_publisher;
+    ros::Publisher vis_pub = markers_node_publisher.advertise<visualization_msgs::Marker>
+            ("visualization_marker", 10);
 
     ros::NodeHandle markers_array_node_publisher;
     ros::Publisher vis_array_pub = markers_array_node_publisher.advertise<visualization_msgs::MarkerArray>
@@ -80,37 +71,46 @@ int main(int argc, char **argv)
 	World my_world;
 	
 	Vec3 pt_start(0, 0, 0);
-	Vec3 pt_goal(10, 0,0);
+	Vec3 pt_goal(5, 0,0);
 
-    Vec3 rock(5, 0, -0.3);
-    my_world.add_obstacle(3, rock);
+    // Vec3 rock(5, 0, -0.3);
+    // my_world.add_obstacle(3, rock);
+
+    Vec3 standing_center(2, 0, 0);
+    my_world.add_obstacle("cylinder", 0.2, standing_center, 2.0);
+
+    Vec3 standing1(2, 2, 0);
+    my_world.add_obstacle("cylinder", 0.3, standing1, 3.0);
+
+    Vec3 standing2(2, -2, 0);
+    my_world.add_obstacle("cylinder", 1, standing2, 4.0);
 
     double goal_radius = 0.8;
 
-    Vec3 drone_center(0, 0, 0);
-    Vec3 obj_center(-3, 1, 0);
+    //Vec3 drone_center(0, 0, 0);
+    //Vec3 obj_center(-3, 1, 0);
 //    std::cout << AvoidanceAlgorithm::DoesIntersectByBinaryAvoidance(pt_start, pt_goal, 0.5, obj_center, 0.6) << "\n";
 
 //	std::vector<Vec3> path = RRT_tree::find_path_to_goal_RRT(&my_world, pt_start, pt_goal, goal_radius, 3);
 
-    float neighbor_radius = 3;
-    float drone_radius = 0.6;
-    RRT_tree tree(pt_start, &my_world, neighbor_radius);
-    std::vector<Vec3> path = tree.find_path(RRTStarAlgorithm(), BinarySearchIntersection(), pt_goal, goal_radius, drone_radius);
+    //float neighbor_radius = 3;
+    //float drone_radius = 0.6;
+    //RRT_tree tree(pt_start, &my_world, neighbor_radius);
+    //std::vector<Vec3> path = tree.find_path(RRTStarAlgorithm(), BinarySearchIntersection(), pt_goal, goal_radius, drone_radius);
 
 //    std::string tree_name = "RRT* with multiple obstacles and neighbor radius:" + std::to_string(neighbor_radius);
-    std::string tree_name = "RRT, binary search with spherical UAV";
+    //std::string tree_name = "RRT, binary search with spherical UAV";
     //std::string tree_name = "RRT*: min_N_iters = 2000,  D_max = 1.5,  R_n = " + std::to_string(int(neighbor_radius));
-    RRT_tree::write_tree_structure_to_json_file(tree.root.get(), tree_name,
-                                                "Created_file.json", path,
-                                                pt_goal, goal_radius,
-                                                my_world.obstacles);
+    //RRT_tree::write_tree_structure_to_json_file(tree.root.get(), tree_name,
+    //                                          "Created_file.json", path,
+    //                                          pt_goal, goal_radius,
+    //                                          my_world.obstacles);
 
 
-    for (const auto& point : path) {
-        printf("%lf %lf %lf\n", point.x, point.y, point.z);
-        my_world.add_object(0.2, point);
-    }
+    //for (const auto& point : path) {
+    //    printf("%lf %lf %lf\n", point.x, point.y, point.z);
+    //    my_world.add_object(0.2, point);
+    //}
 
     my_world.add_object(goal_radius, pt_goal);
     my_world.add_object(0.5, pt_start);
@@ -118,40 +118,16 @@ int main(int argc, char **argv)
     my_world.objects[k - 2].set_as_a_goal();
     my_world.objects[k - 1].set_as_a_start();
 
-
-//    my_world.publish_world(vis_array_pub);
+    my_world.publish_world(vis_array_pub);
 //    World::publish_path(vis_pub, path);
 
+    ros::spinOnce();
+    rate.sleep();
 
-    mrs_msgs::Reference reference;
-    reference.position.x = -5;
-    reference.position.y = -5;
-    reference.position.z = -7;
-
-    std::vector<mrs_msgs::Reference> array;
-    array.push_back(reference);
-
-    cmd_traj.points = array;
-    cmd_traj.fly_now = true;
-    cmd_traj.header.frame_id = "uav1/fcu";
-    // trajectory_pub.publish(cmd_traj);
-
-
-    cmd_goto.reference.position.x = -5.0;
-    cmd_goto.reference.position.y = -5.0;
-    cmd_goto.reference.position.z = 2.0;
-    cmd_goto.header.frame_id = "uav1/fcu";
-    cmd_goto.reference.heading = 0.0;
-    cmd_goto.header.stamp = ros::Time::now();
-    //goto_pub.publish(cmd_goto);
-
+    return 0;
 
     Drone drone1(1);
     Drone drone2(2);
-
-//    MotionMethods::go_to_the_point(drone, Vec3(-10, -10, -8.0));
-
-    Vec3 start_position;
 
     while (ros::ok()) {
 
@@ -163,9 +139,8 @@ int main(int argc, char **argv)
         rate.sleep();
     }
 
-    MotionMethods::go_through_a_trajectory(drone1, path, 3);
-
-    MotionMethods::go_through_a_trajectory(drone2, path, 6);
+    //MotionMethods::go_through_a_trajectory(drone1, path, 3);
+    //MotionMethods::go_through_a_trajectory(drone2, path, 6);
 
     std::cout << "The End." << std::endl;
     return EXIT_SUCCESS;
@@ -179,24 +154,3 @@ void odomCallback(mrs_msgs::UavState::ConstPtr const &msg)
 	ready = true;
 }
 
-
-// std::cout << "start_position: " << start_position.x << " " << start_position.y << " " << start_position.z << "\n";
-
-//    MotionMethods::go_to_the_point(drone, Vec3(-15, 0, -1.0));
-//    std::this_thread::sleep_for(std::chrono::milliseconds(5000));
-//
-//    for (auto &point : path){
-//        point = point + start_position;
-//    }
-
-//    for (uint32_t i = path.size(); i > 0; --i) {
-//        path[i] = path[i] - path[i - 1];
-//    }
-//
-//    for (const auto& point : path) {
-//        std::cout << "point: " << point.x << " " << point.y << " " << point.z << "\n";
-//        MotionMethods::go_to_the_point(drone, point);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(3000));
-//        ros::spinOnce();
-//        rate.sleep();
-//    }

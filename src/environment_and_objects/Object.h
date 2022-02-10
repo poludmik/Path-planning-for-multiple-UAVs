@@ -15,13 +15,14 @@
 class Object{
 public:
     
-    std::string name;
+    std::string type;
     double radius;
     Vec3 coords;
     bool is_goal = false;
     bool is_start = false;
     bool is_obstacle = false;
-    
+    double height;
+
     void print_out_info() const;
     
     void set_as_a_goal();
@@ -34,10 +35,12 @@ public:
     
     static bool are_intersecting(const Object &obj1, const Object &obj2);
     
-    Object(const World* pBigWorld, const std::string &name, double radius,
+    Object(const World* pBigWorld, const std::string &type, double radius,
            const Vec3 &given_coords);
     
     Object(const World* pBigWorld, double radius, const Vec3 &given_coords);
+
+    Object(const World* pBigWorld, const std::string &type, double radius, const Vec3 &given_coords, double height);
     
     Object (const Object& obj);
     

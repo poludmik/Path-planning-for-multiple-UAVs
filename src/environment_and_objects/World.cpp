@@ -6,9 +6,9 @@
 #include "Object.h"
 #include <visualization_msgs/MarkerArray.h>
 
-void World::add_object(const std::string &name, double radius,
+void World::add_object(const std::string &type, double radius,
                        const Vec3 &given_coords) {
-	objects.emplace_back(this, name, radius, given_coords);
+	objects.emplace_back(this, type, radius, given_coords);
 }
 
 void World::add_object(double radius, const Vec3 &given_coords) {
@@ -43,9 +43,10 @@ void World::publish_world(const ros::Publisher &publisher) const {
 
     //publish_one_array(objects);
     //publish_one_array(obstacles);
-    std::vector<Object> vector1 = obstacles;
-    vector1.insert(vector1.end(), objects.begin(), objects.end());
-    publish_one_array(vector1);
+    std::vector<Object> both = obstacles;
+    both.insert(both.end(), objects.begin(), objects.end());
+    publish_one_array(both);
+    std::cout << "published\n";
 }
 
 World::~World() {
@@ -53,18 +54,27 @@ World::~World() {
 }
 
 void World::fill_out_default_marker(visualization_msgs::Marker &marker,
-				    uint8_t id, const Object &obj) {
+                                    uint8_t id,
+                                    const Object &obj) {
 	const Vec3 &given_coords = obj.coords;
 	double const size = obj.radius;
-	const std::string &name = obj.name;
+	const std::string &type = obj.type;
     const bool tmp_start = obj.is_start;
 	
-	marker.header.frame_id = "uav1/fcu"; // "map"  uav1/local_origin;
+	marker.header.frame_id = "map"; //"uav1/fcu"; //   uav1/local_origin;
 	marker.header.stamp = ros::Time::now();
-	marker.ns = name;
+	marker.ns = type;
 	marker.id = id;
-	marker.type = visualization_msgs::Marker::SPHERE;
-	marker.action = visualization_msgs::Marker::ADD;
+
+    if (type == "cylinder") {
+        marker.type = visualization_msgs::Marker::CYLINDER;
+        marker.scale.z = obj.height;
+    } else {
+        marker.type = visualization_msgs::Marker::SPHERE;
+        marker.scale.z = size * 2;
+    }
+
+    marker.action = visualization_msgs::Marker::ADD;
 	marker.pose.position.x = given_coords.x;
 	marker.pose.position.y = given_coords.y;
 	marker.pose.position.z = given_coords.z;
@@ -74,7 +84,6 @@ void World::fill_out_default_marker(visualization_msgs::Marker &marker,
 	marker.pose.orientation.w = 1.0;
 	marker.scale.x = size * 2;
 	marker.scale.y = size * 2;
-	marker.scale.z = size * 2;
 	marker.color.a = 0.4; // see-through or solid 0 to 1
 	if (obj.is_goal) {
 		marker.color.r = 0.0;
@@ -134,7 +143,10 @@ void World::add_obstacle(double radius, const Vec3 &given_coords) {
     obstacles.emplace_back(this, radius, given_coords);
 }
 
-void World::add_obstacle(const std::string &name, double radius, const Vec3 &given_coords) {
-    obstacles.emplace_back(this, name, radius, given_coords);
+void World::add_obstacle(const std::string &type, double radius, const Vec3 &given_coords) {
+    obstacles.emplace_back(this, type, radius, given_coords);
 }
 
+void World::add_obstacle(const std::string &type, double radius, const Vec3 &given_coords, const double height) {
+    obstacles.emplace_back(this, type, radius, given_coords, height);
+}
