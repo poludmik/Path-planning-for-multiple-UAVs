@@ -38,3 +38,37 @@ void MotionMethods::go_to_point_proportional(Drone &drone, const Vec3& point){
         rate.sleep();
     }
 }
+
+void MotionMethods::go_to_the_point(Drone &drone, const Vec3 &point) {
+
+    drone.cmd_goto.reference.position.x = point.x;
+    drone.cmd_goto.reference.position.y = point.y;
+    drone.cmd_goto.reference.position.z = point.z;
+    drone.cmd_goto.header.frame_id = drone.local_frame_id; // point is assumed to be in a local coordinate system
+    drone.cmd_goto.reference.heading = 0.0;
+    drone.cmd_goto.header.stamp = ros::Time::now();
+    drone.goto_pub.publish(drone.cmd_goto);
+
+    ros::Rate rate(10);
+    rate.sleep();
+    ros::spinOnce();
+}
+
+void MotionMethods::go_through_a_trajectory(Drone &drone, const std::vector<Vec3> &path, const double dt) {
+    std::vector<mrs_msgs::Reference> array;
+
+    for (const auto &point : path) {
+        mrs_msgs::Reference reference;
+        reference.position.x = point.x;
+        reference.position.y = point.y;
+        reference.position.z = point.z;
+
+        array.push_back(reference);
+    }
+
+    drone.cmd_trajectory.points = array;
+    drone.cmd_trajectory.fly_now = true;
+    drone.cmd_trajectory.header.frame_id = drone.local_frame_id;
+    drone.cmd_trajectory.dt = dt; // time between trajectory points
+    drone.trajectory_pub.publish(drone.cmd_trajectory);
+}

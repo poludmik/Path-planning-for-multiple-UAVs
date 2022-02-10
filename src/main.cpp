@@ -82,19 +82,8 @@ int main(int argc, char **argv)
 	Vec3 pt_start(0, 0, 0);
 	Vec3 pt_goal(10, 0,0);
 
-    Vec3 rock(5, -0.5, -0.3);
+    Vec3 rock(5, 0, -0.3);
     my_world.add_obstacle(3, rock);
-    Vec3 rock2(5.0, 3, 0.0);
-    my_world.add_obstacle(1, rock2);
-    Vec3 rock3(5, -3, 1.0);
-    my_world.add_obstacle(1, rock3);
-    Vec3 rock4(3, -1, 0);
-    my_world.add_obstacle(1, rock4);
-    Vec3 rock5(3, 1.5, -1);
-    my_world.add_obstacle(1, rock5);
-    Vec3 rock6(8, 1, -3);
-    my_world.add_obstacle(1, rock6);
-    Vec3 rock7(8, -2, 5);
 
     double goal_radius = 0.8;
 
@@ -130,8 +119,8 @@ int main(int argc, char **argv)
     my_world.objects[k - 1].set_as_a_start();
 
 
-    my_world.publish_world(vis_array_pub);
-    World::publish_path(vis_pub, path);
+//    my_world.publish_world(vis_array_pub);
+//    World::publish_path(vis_pub, path);
 
 
     mrs_msgs::Reference reference;
@@ -157,40 +146,26 @@ int main(int argc, char **argv)
     //goto_pub.publish(cmd_goto);
 
 
-    Drone drone(1);
+    Drone drone1(1);
+    Drone drone2(2);
 
 //    MotionMethods::go_to_the_point(drone, Vec3(-10, -10, -8.0));
 
     Vec3 start_position;
-    mrs_msgs::UavState::ConstPtr cur_uav_state;
 
     while (ros::ok()) {
 
-        if (drone.ready) {
-            std::lock_guard<std::mutex> lock(drone.uav_state_mutex);
-            cur_uav_state = drone.uav_state;
-            start_position = Vec3(cur_uav_state->pose.position.x,
-                                  cur_uav_state->pose.position.y,
-                                  cur_uav_state->pose.position.z);
+        if (drone1.ready and drone2.ready) {
+            // std::lock_guard<std::mutex> lock(drone1.uav_state_mutex);
             break;
         }
         ros::spinOnce();
         rate.sleep();
     }
 
-    std::cout << "start_position: " << start_position.x << " " << start_position.y << " " << start_position.z << "\n";
+    MotionMethods::go_through_a_trajectory(drone1, path, 3);
 
-    MotionMethods::go_to_the_point(drone, Vec3(5, 0, 2.0));
-
-    for (auto &point : path){
-        point = point + start_position;
-    }
-
-    for (const auto& point : path) {
-        std::cout << "point: " << point.x << " " << point.y << " " << point.z << "\n";
-        std::this_thread::sleep_for(std::chrono::milliseconds(3000));
-        MotionMethods::go_to_the_point(drone, point);
-    }
+    MotionMethods::go_through_a_trajectory(drone2, path, 6);
 
     std::cout << "The End." << std::endl;
     return EXIT_SUCCESS;
@@ -203,3 +178,25 @@ void odomCallback(mrs_msgs::UavState::ConstPtr const &msg)
 	uav_state = msg;
 	ready = true;
 }
+
+
+// std::cout << "start_position: " << start_position.x << " " << start_position.y << " " << start_position.z << "\n";
+
+//    MotionMethods::go_to_the_point(drone, Vec3(-15, 0, -1.0));
+//    std::this_thread::sleep_for(std::chrono::milliseconds(5000));
+//
+//    for (auto &point : path){
+//        point = point + start_position;
+//    }
+
+//    for (uint32_t i = path.size(); i > 0; --i) {
+//        path[i] = path[i] - path[i - 1];
+//    }
+//
+//    for (const auto& point : path) {
+//        std::cout << "point: " << point.x << " " << point.y << " " << point.z << "\n";
+//        MotionMethods::go_to_the_point(drone, point);
+//        std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+//        ros::spinOnce();
+//        rate.sleep();
+//    }
