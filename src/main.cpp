@@ -70,20 +70,23 @@ int main(int argc, char **argv)
 
 	World my_world;
 
-	Vec3 pt_start(-3, 0, 1);
-	Vec3 pt_goal(3, 0,1);
+	Vec3 pt_start(-3.5, 0, 1);
+	Vec3 pt_goal(3.5, 0,1);
 
     // Vec3 rock(5, 0, -0.3);
     // my_world.add_obstacle(3, rock);
 
     Vec3 standing_center(0, 0, 0);
-    my_world.add_obstacle("cylinder", 2.5, standing_center, 1.4);
+    my_world.add_obstacle("cylinder", 1.5, standing_center, 7);
 
-//    Vec3 standing_center_above(0.7, 2, 3.5);
-//    my_world.add_obstacle("cylinder", 1., standing_center_above, 1.5);
-//
-//    Vec3 standing1(0, 0, 0);
-//    my_world.add_obstacle("cylinder", 1.7, standing1, 5.0);
+    Vec3 standing_center_above1(0, 0, 7);
+    my_world.add_obstacle("sphere", 1.5, standing_center_above1);
+
+    Vec3 standing_center_above(0, 2, 0);
+    my_world.add_obstacle("sphere", 2, standing_center_above);
+
+    Vec3 standing1(0, -2, 0);
+    my_world.add_obstacle("sphere", 1.8, standing1);
 //
 //    Vec3 standing2(-0.7, -2, 0);
 //    my_world.add_obstacle("cylinder", 1., standing2, 0.5);
@@ -104,9 +107,9 @@ int main(int argc, char **argv)
     //Vec3 obj_center(-3, 1, 0);
 
     float neighbor_radius = 3;
-    float drone_radius = 0.3;
+    float drone_radius = 0.5;
     RRT_tree tree(pt_start, &my_world, neighbor_radius);
-    std::vector<Vec3> path = tree.find_path(RRTStarAlgorithm(), LinearAlgebraIntersection(), pt_goal, goal_radius, drone_radius);
+    std::vector<Vec3> path = tree.find_path(RRTStarAlgorithm(), BinarySearchIntersection(), pt_goal, goal_radius, drone_radius);
 
     //std::string tree_name = "RRT* with multiple obstacles and neighbor radius:" + std::to_string(neighbor_radius);
     //std::string tree_name = "RRT, binary search with spherical UAV";

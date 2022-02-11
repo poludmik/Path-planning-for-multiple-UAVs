@@ -28,6 +28,8 @@ public:
     Vec3 operator/(double number) const;
 
     double operator|(const Vec3 &V) const;
+
+    bool operator==(const Vec3 &V) const;
     
     Vec3(const Vec3& pt);
     

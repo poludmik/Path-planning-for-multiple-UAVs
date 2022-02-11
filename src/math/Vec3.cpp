@@ -70,6 +70,10 @@ double Vec3::operator|(const Vec3 &V) const {
     return x*V.x + y*V.y + z*V.z;
 }
 
+bool Vec3::operator==(const Vec3 &V) const {
+    return (x==V.x and y==V.y and z==V.z);
+}
+
 
 Vec3 Vec3::operator*(double number) const {
     Vec3 a;
