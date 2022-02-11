@@ -69,36 +69,46 @@ int main(int argc, char **argv)
             ("visualization_marker_array", 100);
 
 	World my_world;
-	
-	Vec3 pt_start(0, 0, 0);
-	Vec3 pt_goal(5, 0,0);
+
+	Vec3 pt_start(-3, 0, 1);
+	Vec3 pt_goal(3, 0,1);
 
     // Vec3 rock(5, 0, -0.3);
     // my_world.add_obstacle(3, rock);
 
-    Vec3 standing_center(2, 0, 0);
-    my_world.add_obstacle("cylinder", 0.2, standing_center, 2.0);
+    Vec3 standing_center(0, 0, 0);
+    my_world.add_obstacle("cylinder", 2.5, standing_center, 1.4);
 
-    Vec3 standing1(2, 2, 0);
-    my_world.add_obstacle("cylinder", 0.3, standing1, 3.0);
+//    Vec3 standing_center_above(0.7, 2, 3.5);
+//    my_world.add_obstacle("cylinder", 1., standing_center_above, 1.5);
+//
+//    Vec3 standing1(0, 0, 0);
+//    my_world.add_obstacle("cylinder", 1.7, standing1, 5.0);
+//
+//    Vec3 standing2(-0.7, -2, 0);
+//    my_world.add_obstacle("cylinder", 1., standing2, 0.5);
+//
+//    Vec3 standing5(-0.7, -2, 1);
+//    my_world.add_obstacle("cylinder", 1., standing5, 2);
+//
+//    Vec3 standing6(-0.7, -2, 3.7);
+//    my_world.add_obstacle("cylinder", 1., standing6, 1.3);
+//
+//    Vec3 standing3(1, 4, 0);
+//    my_world.add_obstacle("cylinder", 1.5, standing3, 2.0);
 
-    Vec3 standing2(2, -2, 0);
-    my_world.add_obstacle("cylinder", 1, standing2, 4.0);
 
-    double goal_radius = 0.8;
+    double goal_radius = 0.5;
 
     //Vec3 drone_center(0, 0, 0);
     //Vec3 obj_center(-3, 1, 0);
-//    std::cout << AvoidanceAlgorithm::DoesIntersectByBinaryAvoidance(pt_start, pt_goal, 0.5, obj_center, 0.6) << "\n";
 
-//	std::vector<Vec3> path = RRT_tree::find_path_to_goal_RRT(&my_world, pt_start, pt_goal, goal_radius, 3);
+    float neighbor_radius = 3;
+    float drone_radius = 0.3;
+    RRT_tree tree(pt_start, &my_world, neighbor_radius);
+    std::vector<Vec3> path = tree.find_path(RRTStarAlgorithm(), LinearAlgebraIntersection(), pt_goal, goal_radius, drone_radius);
 
-    //float neighbor_radius = 3;
-    //float drone_radius = 0.6;
-    //RRT_tree tree(pt_start, &my_world, neighbor_radius);
-    //std::vector<Vec3> path = tree.find_path(RRTStarAlgorithm(), BinarySearchIntersection(), pt_goal, goal_radius, drone_radius);
-
-//    std::string tree_name = "RRT* with multiple obstacles and neighbor radius:" + std::to_string(neighbor_radius);
+    //std::string tree_name = "RRT* with multiple obstacles and neighbor radius:" + std::to_string(neighbor_radius);
     //std::string tree_name = "RRT, binary search with spherical UAV";
     //std::string tree_name = "RRT*: min_N_iters = 2000,  D_max = 1.5,  R_n = " + std::to_string(int(neighbor_radius));
     //RRT_tree::write_tree_structure_to_json_file(tree.root.get(), tree_name,
@@ -107,10 +117,11 @@ int main(int argc, char **argv)
     //                                          my_world.obstacles);
 
 
-    //for (const auto& point : path) {
-    //    printf("%lf %lf %lf\n", point.x, point.y, point.z);
-    //    my_world.add_object(0.2, point);
-    //}
+
+    for (const auto& point : path) {
+        printf("%lf %lf %lf\n", point.x, point.y, point.z);
+        my_world.add_object(0.2, point);
+    }
 
     my_world.add_object(goal_radius, pt_goal);
     my_world.add_object(0.5, pt_start);
@@ -119,7 +130,7 @@ int main(int argc, char **argv)
     my_world.objects[k - 1].set_as_a_start();
 
     my_world.publish_world(vis_array_pub);
-//    World::publish_path(vis_pub, path);
+    World::publish_path(vis_pub, path);
 
     ros::spinOnce();
     rate.sleep();

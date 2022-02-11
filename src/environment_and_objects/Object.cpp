@@ -8,6 +8,8 @@ void Object::print_out_info() const {
 	std::cout << "name: " << type << std::endl;
     std::cout << "IsGoal: " << is_goal << std::endl;
     std::cout << "IsStart: " << is_start << std::endl;
+    std::cout << "Radius: " << radius << std::endl;
+    std::cout << "Height: " << height << std::endl;
 	std::cout << "x: " << coords.x << std::endl;
 	std::cout << "y: " << coords.y << std::endl;
 	std::cout << "z: " << coords.z << std::endl;
@@ -21,6 +23,7 @@ Object::Object(const World *pBigWorld, const std::string &type, double radius,
         std::cout << "Unknown object type: " << type << ". Making a sphere." << std::endl;
         this->type = "sphere";
         this->coords = given_coords;
+        this->height = 0.0;
     } else if (type == "cylinder"){
         std::cout << "Assuming height = 2\n";
         this->height = 2.0;
@@ -30,6 +33,7 @@ Object::Object(const World *pBigWorld, const std::string &type, double radius,
     } else if (type == "sphere"){
         this->type = type;
         this->coords = given_coords;
+        this->height = 0.0;
     }
 
 	this->radius = radius;
@@ -87,6 +91,7 @@ Object::Object(const World *pBigWorld, const std::string &type, double radius, c
         std::cout << "Unknown object type: " << type << ". Making a sphere." << std::endl;
         this->type = "sphere";
         this->coords = given_coords;
+        this->height = 0.0;
     } else if (type == "cylinder"){
         this->height = height;
         this->type = type;
@@ -95,6 +100,7 @@ Object::Object(const World *pBigWorld, const std::string &type, double radius, c
     } else if (type == "sphere"){
         this->type = type;
         this->coords = given_coords;
+        this->height = 0.0;
     }
 
     this->radius = radius;

@@ -5,7 +5,7 @@
 #pragma once
 
 #include "../environment_and_objects/Object.h"
-#include "AvoidanceAlgorithm.h"
+#include "../avoidance/AvoidanceAlgorithm.h"
 
 class BinarySearchIntersection : public AvoidanceAlgorithm {
 
@@ -15,6 +15,7 @@ public:
                                          const Vec3 &line_end,
                                          const Vec3 &obstacleCoords,
                                          double droneRadius,
-                                         double obstacleRadius) const override;
+                                         double obstacleRadius,
+                                         double obstacleHeight) const override;
 
 };

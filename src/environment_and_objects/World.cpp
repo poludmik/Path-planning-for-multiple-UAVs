@@ -66,13 +66,13 @@ void World::fill_out_default_marker(visualization_msgs::Marker &marker,
 	marker.ns = type;
 	marker.id = id;
 
-    if (type == "cylinder") {
-        marker.type = visualization_msgs::Marker::CYLINDER;
-        marker.scale.z = obj.height;
-    } else {
-        marker.type = visualization_msgs::Marker::SPHERE;
-        marker.scale.z = size * 2;
-    }
+     if (type == "cylinder") {
+         marker.type = visualization_msgs::Marker::CYLINDER;
+         marker.scale.z = obj.height;
+     } else {
+         marker.type = visualization_msgs::Marker::SPHERE;
+         marker.scale.z = size * 2;
+     }
 
     marker.action = visualization_msgs::Marker::ADD;
 	marker.pose.position.x = given_coords.x;
@@ -84,7 +84,7 @@ void World::fill_out_default_marker(visualization_msgs::Marker &marker,
 	marker.pose.orientation.w = 1.0;
 	marker.scale.x = size * 2;
 	marker.scale.y = size * 2;
-	marker.color.a = 0.4; // see-through or solid 0 to 1
+	marker.color.a = 1; // see-through or solid 0 to 1
 	if (obj.is_goal) {
 		marker.color.r = 0.0;
 		marker.color.g = 0.0;
@@ -108,7 +108,7 @@ void World::fill_out_default_marker(visualization_msgs::Marker &marker,
 void World::publish_path(const ros::Publisher &publisher, const std::vector<Vec3>& points) {
 
     visualization_msgs::Marker line_strip;
-    line_strip.header.frame_id = "uav1/fcu"; // "map";
+    line_strip.header.frame_id = "map"; //"uav1/fcu"; // ;
     line_strip.ns = "path1";
     line_strip.header.stamp = ros::Time::now();
     line_strip.type = visualization_msgs::Marker::LINE_STRIP;

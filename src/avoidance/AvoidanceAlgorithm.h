@@ -15,13 +15,14 @@ public:
                                                  const Vec3 &line_end,
                                                  const Vec3 &obstacleCoords,
                                                  double droneRadius,
-                                                 double obstacleRadius) const = 0;
+                                                 double obstacleRadius,
+                                                 double obstacleHeight) const = 0;
 
 
     static bool DoesSphereIntersectSphere(const Vec3 &firstSphereCenter,
-                                         const Vec3 &secondSphereCenter,
-                                         double firstSphereRadius,
-                                         double secondSphereRadius) {
+                                          const Vec3 &secondSphereCenter,
+                                          double firstSphereRadius,
+                                          double secondSphereRadius) {
         return Vec3::distance_between_two_vec3(firstSphereCenter, secondSphereCenter) <= firstSphereRadius + secondSphereRadius;
     }
 

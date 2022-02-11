@@ -40,8 +40,8 @@ std::vector<Vec3> RRTAlgorithm::find_path_according_to_alg(const World *world_pt
     while (true) {
         Vec3 rnd_point = Vec3::random_vec3(center.x - dist_to_goal, center.x + dist_to_goal,
                                            center.y - dist_to_goal, center.y + dist_to_goal,
-                                           center.z - dist_to_goal, center.z + dist_to_goal);
-                                           //.0, 0);
+                                           0, center.z + dist_to_goal);
+        //.0, 0);
 
         is_inside_an_obstacle = false;
 
@@ -53,7 +53,8 @@ std::vector<Vec3> RRTAlgorithm::find_path_according_to_alg(const World *world_pt
 
         for (const auto& obst : world_ptr->obstacles) {
             if (avoid_alg.ThereIsIntersectionAlongThePath(closest->coords,rnd_point,
-                                                     obst.coords, droneRadius, obst.radius)){
+                                                          obst.coords, droneRadius,
+                                                          obst.radius, obst.height)){
                 is_inside_an_obstacle = true;
                 break;
             }

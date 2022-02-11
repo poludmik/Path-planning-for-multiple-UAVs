@@ -2,14 +2,15 @@
 // Created by micha on 11/28/2021.
 //
 
-#include "BinarySearchIntersection.h"
+#include "../avoidance/BinarySearchIntersection.h"
 
 
 bool BinarySearchIntersection::ThereIsIntersectionAlongThePath(const Vec3 &line_start,
                                                                const Vec3 &line_end,
                                                                const Vec3 &obstacleCoords,
                                                                double droneRadius,
-                                                               double obstacleRadius) const {
+                                                               double obstacleRadius,
+                                                               double obstacleHeight) const {
 
     double current_step = Vec3::distance_between_two_vec3(line_end, line_start);
     double iter_num = 8;
