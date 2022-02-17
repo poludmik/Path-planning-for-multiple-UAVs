@@ -105,11 +105,11 @@ void World::fill_out_default_marker(visualization_msgs::Marker &marker,
 	marker.lifetime = ros::Duration(40);
 }
 
-void World::publish_path(const ros::Publisher &publisher, const std::vector<Vec3>& points) {
+void World::publish_path(const ros::Publisher &publisher, const std::vector<Vec3>& points, const std::string &number) {
 
     visualization_msgs::Marker line_strip;
     line_strip.header.frame_id = "map"; //"uav1/fcu"; // ;
-    line_strip.ns = "path1";
+    line_strip.ns = "path" + number;
     line_strip.header.stamp = ros::Time::now();
     line_strip.type = visualization_msgs::Marker::LINE_STRIP;
     line_strip.action = visualization_msgs::Marker::ADD;

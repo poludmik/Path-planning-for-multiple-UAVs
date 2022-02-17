@@ -35,7 +35,7 @@ public:
     
     void publish_world(const ros::Publisher &publisher) const;
 
-    static void publish_path(const ros::Publisher &publisher, const std::vector<Vec3>& points);
+    static void publish_path(const ros::Publisher &publisher, const std::vector<Vec3>& points, const std::string &number);
     
     World()=default;
     

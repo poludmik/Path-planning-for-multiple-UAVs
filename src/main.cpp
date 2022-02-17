@@ -70,82 +70,54 @@ int main(int argc, char **argv)
 
 	World my_world;
 
-	Vec3 pt_start(-3.5, 0, 1);
-	Vec3 pt_goal(3.5, 0,1);
+    double goal_radius = 0.5;
+    double drone_radius = 0.5;
 
-    // Vec3 rock(5, 0, -0.3);
-    // my_world.add_obstacle(3, rock);
+    Vec3 start1(-3.5, 0, 1);
+    Vec3 goal1(3.5, 0, 1);
+
+    Vec3 start2(2.5, 2.5, 1);
+    Vec3 goal2(-2.5, -1.5, 1);
+
+    std::vector<Drone> drones;
+    Drone dron1(1, start1, goal1, goal_radius, drone_radius);
+    drones.push_back(dron1);
+    drones.emplace_back(2, start2, goal2, goal_radius, drone_radius);
 
     Vec3 standing_center(0, 0, 0);
-    my_world.add_obstacle("cylinder", 1.5, standing_center, 7);
-
-    Vec3 standing_center_above1(0, 0, 7);
-    my_world.add_obstacle("sphere", 1.5, standing_center_above1);
-
-    Vec3 standing_center_above(0, 2, 0);
-    my_world.add_obstacle("sphere", 2, standing_center_above);
-
-    Vec3 standing1(0, -2, 0);
-    my_world.add_obstacle("sphere", 1.8, standing1);
-//
-//    Vec3 standing2(-0.7, -2, 0);
-//    my_world.add_obstacle("cylinder", 1., standing2, 0.5);
-//
-//    Vec3 standing5(-0.7, -2, 1);
-//    my_world.add_obstacle("cylinder", 1., standing5, 2);
-//
-//    Vec3 standing6(-0.7, -2, 3.7);
-//    my_world.add_obstacle("cylinder", 1., standing6, 1.3);
-//
-//    Vec3 standing3(1, 4, 0);
-//    my_world.add_obstacle("cylinder", 1.5, standing3, 2.0);
-
-
-    double goal_radius = 0.5;
-
-    //Vec3 drone_center(0, 0, 0);
-    //Vec3 obj_center(-3, 1, 0);
-
+    my_world.add_obstacle("cylinder", 1, standing_center, 5);
     float neighbor_radius = 3;
-    float drone_radius = 0.5;
-    RRT_tree tree(pt_start, &my_world, neighbor_radius);
-    std::vector<Vec3> path = tree.find_path(RRTStarAlgorithm(), BinarySearchIntersection(), pt_goal, goal_radius, drone_radius);
-
-    //std::string tree_name = "RRT* with multiple obstacles and neighbor radius:" + std::to_string(neighbor_radius);
-    //std::string tree_name = "RRT, binary search with spherical UAV";
-    //std::string tree_name = "RRT*: min_N_iters = 2000,  D_max = 1.5,  R_n = " + std::to_string(int(neighbor_radius));
-    //RRT_tree::write_tree_structure_to_json_file(tree.root.get(), tree_name,
-    //                                          "Created_file.json", path,
-    //                                          pt_goal, goal_radius,
-    //                                          my_world.obstacles);
 
 
+    for (Drone &drone : drones) {
 
-    for (const auto& point : path) {
-        printf("%lf %lf %lf\n", point.x, point.y, point.z);
-        my_world.add_object(0.2, point);
+        RRT_tree tree(drone.start_point, &my_world, neighbor_radius);
+        drone.found_trajectory = tree.find_path(RRTStarAlgorithm(), BinarySearchIntersection(), drone.goal_point,
+                                                 drone.goal_radius,
+                                                 drone.drone_radius);
+
+        for (const auto &point: drone.found_trajectory) {
+            printf("%lf %lf %lf\n", point.x, point.y, point.z);
+            my_world.add_object(0.2, point);
+        }
+
+        my_world.add_object(drone.goal_radius, drone.goal_point);
+        my_world.add_object(0.3, drone.start_point);
+        auto k = my_world.objects.size();
+        my_world.objects[k - 2].set_as_a_goal();
+        my_world.objects[k - 1].set_as_a_start();
+
+        my_world.publish_world(vis_array_pub);
+        World::publish_path(vis_pub, drone.found_trajectory, std::to_string(drone.uav_id));
+
+        ros::spinOnce();
+        rate.sleep();
     }
-
-    my_world.add_object(goal_radius, pt_goal);
-    my_world.add_object(0.5, pt_start);
-    auto k = my_world.objects.size();
-    my_world.objects[k - 2].set_as_a_goal();
-    my_world.objects[k - 1].set_as_a_start();
-
-    my_world.publish_world(vis_array_pub);
-    World::publish_path(vis_pub, path);
-
-    ros::spinOnce();
-    rate.sleep();
-
     return 0;
-
-    Drone drone1(1);
-    Drone drone2(2);
 
     while (ros::ok()) {
 
-        if (drone1.ready and drone2.ready) {
+        if (drones[0].ready and drones[1].ready) {
             // std::lock_guard<std::mutex> lock(drone1.uav_state_mutex);
             break;
         }
