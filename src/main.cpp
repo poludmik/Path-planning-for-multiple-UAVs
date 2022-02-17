@@ -35,6 +35,7 @@
 
 #include "motion/MotionMethods.h"
 #include "motion/Drone.h"
+#include "motion/Trajectory.h"
 
 bool ready = false;
 mrs_msgs::UavState::ConstPtr uav_state;
@@ -85,9 +86,8 @@ int main(int argc, char **argv)
     drones.emplace_back(2, start2, goal2, goal_radius, drone_radius);
 
     Vec3 standing_center(0, 0, 0);
-    my_world.add_obstacle("cylinder", 1, standing_center, 5);
+    //my_world.add_obstacle("cylinder", 2, standing_center, 5);
     float neighbor_radius = 3;
-
 
     for (Drone &drone : drones) {
 
@@ -96,10 +96,18 @@ int main(int argc, char **argv)
                                                  drone.goal_radius,
                                                  drone.drone_radius);
 
-        for (const auto &point: drone.found_trajectory) {
-            printf("%lf %lf %lf\n", point.x, point.y, point.z);
-            my_world.add_object(0.2, point);
+        Trajectory trajectory(drone.found_trajectory, 0.2, 0.2);
+        for (const auto &point_in_time : trajectory.time_points){
+            printf("%lf\n", point_in_time.second);
+            printf("%lf %lf %lf\n\n", point_in_time.first.x, point_in_time.first.y, point_in_time.first.z);
+
+            my_world.add_object(0.05, point_in_time.first);
         }
+
+//        for (const auto &point: drone.found_trajectory) {
+//            printf("%lf %lf %lf\n", point.x, point.y, point.z);
+//            my_world.add_object(0.2, point);
+//        }
 
         my_world.add_object(drone.goal_radius, drone.goal_point);
         my_world.add_object(0.3, drone.start_point);
@@ -108,7 +116,7 @@ int main(int argc, char **argv)
         my_world.objects[k - 1].set_as_a_start();
 
         my_world.publish_world(vis_array_pub);
-        World::publish_path(vis_pub, drone.found_trajectory, std::to_string(drone.uav_id));
+        World::publish_trajectory(vis_pub, trajectory, std::to_string(drone.uav_id));
 
         ros::spinOnce();
         rate.sleep();
