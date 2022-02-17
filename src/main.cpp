@@ -92,22 +92,27 @@ int main(int argc, char **argv)
     for (Drone &drone : drones) {
 
         RRT_tree tree(drone.start_point, &my_world, neighbor_radius);
-        drone.found_trajectory = tree.find_path(RRTStarAlgorithm(), BinarySearchIntersection(), drone.goal_point,
+        drone.found_path = tree.find_path(RRTStarAlgorithm(), BinarySearchIntersection(), drone.goal_point,
                                                  drone.goal_radius,
                                                  drone.drone_radius);
 
-        Trajectory trajectory(drone.found_trajectory, 0.2, 0.2);
-        for (const auto &point_in_time : trajectory.time_points){
-            printf("%lf\n", point_in_time.second);
-            printf("%lf %lf %lf\n\n", point_in_time.first.x, point_in_time.first.y, point_in_time.first.z);
-
+        drone.trajectory = Trajectory(drone.found_path, 0.2, 0.3);
+        std::cout << "\n";
+        for (const auto &point_in_time : drone.trajectory.time_points){
+            // printf("%lf\n", point_in_time.second);
+            printf("%lf %lf %lf\n", point_in_time.first.x, point_in_time.first.y, point_in_time.first.z);
             my_world.add_object(0.05, point_in_time.first);
         }
 
-//        for (const auto &point: drone.found_trajectory) {
-//            printf("%lf %lf %lf\n", point.x, point.y, point.z);
-//            my_world.add_object(0.2, point);
-//        }
+        std::vector<Vec3> intersects = Trajectory::find_intersects_of_two_trajectories(drones[0].trajectory,
+                                                                                       drones[1].trajectory,
+                                                                                       drones[0].drone_radius,
+                                                                                       drones[1].drone_radius);
+
+        for (const auto &intersection : intersects){
+            printf("%lf %lf %lf\n", intersection.x, intersection.y, intersection.z);
+            my_world.add_object(dron1.drone_radius, intersection);
+        }
 
         my_world.add_object(drone.goal_radius, drone.goal_point);
         my_world.add_object(0.3, drone.start_point);
@@ -116,7 +121,7 @@ int main(int argc, char **argv)
         my_world.objects[k - 1].set_as_a_start();
 
         my_world.publish_world(vis_array_pub);
-        World::publish_trajectory(vis_pub, trajectory, std::to_string(drone.uav_id));
+        World::publish_trajectory(vis_pub, drone.trajectory, std::to_string(drone.uav_id));
 
         ros::spinOnce();
         rate.sleep();

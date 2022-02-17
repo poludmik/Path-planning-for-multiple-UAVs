@@ -20,20 +20,24 @@
 
 #include "../math/Vec3.h"
 
+#include "../motion/Trajectory.h"
 
 class Drone {
 public:
 
-    size_t uav_id;
+    size_t uav_id = 0;
 
-    Vec3 start_point;
+    Vec3 start_point = Vec3(0, 0, 0);
 
-    Vec3 goal_point;
-    double goal_radius;
+    Vec3 goal_point = Vec3(0, 0, 0);;
 
-    double drone_radius;
+    double goal_radius = 0.5;
 
-    std::vector<Vec3> found_trajectory;
+    double drone_radius = 0.5;
+
+    std::vector<Vec3> found_path;
+
+    Trajectory trajectory;
 
     ros::NodeHandle n;
     bool ready = false;
@@ -47,6 +51,8 @@ public:
     ros::Publisher  trajectory_pub;
     std::string local_frame_id;
     std::string global_frame_id;
+
+    Drone() = default;
 
     Drone(size_t uav_id, const Vec3 &start_point, const Vec3 &goal_point, double goal_radius, double drone_radius);
 
