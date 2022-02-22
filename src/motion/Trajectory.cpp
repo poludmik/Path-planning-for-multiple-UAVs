@@ -3,8 +3,9 @@
 //
 
 #include "Trajectory.h"
+#include "Drone.h"
 
-std::vector<std::pair<Vec3, double>> Trajectory::equally_divide_path_in_time(const std::vector<Vec3> &path) const {
+void Trajectory::equally_divide_path_in_time(const std::vector<Vec3> &path) {
 
     std::vector<std::pair<Vec3, double>> trajectory;
     std::pair<Vec3, double> point_in_time;
@@ -20,7 +21,9 @@ std::vector<std::pair<Vec3, double>> Trajectory::equally_divide_path_in_time(con
 
         point_in_time.first = current_point;
         point_in_time.second = global_time_shift;
-        trajectory.push_back(point_in_time);
+        time_points.push_back(point_in_time);
+
+        trajectory_points.push_back(current_point);
 
         double current_dist_shift = ds_between_points;
 
@@ -38,7 +41,8 @@ std::vector<std::pair<Vec3, double>> Trajectory::equally_divide_path_in_time(con
                 point_in_time.first = between_point;
                 point_in_time.second = global_time_shift;
 
-                trajectory.push_back(point_in_time);
+                time_points.push_back(point_in_time);
+                trajectory_points.push_back(between_point);
             } else {
                 break;
             }
@@ -50,41 +54,125 @@ std::vector<std::pair<Vec3, double>> Trajectory::equally_divide_path_in_time(con
 
     point_in_time.first = path.back();
     point_in_time.second = global_time_shift;
-    trajectory.push_back(point_in_time);
+    time_points.push_back(point_in_time);
+    trajectory_points.push_back(path.back());
 
-    return trajectory;
 }
 
 Trajectory::Trajectory(const std::vector<Vec3> &path, const double dt, const double ds) {
     dt_between_points = dt;
     ds_between_points = ds;
-    time_points = equally_divide_path_in_time(path);
+    equally_divide_path_in_time(path);
 }
 
-std::vector<Vec3> Trajectory::find_intersects_of_two_trajectories(const Trajectory &traj1,
-                                                                  const Trajectory &traj2,
+std::pair<std::vector<Vec3>, int> Trajectory::find_intersects_of_two_trajectories(const Trajectory &priority_traj,
+                                                                  const Trajectory &secondary_traj,
                                                                   double radius1,
                                                                   double radius2) {
 
     std::vector<Vec3> intersection_points;
 
     double time_epsilon = 0.001;
+    bool found_intersection = false;
+    int last_good = -1;
+    int idx = 0;
 
-    for (const auto &first_time_point : traj1.time_points) {
+    for (const auto &second_time_point : secondary_traj.time_points) {
 
-        for (const auto &second_time_point : traj2.time_points) {
+        for (const auto &first_time_point : priority_traj.time_points) {
+
             if (first_time_point.second < second_time_point.second + time_epsilon &&
-                first_time_point.second > second_time_point.second - time_epsilon){
-
+            first_time_point.second > second_time_point.second - time_epsilon){
                 if (AvoidanceAlgorithm::DoesSphereIntersectSphere(first_time_point.first,
                                                                   second_time_point.first,
                                                                   radius1,
-                                                                  radius2))
+                                                                  radius2)) {
                     intersection_points.push_back(first_time_point.first);
+                    found_intersection = true;
+
+                }
             }
         }
 
+        if (!found_intersection) {
+            last_good = idx;
+        }
+        ++idx;
+
     }
 
-    return intersection_points;
+    std::pair<std::vector<Vec3>, int> returned_value;
+    returned_value.first = intersection_points;
+    returned_value.second = last_good; // last point on second trajectory without an intersection
+
+    return returned_value;
+}
+
+void Trajectory::resolve_all_conflicts_with_new_trajectories(World &global_world,
+                                                           std::vector<Drone> &drones) {
+
+    for (int i = 1; i < drones.size(); ++i){
+
+        World local_world = global_world;
+        std::vector<Vec3> intersects_with_one;
+        std::pair<std::vector<Vec3>, int> intersects_and_last_good;
+
+        unsigned long min_last_good = drones[i].trajectory.time_points.size() - 1;
+
+        for (int j = 0; j < i; ++j) {
+            intersects_and_last_good = find_intersects_of_two_trajectories(drones[j].trajectory,
+                                                                      drones[i].trajectory,
+                                                                      drones[j].drone_radius,
+                                                                      drones[i].drone_radius);
+
+            intersects_with_one = intersects_and_last_good.first;
+            std::cout << "last_good: " << intersects_and_last_good.second << "\n";
+            std::cout << "min_last_good: " << min_last_good << "\n";
+            if (intersects_and_last_good.second < min_last_good) {
+                min_last_good = intersects_and_last_good.second;
+            }
+
+            for (const auto &point : intersects_with_one){
+                local_world.add_obstacle("sphere", drones[j].drone_radius, point);
+                global_world.add_object("sphere", drones[j].drone_radius, point);
+            }
+        }
+
+        while (min_last_good >= 0) {
+            Vec3 start = drones[i].trajectory.time_points[min_last_good].first;
+            for (auto const &x : local_world.obstacles) {
+
+                if (AvoidanceAlgorithm::DoesSphereIntersectSphere(x.coords,
+                                                                  start,
+                                                                  x.radius,
+                                                                  drones[i].drone_radius)){
+                    --min_last_good;
+                    continue;
+                }
+            }
+            break;
+        }
+
+        Vec3 new_starting_point = drones[i].trajectory.time_points[min_last_good].first;
+        std::cout << "new_starting_point: ";
+        new_starting_point.printout();
+        std::cout << "min_index: " << min_last_good << "\n";
+
+        double neighbor_radius = 3;
+        RRT_tree tree(new_starting_point, &local_world, neighbor_radius);
+        std::vector<Vec3> path_from_new_start = tree.find_path(RRTStarAlgorithm(),
+                                                BinarySearchIntersection(),
+                                                drones[i].goal_point,
+                                                drones[1].goal_radius,
+                                                drones[1].drone_radius);
+
+        // TODO found_path concatenate
+        drones[i].trajectory.trajectory_points.resize(min_last_good);
+        drones[i].found_path = drones[i].trajectory.trajectory_points;
+
+        drones[i].found_path.insert(drones[i].found_path.end(), path_from_new_start.begin(), path_from_new_start.end());
+
+        drones[i].trajectory = Trajectory(drones[i].found_path, 0.2, 0.3);
+    }
+
 }

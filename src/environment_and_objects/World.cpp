@@ -85,7 +85,7 @@ void World::fill_out_default_marker(visualization_msgs::Marker &marker,
 	marker.pose.orientation.w = 1.0;
 	marker.scale.x = size * 2;
 	marker.scale.y = size * 2;
-	marker.color.a = 1; // see-through or solid 0 to 1
+	marker.color.a = 0.7; // see-through or solid 0 to 1
 	if (obj.is_goal) {
 		marker.color.r = 0.0;
 		marker.color.g = 0.0;

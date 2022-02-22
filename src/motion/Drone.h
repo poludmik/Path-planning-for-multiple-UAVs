@@ -25,15 +25,15 @@
 class Drone {
 public:
 
-    size_t uav_id = 0;
+    size_t uav_id;
 
-    Vec3 start_point = Vec3(0, 0, 0);
+    Vec3 start_point;
 
-    Vec3 goal_point = Vec3(0, 0, 0);;
+    Vec3 goal_point;
 
-    double goal_radius = 0.5;
+    double goal_radius;
 
-    double drone_radius = 0.5;
+    double drone_radius;
 
     std::vector<Vec3> found_path;
 
@@ -52,12 +52,9 @@ public:
     std::string local_frame_id;
     std::string global_frame_id;
 
-    Drone() = default;
 
     Drone(size_t uav_id, const Vec3 &start_point, const Vec3 &goal_point, double goal_radius, double drone_radius);
 
     void odomCallback(mrs_msgs::UavState::ConstPtr const &msg);
 
 };
-
-

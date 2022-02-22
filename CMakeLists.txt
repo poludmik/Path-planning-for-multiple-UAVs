@@ -48,9 +48,7 @@ add_executable(planner src/main.cpp
 		src/tree_structure/Node.h
 		src/tree_structure/RRT_tree.cpp
 		src/tree_structure/RRT_tree.h
-		src/VelocityControllerP.cpp
-		src/VelocityControllerP.h
-		src/path_planning_algorithms/Algorithm.h
+        src/path_planning_algorithms/Algorithm.h
 		src/path_planning_algorithms/RRTStarAlgorithm.cpp
 		src/path_planning_algorithms/RRTStarAlgorithm.h
 		src/path_planning_algorithms/RRTAlgorithm.cpp

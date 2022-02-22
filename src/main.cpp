@@ -23,7 +23,6 @@
 #include "environment_and_objects/Object.h"
 #include "tree_structure/Node.h"
 #include "tree_structure/RRT_tree.h"
-#include "VelocityControllerP.h"
 
 #include "path_planning_algorithms/Algorithm.h"
 #include "path_planning_algorithms/RRTAlgorithm.h"
@@ -77,7 +76,7 @@ int main(int argc, char **argv)
     Vec3 start1(-3.5, 0, 1);
     Vec3 goal1(3.5, 0, 1);
 
-    Vec3 start2(2.5, 2.5, 1);
+    Vec3 start2(1, 2.5, 1);
     Vec3 goal2(-2.5, -1.5, 1);
 
     std::vector<Drone> drones;
@@ -93,25 +92,20 @@ int main(int argc, char **argv)
 
         RRT_tree tree(drone.start_point, &my_world, neighbor_radius);
         drone.found_path = tree.find_path(RRTStarAlgorithm(), BinarySearchIntersection(), drone.goal_point,
-                                                 drone.goal_radius,
-                                                 drone.drone_radius);
+                                          drone.goal_radius,
+                                          drone.drone_radius);
 
         drone.trajectory = Trajectory(drone.found_path, 0.2, 0.3);
-        std::cout << "\n";
-        for (const auto &point_in_time : drone.trajectory.time_points){
+    }
+
+    Trajectory::resolve_all_conflicts_with_new_trajectories(my_world, drones);
+
+    for (Drone &drone : drones) {
+
+        for (const auto &point_in_time: drone.trajectory.time_points) {
             // printf("%lf\n", point_in_time.second);
             printf("%lf %lf %lf\n", point_in_time.first.x, point_in_time.first.y, point_in_time.first.z);
             my_world.add_object(0.05, point_in_time.first);
-        }
-
-        std::vector<Vec3> intersects = Trajectory::find_intersects_of_two_trajectories(drones[0].trajectory,
-                                                                                       drones[1].trajectory,
-                                                                                       drones[0].drone_radius,
-                                                                                       drones[1].drone_radius);
-
-        for (const auto &intersection : intersects){
-            printf("%lf %lf %lf\n", intersection.x, intersection.y, intersection.z);
-            my_world.add_object(dron1.drone_radius, intersection);
         }
 
         my_world.add_object(drone.goal_radius, drone.goal_point);
