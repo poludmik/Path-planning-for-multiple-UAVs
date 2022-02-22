@@ -73,19 +73,34 @@ int main(int argc, char **argv)
     double goal_radius = 0.5;
     double drone_radius = 0.5;
 
-    Vec3 start1(-3.5, 0, 1);
-    Vec3 goal1(3.5, 0, 1);
+    Vec3 start1(-3.5, 0.6, 1);
+    Vec3 goal1(3.5, 0.6, 1);
 
-    Vec3 start2(1, 2.5, 1);
-    Vec3 goal2(-2.5, -1.5, 1);
+    Vec3 start2(-3.5, 2, 1);
+    Vec3 goal3(3.5, 2,1);
+
+    Vec3 start3(-3.5, -0.5, 1);
+    Vec3 goal2(3.5, -1.1, 1);
+
+    Vec3 start4(-3.5, 3.5, 1);
+    Vec3 goal4(3.5, -2.1, 1);
 
     std::vector<Drone> drones;
     Drone dron1(1, start1, goal1, goal_radius, drone_radius);
     drones.push_back(dron1);
     drones.emplace_back(2, start2, goal2, goal_radius, drone_radius);
+    drones.emplace_back(3, start3, goal3, goal_radius, drone_radius);
+    drones.emplace_back(4, start4, goal4, goal_radius, drone_radius);
 
     Vec3 standing_center(0, 0, 0);
-    //my_world.add_obstacle("cylinder", 2, standing_center, 5);
+    my_world.add_obstacle("cylinder", 0.4, standing_center, 5);
+    Vec3 standing_center1(0, 2, 0);
+    my_world.add_obstacle("cylinder", 0.4, standing_center1, 5);
+    Vec3 standing_center2(0, -2, 0);
+    my_world.add_obstacle("cylinder", 0.4, standing_center2, 5);
+
+
+
     float neighbor_radius = 3;
 
     for (Drone &drone : drones) {
@@ -104,7 +119,7 @@ int main(int argc, char **argv)
 
         for (const auto &point_in_time: drone.trajectory.time_points) {
             // printf("%lf\n", point_in_time.second);
-            printf("%lf %lf %lf\n", point_in_time.first.x, point_in_time.first.y, point_in_time.first.z);
+            //printf("%lf %lf %lf\n", point_in_time.first.x, point_in_time.first.y, point_in_time.first.z);
             my_world.add_object(0.05, point_in_time.first);
         }
 
