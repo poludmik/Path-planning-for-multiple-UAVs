@@ -20,7 +20,7 @@ void World::publish_world(const ros::Publisher &publisher) const {
     auto publish_one_array = [&](const std::vector<Object> &array) {
         int count = 0;
         visualization_msgs::MarkerArray markerArray;
-        ros::Rate rate(10);
+        ros::Rate rate(100);
         for (auto ptr = array.begin(); ptr < array.end(); ptr++){
             visualization_msgs::Marker localMarker;
             //array[count].print_out_info();
@@ -35,17 +35,18 @@ void World::publish_world(const ros::Publisher &publisher) const {
             }
             markerArray.markers.push_back(localMarker);
             //publisher.publish(localMarker);
-            //ros::spinOnce();
-            //rate.sleep();
         }
         std::cout << std::endl;
         publisher.publish(markerArray);
+        ros::spinOnce();
+        rate.sleep();
     };
 
     //publish_one_array(objects);
     //publish_one_array(obstacles);
     std::vector<Object> both = obstacles;
     both.insert(both.end(), objects.begin(), objects.end());
+
     publish_one_array(both);
     std::cout << "published\n";
 }

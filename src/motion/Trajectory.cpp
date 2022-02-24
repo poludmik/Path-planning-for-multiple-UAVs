@@ -125,7 +125,10 @@ void Trajectory::resolve_all_conflicts_with_new_trajectories(World &global_world
 
             unsigned long min_last_good = drones[i].trajectory.time_points.size() - 1;
 
-            for (int j = 0; j < i; ++j) {
+            for (int j = 0; j < drones.size(); ++j) {
+
+                if (j == i) continue;
+
                 intersects_and_last_good = find_intersects_of_two_trajectories(drones[j].trajectory,
                                                                                drones[i].trajectory,
                                                                                drones[j].drone_radius,
@@ -136,7 +139,7 @@ void Trajectory::resolve_all_conflicts_with_new_trajectories(World &global_world
                     min_last_good = intersects_and_last_good.second;
                 }
 
-                std::cout << "vot:\n";
+                std::cout << "All the obstacles:\n";
                 for (const auto &point: intersects_with_one) {
                     point.printout();
                     zero_conflicts = false;
@@ -148,6 +151,7 @@ void Trajectory::resolve_all_conflicts_with_new_trajectories(World &global_world
             for (const Drone &drone: drones) {
                 if (drone.goal_point == drones[i].goal_point) continue;
                 local_world.add_obstacle("sphere", drone.goal_radius, drone.goal_point);
+                local_world.add_obstacle("sphere", drone.goal_radius, drone.start_point);
             }
 
             std::cout << "\nmin_last_good: " << min_last_good << "\n\n";
@@ -167,12 +171,12 @@ void Trajectory::resolve_all_conflicts_with_new_trajectories(World &global_world
                                                                       start,
                                                                       x.radius,
                                                                       drones[i].drone_radius)) {
-                        --min_last_good;
                         flag = true;
                         break;
                     }
                 }
                 if (flag) {
+                    --min_last_good;
                     continue;
                 } else {
                     break;
@@ -183,6 +187,21 @@ void Trajectory::resolve_all_conflicts_with_new_trajectories(World &global_world
             std::cout << "new_starting_point: ";
             new_starting_point.printout();
             std::cout << "min_last_good: " << min_last_good << "\n\n";
+
+            for (auto const &x: local_world.obstacles) {
+                if (AvoidanceAlgorithm::DoesSphereIntersectSphere(x.coords,
+                                                                  drones[i].trajectory.time_points[min_last_good].first,
+                                                                  x.radius,
+                                                                  drones[i].drone_radius)) {
+
+                    std::cout << "The start point is occupied, error.\n";
+                    std::cout << "Obstacle:";
+                    x.coords.printout();
+                    break;
+                }
+            }
+
+
 
             double neighbor_radius = 2;
             RRT_tree tree(new_starting_point, &local_world, neighbor_radius);

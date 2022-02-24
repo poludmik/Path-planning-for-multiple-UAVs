@@ -54,7 +54,7 @@ int main(int argc, char **argv)
 
     ros::NodeHandle n;
     ros::Subscriber odom_sub  = n.subscribe(odom_sub_topic, 100, odomCallback);
-    ros::Publisher  vel_pub   = n.advertise<mrs_msgs::VelocityReferenceStamped>(vel_pub_topic, 100);
+    ros::Publisher  vel_pub   = n.advertise<mrs_msgs::VelocityReferenceStamped>(vel_pub_topic, 200);
 
     ros::Rate rate(10);
 
@@ -66,24 +66,24 @@ int main(int argc, char **argv)
 
     ros::NodeHandle markers_array_node_publisher;
     ros::Publisher vis_array_pub = markers_array_node_publisher.advertise<visualization_msgs::MarkerArray>
-            ("visualization_marker_array", 100);
+            ("visualization_marker_array", 300);
 
 	World my_world;
 
     double goal_radius = 0.5;
     double drone_radius = 0.5;
 
-    Vec3 start1(-3.5, 0.6, 1);
-    Vec3 goal1(3.5, 0.6, 1);
+    Vec3 start1(-3.5, 0.7, 1);
+    Vec3 goal1(3.5, -0.7, 1);
 
-    Vec3 start2(-3.5, 2, 1);
-    Vec3 goal3(3.5, 2,1);
+    Vec3 start2(-5, -0.7, 1);
+    Vec3 goal2(3.5, 0.7, 1);
 
-    Vec3 start3(-3.5, -0.5, 1);
-    Vec3 goal2(3.5, -1.1, 1);
+    Vec3 start3(-3.5, -0.8, 1);
+    Vec3 goal3(3.5, 2.1,1);
 
-    Vec3 start4(-3.5, 3.5, 1);
-    Vec3 goal4(3.5, -2.1, 1);
+    Vec3 start4(-3.5, -2.1, 1);
+    Vec3 goal4(3.5, -2.3, 1);
 
     std::vector<Drone> drones;
     Drone dron1(1, start1, goal1, goal_radius, drone_radius);
@@ -93,12 +93,17 @@ int main(int argc, char **argv)
     drones.emplace_back(4, start4, goal4, goal_radius, drone_radius);
 
     Vec3 standing_center(0, 0, 0);
-    my_world.add_obstacle("cylinder", 0.4, standing_center, 5);
+    my_world.add_obstacle("cylinder", 0.4, standing_center, 3.5);
     Vec3 standing_center1(0, 2, 0);
-    my_world.add_obstacle("cylinder", 0.4, standing_center1, 5);
+    my_world.add_obstacle("cylinder", 0.3, standing_center1, 4);
     Vec3 standing_center2(0, -2, 0);
-    my_world.add_obstacle("cylinder", 0.4, standing_center2, 5);
-
+    my_world.add_obstacle("cylinder", 0.35, standing_center2, 3);
+//    Vec3 standing_center3(-2, 1, 0);
+//    //my_world.add_obstacle("cylinder", 0.4, standing_center3, 5);
+//    Vec3 standing_center4(-2, -0, 0);
+//    my_world.add_obstacle("cylinder", 0.4, standing_center4, 2);
+//    Vec3 standing_center5(2, 1, 0);
+//    my_world.add_obstacle("cylinder", 0.4, standing_center5, 5);
 
 
     float neighbor_radius = 3;
@@ -124,17 +129,19 @@ int main(int argc, char **argv)
         }
 
         my_world.add_object(drone.goal_radius, drone.goal_point);
-        my_world.add_object(0.3, drone.start_point);
+        my_world.add_object(drone.drone_radius, drone.start_point);
         auto k = my_world.objects.size();
         my_world.objects[k - 2].set_as_a_goal();
         my_world.objects[k - 1].set_as_a_start();
 
-        my_world.publish_world(vis_array_pub);
         World::publish_trajectory(vis_pub, drone.trajectory, std::to_string(drone.uav_id));
 
         ros::spinOnce();
         rate.sleep();
     }
+
+    my_world.publish_world(vis_array_pub);
+
     return 0;
 
     while (ros::ok()) {

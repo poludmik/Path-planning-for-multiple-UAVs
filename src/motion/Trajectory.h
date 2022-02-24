@@ -23,6 +23,7 @@
 #include "../avoidance/BinarySearchIntersection.h"
 #include "../tree_structure/RRT_tree.h"
 #include "../path_planning_algorithms/RRTStarAlgorithm.h"
+#include "../path_planning_algorithms/RRTAlgorithm.h"
 
 class Drone;
 
