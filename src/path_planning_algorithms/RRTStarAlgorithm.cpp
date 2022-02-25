@@ -48,7 +48,7 @@ std::vector<Vec3> RRTStarAlgorithm::find_path_according_to_alg(const World *worl
 
         Vec3 rnd_point = Vec3::random_vec3(center.x - dist_to_goal, center.x + dist_to_goal,
                                            center.y - dist_to_goal, center.y + dist_to_goal,
-                                           0.2,center.z + dist_to_goal);
+                                           1,1);
 
         //center.z - 1, center.z + 1);
         is_inside_an_obstacle = false;
@@ -162,7 +162,6 @@ std::vector<Vec3> RRTStarAlgorithm::find_path_according_to_alg(const World *worl
         if (Vec3::distance_between_two_vec3(rnd_point, goal_point) < goal_radius) {
 
             if (best_neighbor != nullptr) {
-//                std::cout <<"a\n";
 
                 reached_goal_nodes.push_back(best_neighbor->children.back());
                 Node *best_in_goal = best_neighbor->children.back().get();

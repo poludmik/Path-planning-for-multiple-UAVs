@@ -34,14 +34,5 @@ public:
 
     explicit RRT_tree(Vec3 &coords, World *ptr_to_world, double neighbor_radius);
 
-    [[nodiscard]] static std::vector<Vec3> find_way_from_goal_to_root(Node *last_goal_p);
-
-    static void write_tree_structure_to_json_file(Node *root,
-                                                  const std::string& tree_name,
-                                                  const std::string& filename,
-                                                  const std::vector<Vec3> &path,
-                                                  const Vec3 &goal,
-                                                  double goal_radius,
-                                                  const std::vector<Object> &obstacles);
-
+    static std::vector<Vec3> find_way_from_goal_to_root(Node *last_goal_p);
 };

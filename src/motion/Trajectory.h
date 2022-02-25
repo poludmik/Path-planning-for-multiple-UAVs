@@ -47,7 +47,8 @@ public:
                                                                  double radius2);
 
     static void resolve_all_conflicts_with_new_trajectories(World &global_world,
-                                                          std::vector<Drone> &drones);
+                                                          std::vector<Drone> &drones,
+                                                          bool performance_mode);
 
 };
 
