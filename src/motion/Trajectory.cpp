@@ -109,7 +109,8 @@ std::pair<std::vector<Vec3>, int> Trajectory::find_intersects_of_two_trajectorie
 }
 
 void Trajectory::resolve_all_conflicts_with_new_trajectories(World &global_world,
-                                                           std::vector<Drone> &drones) {
+                                                           std::vector<Drone> &drones,
+                                                           const bool performance_mode) {
 
     for (int i = 1; i < drones.size(); ++i) {
 
@@ -144,7 +145,7 @@ void Trajectory::resolve_all_conflicts_with_new_trajectories(World &global_world
                     point.printout();
                     zero_conflicts = false;
                     local_world.add_obstacle("sphere", drones[j].drone_radius, point);
-                    //global_world.add_object("sphere", drones[j].drone_radius, point);
+                    global_world.add_object("sphere", drones[j].drone_radius, point);
                 }
             }
 
@@ -160,25 +161,30 @@ void Trajectory::resolve_all_conflicts_with_new_trajectories(World &global_world
                 continue;
             }
 
-            while (min_last_good > 0) {
-                bool flag = false;
-                Vec3 start = drones[i].trajectory.time_points[min_last_good].first;
-                for (auto const &x: local_world.obstacles) {
+            if (performance_mode) {
 
-                    if (AvoidanceAlgorithm::DoesSphereIntersectSphere(x.coords,
-                                                                      start,
-                                                                      x.radius,
-                                                                      drones[i].drone_radius)) {
-                        flag = true;
+                while (min_last_good > 0) {
+                    bool flag = false;
+                    Vec3 start = drones[i].trajectory.time_points[min_last_good].first;
+                    for (auto const &x: local_world.obstacles) {
+
+                        if (AvoidanceAlgorithm::DoesSphereIntersectSphere(x.coords,
+                                                                          start,
+                                                                          x.radius,
+                                                                          drones[i].drone_radius)) {
+                            flag = true;
+                            break;
+                        }
+                    }
+                    if (flag) {
+                        --min_last_good;
+                        continue;
+                    } else {
                         break;
                     }
                 }
-                if (flag) {
-                    --min_last_good;
-                    continue;
-                } else {
-                    break;
-                }
+            } else {
+                min_last_good = 0;
             }
 
             Vec3 new_starting_point = drones[i].trajectory.time_points[min_last_good].first;

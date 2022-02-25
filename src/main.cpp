@@ -1,40 +1,23 @@
 #include <mrs_msgs/UavState.h>
 #include <mrs_msgs/VelocityReferenceStamped.h>
-#include <mrs_msgs/ReferenceStamped.h>
-#include <mrs_msgs/TrajectoryReference.h>
-#include <mrs_msgs/Reference.h>
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
-
 #include <vector>
-
 #include <string>
-
 #include <ros/ros.h>
 #include <mutex>
-
 #include <fstream>
-
 #include <chrono>
-#include <thread>
 
 #include "math/Vec3.h"
 #include "environment_and_objects/World.h"
 #include "environment_and_objects/Object.h"
-#include "tree_structure/Node.h"
 #include "tree_structure/RRT_tree.h"
-
-#include "path_planning_algorithms/Algorithm.h"
-#include "path_planning_algorithms/RRTAlgorithm.h"
 #include "path_planning_algorithms/RRTStarAlgorithm.h"
-
-#include "avoidance/AvoidanceAlgorithm.h"
-#include "avoidance/LinearAlgebraIntersetion.h"
 #include "avoidance/BinarySearchIntersection.h"
-
-#include "motion/MotionMethods.h"
 #include "motion/Drone.h"
 #include "motion/Trajectory.h"
+#include "2D_plot/Plot2D.h"
 
 bool ready = false;
 mrs_msgs::UavState::ConstPtr uav_state;
@@ -73,16 +56,16 @@ int main(int argc, char **argv)
     double goal_radius = 0.5;
     double drone_radius = 0.5;
 
-    Vec3 start1(-3.5, 0.7, 1);
-    Vec3 goal1(3.5, -0.7, 1);
+    Vec3 start1(-3.5, 2, 1);
+    Vec3 goal1(3.5, 2, 1);
 
-    Vec3 start2(-5, -0.7, 1);
-    Vec3 goal2(3.5, 0.7, 1);
+    Vec3 start2(-3.4, 0.8, 1);
+    Vec3 goal2(3.5, -0.8, 1);
 
     Vec3 start3(-3.5, -0.8, 1);
-    Vec3 goal3(3.5, 2.1,1);
+    Vec3 goal3(3.5, 0.8,1);
 
-    Vec3 start4(-3.5, -2.1, 1);
+    Vec3 start4(-3.5, -2.3, 1);
     Vec3 goal4(3.5, -2.3, 1);
 
     std::vector<Drone> drones;
@@ -98,12 +81,12 @@ int main(int argc, char **argv)
     my_world.add_obstacle("cylinder", 0.3, standing_center1, 4);
     Vec3 standing_center2(0, -2, 0);
     my_world.add_obstacle("cylinder", 0.35, standing_center2, 3);
-//    Vec3 standing_center3(-2, 1, 0);
-//    //my_world.add_obstacle("cylinder", 0.4, standing_center3, 5);
-//    Vec3 standing_center4(-2, -0, 0);
-//    my_world.add_obstacle("cylinder", 0.4, standing_center4, 2);
-//    Vec3 standing_center5(2, 1, 0);
-//    my_world.add_obstacle("cylinder", 0.4, standing_center5, 5);
+    Vec3 standing_center3(-2, 1, 0);
+    //my_world.add_obstacle("cylinder", 0.4, standing_center3, 5);
+    Vec3 standing_center4(-2, -0, 0);
+    my_world.add_obstacle("cylinder", 0.4, standing_center4, 2);
+    Vec3 standing_center5(2, 1, 0);
+    my_world.add_obstacle("cylinder", 0.4, standing_center5, 5);
 
 
     float neighbor_radius = 3;
@@ -118,7 +101,8 @@ int main(int argc, char **argv)
         drone.trajectory = Trajectory(drone.found_path, 0.2, 0.3);
     }
 
-    Trajectory::resolve_all_conflicts_with_new_trajectories(my_world, drones);
+    // performance mode is better for 3D
+    Trajectory::resolve_all_conflicts_with_new_trajectories(my_world, drones, false);
 
     for (Drone &drone : drones) {
 
@@ -140,7 +124,11 @@ int main(int argc, char **argv)
         rate.sleep();
     }
 
-    my_world.publish_world(vis_array_pub);
+    std::string file_name = "Multiple_trajectories.json";
+    std::string plot_title = "Multiple paths";
+    Plot2D::write_multiple_trajectories_to_json_file(drones, file_name, my_world.obstacles, plot_title);
+
+     my_world.publish_world(vis_array_pub);
 
     return 0;
 

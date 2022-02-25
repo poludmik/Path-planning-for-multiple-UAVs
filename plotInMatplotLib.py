@@ -19,7 +19,8 @@ ax.add_patch(circle_start)
 
 
 obstacles_number = data["obstacles_number"]
-for i in range(1, obstacles_number):
+# changed index to 0 while writing, don't know why I had it from 1
+for i in range(0, obstacles_number):
     radius = data["obstacle"+str(i)][0]
     x = data["obstacle" + str(i)][1]
     y = data["obstacle" + str(i)][2]
