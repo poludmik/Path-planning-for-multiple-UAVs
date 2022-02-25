@@ -14,6 +14,7 @@
 #include <visualization_msgs/Marker.h>
 
 class Object;
+class Trajectory;
 
 class World{
 
@@ -35,8 +36,12 @@ public:
     
     void publish_world(const ros::Publisher &publisher) const;
 
-    static void publish_path(const ros::Publisher &publisher, const std::vector<Vec3>& points);
-    
+    static void publish_path(const ros::Publisher &publisher, const std::vector<Vec3>& points, const std::string &number);
+
+    static void publish_trajectory(const ros::Publisher &publisher,
+                                          const Trajectory &trajectory,
+                                          const std::string &number);
+
     World()=default;
     
     ~World();

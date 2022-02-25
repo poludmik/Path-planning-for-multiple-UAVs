@@ -5,6 +5,7 @@
 #include "World.h"
 #include "Object.h"
 #include <visualization_msgs/MarkerArray.h>
+#include "../motion/Trajectory.h"
 
 void World::add_object(const std::string &type, double radius,
                        const Vec3 &given_coords) {
@@ -19,7 +20,7 @@ void World::publish_world(const ros::Publisher &publisher) const {
     auto publish_one_array = [&](const std::vector<Object> &array) {
         int count = 0;
         visualization_msgs::MarkerArray markerArray;
-        ros::Rate rate(10);
+        ros::Rate rate(100);
         for (auto ptr = array.begin(); ptr < array.end(); ptr++){
             visualization_msgs::Marker localMarker;
             //array[count].print_out_info();
@@ -34,17 +35,18 @@ void World::publish_world(const ros::Publisher &publisher) const {
             }
             markerArray.markers.push_back(localMarker);
             //publisher.publish(localMarker);
-            //ros::spinOnce();
-            //rate.sleep();
         }
         std::cout << std::endl;
         publisher.publish(markerArray);
+        ros::spinOnce();
+        rate.sleep();
     };
 
     //publish_one_array(objects);
     //publish_one_array(obstacles);
     std::vector<Object> both = obstacles;
     both.insert(both.end(), objects.begin(), objects.end());
+
     publish_one_array(both);
     std::cout << "published\n";
 }
@@ -84,7 +86,7 @@ void World::fill_out_default_marker(visualization_msgs::Marker &marker,
 	marker.pose.orientation.w = 1.0;
 	marker.scale.x = size * 2;
 	marker.scale.y = size * 2;
-	marker.color.a = 1; // see-through or solid 0 to 1
+	marker.color.a = 0.7; // see-through or solid 0 to 1
 	if (obj.is_goal) {
 		marker.color.r = 0.0;
 		marker.color.g = 0.0;
@@ -105,11 +107,11 @@ void World::fill_out_default_marker(visualization_msgs::Marker &marker,
 	marker.lifetime = ros::Duration(40);
 }
 
-void World::publish_path(const ros::Publisher &publisher, const std::vector<Vec3>& points) {
+void World::publish_path(const ros::Publisher &publisher, const std::vector<Vec3>& points, const std::string &number) {
 
     visualization_msgs::Marker line_strip;
     line_strip.header.frame_id = "map"; //"uav1/fcu"; // ;
-    line_strip.ns = "path1";
+    line_strip.ns = "path" + number;
     line_strip.header.stamp = ros::Time::now();
     line_strip.type = visualization_msgs::Marker::LINE_STRIP;
     line_strip.action = visualization_msgs::Marker::ADD;
@@ -149,4 +151,47 @@ void World::add_obstacle(const std::string &type, double radius, const Vec3 &giv
 
 void World::add_obstacle(const std::string &type, double radius, const Vec3 &given_coords, const double height) {
     obstacles.emplace_back(this, type, radius, given_coords, height);
+}
+
+void World::publish_trajectory(const ros::Publisher &publisher, const Trajectory &trajectory, const std::string &number) {
+
+    ros::Rate rate(1000);
+
+    std::vector<Vec3> points;
+    visualization_msgs::Marker text_marker;
+    text_marker.header.frame_id = "map"; //"uav1/fcu"; // ;
+    text_marker.type = visualization_msgs::Marker::TEXT_VIEW_FACING;
+    text_marker.action = visualization_msgs::Marker::ADD;
+    text_marker.id = 0;
+    text_marker.scale.z = 0.1; // size of A letter
+    text_marker.color.g = 1;
+    text_marker.color.b = 1;
+    text_marker.color.r = 1;
+    text_marker.color.a = 1;
+
+    for (const auto &time_point : trajectory.time_points) {
+        // publish text
+        points.push_back(time_point.first);
+        text_marker.ns = number + ": " + std::to_string(time_point.second).substr(0, 5);
+        text_marker.text = text_marker.ns;
+        text_marker.header.stamp = ros::Time::now();
+        text_marker.lifetime = ros::Duration(40);
+        text_marker.id += 1;
+        text_marker.pose.position.x = time_point.first.x;
+        text_marker.pose.position.y = time_point.first.y;
+        text_marker.pose.position.z = time_point.first.z + 0.12;
+
+        while (publisher.getNumSubscribers() < 1) {
+            if (!ros::ok()) {
+                std::cout << "Cannot publish text, !ros::ok.\n";
+            }
+            ROS_WARN_ONCE("Waiting for at least one single sub.");
+            sleep(1);
+        }
+        publisher.publish(text_marker);
+        ros::spinOnce();
+        rate.sleep();
+    }
+
+    publish_path(publisher, points, number);
 }

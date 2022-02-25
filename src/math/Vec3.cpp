@@ -87,3 +87,7 @@ Vec3 Vec3::operator*(double number) const {
 double Vec3::norm() const {
     return sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
 }
+
+void Vec3::printout() const {
+    std::cout << x << " " << y << " " << z << "\n";
+}

@@ -20,10 +20,25 @@
 
 #include "../math/Vec3.h"
 
+#include "../motion/Trajectory.h"
 
 class Drone {
 public:
-    std::mutex uav_state_mutex;
+
+    size_t uav_id;
+
+    Vec3 start_point;
+
+    Vec3 goal_point;
+
+    double goal_radius;
+
+    double drone_radius;
+
+    std::vector<Vec3> found_path;
+
+    Trajectory trajectory;
+
     ros::NodeHandle n;
     bool ready = false;
     mrs_msgs::UavState::ConstPtr uav_state;
@@ -37,10 +52,9 @@ public:
     std::string local_frame_id;
     std::string global_frame_id;
 
-    explicit Drone(size_t uav_id);
+
+    Drone(size_t uav_id, const Vec3 &start_point, const Vec3 &goal_point, double goal_radius, double drone_radius);
 
     void odomCallback(mrs_msgs::UavState::ConstPtr const &msg);
 
 };
-
-

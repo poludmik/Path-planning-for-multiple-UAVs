@@ -48,9 +48,7 @@ add_executable(planner src/main.cpp
 		src/tree_structure/Node.h
 		src/tree_structure/RRT_tree.cpp
 		src/tree_structure/RRT_tree.h
-		src/VelocityControllerP.cpp
-		src/VelocityControllerP.h
-		src/path_planning_algorithms/Algorithm.h
+        src/path_planning_algorithms/Algorithm.h
 		src/path_planning_algorithms/RRTStarAlgorithm.cpp
 		src/path_planning_algorithms/RRTStarAlgorithm.h
 		src/path_planning_algorithms/RRTAlgorithm.cpp
@@ -59,7 +57,7 @@ add_executable(planner src/main.cpp
 		src/avoidance/BinarySearchIntersection.cpp
 		src/avoidance/BinarySearchIntersection.h
 		src/avoidance/LinearAlgebraIntersetion.cpp
-		src/avoidance/LinearAlgebraIntersetion.h src/motion/MotionMethods.cpp src/motion/MotionMethods.h src/motion/Drone.cpp src/motion/Drone.h)
+		src/avoidance/LinearAlgebraIntersetion.h src/motion/MotionMethods.cpp src/motion/MotionMethods.h src/motion/Drone.cpp src/motion/Drone.h src/motion/Trajectory.cpp src/motion/Trajectory.h src/2D_plot/Plot2D.cpp src/2D_plot/Plot2D.h)
 
 target_link_libraries(planner PRIVATE nlohmann_json::nlohmann_json)
 
