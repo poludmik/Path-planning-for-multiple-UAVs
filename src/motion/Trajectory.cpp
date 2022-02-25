@@ -154,11 +154,9 @@ void Trajectory::resolve_all_conflicts_with_new_trajectories(World &global_world
                 local_world.add_obstacle("sphere", drone.goal_radius, drone.start_point);
             }
 
-            std::cout << "\nmin_last_good: " << min_last_good << "\n\n";
-
             if (min_last_good == -1) {
                 // no collisions
-                std::cout << "No collisions.\n";
+                std::cout << "No collisions found.\n";
                 continue;
             }
 
@@ -184,9 +182,7 @@ void Trajectory::resolve_all_conflicts_with_new_trajectories(World &global_world
             }
 
             Vec3 new_starting_point = drones[i].trajectory.time_points[min_last_good].first;
-            std::cout << "new_starting_point: ";
             new_starting_point.printout();
-            std::cout << "min_last_good: " << min_last_good << "\n\n";
 
             for (auto const &x: local_world.obstacles) {
                 if (AvoidanceAlgorithm::DoesSphereIntersectSphere(x.coords,
@@ -210,8 +206,6 @@ void Trajectory::resolve_all_conflicts_with_new_trajectories(World &global_world
                                                                    drones[i].goal_point,
                                                                    drones[1].goal_radius,
                                                                    drones[1].drone_radius);
-
-            std::cout << "here" << "\n\n";
 
             // found_path concatenate
             drones[i].trajectory.trajectory_points.resize(min_last_good);

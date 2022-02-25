@@ -162,7 +162,6 @@ std::vector<Vec3> RRTStarAlgorithm::find_path_according_to_alg(const World *worl
         if (Vec3::distance_between_two_vec3(rnd_point, goal_point) < goal_radius) {
 
             if (best_neighbor != nullptr) {
-//                std::cout <<"a\n";
 
                 reached_goal_nodes.push_back(best_neighbor->children.back());
                 Node *best_in_goal = best_neighbor->children.back().get();
@@ -179,36 +178,9 @@ std::vector<Vec3> RRTStarAlgorithm::find_path_according_to_alg(const World *worl
 
                 return Algorithm::find_way_from_goal_to_root(best_in_goal);
             }
-//            std::cout <<"b\n";
 
             if (i < min_iters) continue;
             return Algorithm::find_way_from_goal_to_root(closest->children.back().get());
         }
     }
 }
-
-
-
-////// TEST FIND NEIGHBORS
-//    Vec3 coords(0, 0 ,0);
-//    Node zero(coords);
-//    root = &zero;
-//    Vec3 coords1(-1, 0 ,0);
-//    root->add_child(coords1);
-//    Vec3 coords2(1, 0 ,0);
-//    root->add_child(coords2);
-//    Vec3 coords3(2, 0 ,0);
-//    root->children.back()->add_child(coords3);
-//
-//    Vec3 coordsLast(2, 1, 0);
-//    Node reference(coordsLast);
-//
-//    std::vector<std::shared_ptr<Node>> array = get_neighbors_in_radius(root, &reference, 1.5);
-//
-//    for (const auto& x:array){
-//        std::cout << x->coords.x << " " << x->coords.y << "\n";
-//    }
-//
-//    std::vector<Vec3> a;
-//
-//    return a;
