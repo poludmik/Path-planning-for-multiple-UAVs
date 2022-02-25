@@ -117,8 +117,12 @@ void World::publish_path(const ros::Publisher &publisher, const std::vector<Vec3
     line_strip.action = visualization_msgs::Marker::ADD;
     line_strip.id = 200;
     line_strip.scale.x = 0.1;
-    line_strip.color.g = 1.0;
-    line_strip.color.a = 0.5;
+
+    Vec3 color = Vec3::random_vec3(0, 1, 0, 1, 0, 1);
+    line_strip.color.r = (float) color.x;
+    line_strip.color.g = (float) color.y;
+    line_strip.color.b = (float) color.z;
+    line_strip.color.a = 1;
     line_strip.pose.position.x = 0;
     line_strip.pose.position.y = 0;
     line_strip.pose.position.z = 0;
