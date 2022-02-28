@@ -61,7 +61,6 @@ void World::fill_out_default_marker(visualization_msgs::Marker &marker,
 	const Vec3 &given_coords = obj.coords;
 	double const size = obj.radius;
 	const std::string &type = obj.type;
-    const bool tmp_start = obj.is_start;
 	
 	marker.header.frame_id = "map"; //"uav1/fcu"; //   uav1/local_origin;
 	marker.header.stamp = ros::Time::now();
@@ -87,19 +86,15 @@ void World::fill_out_default_marker(visualization_msgs::Marker &marker,
 	marker.scale.x = size * 2;
 	marker.scale.y = size * 2;
 	marker.color.a = 0.7; // see-through or solid 0 to 1
-	if (obj.is_goal) {
+	if (obj.is_goal()) {
 		marker.color.r = 0.0;
 		marker.color.g = 0.0;
 		marker.color.b = 1.0;
-	} else if (obj.is_start) {
+	} else if (obj.is_start()) {
 		marker.color.r = 0.0;
 		marker.color.g = 1.0;
 		marker.color.b = 0.0;
-    } else if (obj.is_obstacle){
-        marker.color.r = 1.0;
-        marker.color.g = 0.0;
-        marker.color.b = 0.0;
-	} else {
+    } else {
         marker.color.r = 1.0;
         marker.color.g = 0.0;
         marker.color.b = 0.0;

@@ -41,14 +41,20 @@ public:
 
     void equally_divide_path_in_time(const std::vector<Vec3> &path);
 
-    static std::pair<std::vector<Vec3>, int> find_intersects_of_two_trajectories(const Trajectory &priority_traj,
-                                                                 const Trajectory &secondary_traj,
-                                                                 double radius1,
-                                                                 double radius2);
+    static void find_trajectories_without_time_collisions(World &global_world,
+                                                            std::vector<Drone> &drones,
+                                                            bool performance_mode);
 
-    static void resolve_all_conflicts_with_new_trajectories(World &global_world,
-                                                          std::vector<Drone> &drones,
-                                                          bool performance_mode);
+private:
+
+    static std::pair<std::vector<Vec3>, int> find_intersects_of_two_trajectories(const Trajectory &priority_traj,
+                                                                                 const Trajectory &secondary_traj,
+                                                                                 double radius1,
+                                                                                 double radius2);
+
+    static unsigned long  last_good_index_of_a_trajectory(World &local_world,
+                                                Drone &drone,
+                                                unsigned long min_last_good);
 
 };
 

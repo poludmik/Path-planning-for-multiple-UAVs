@@ -11,11 +11,9 @@ class LinearAlgebraIntersection : public AvoidanceAlgorithm {
 
 public:
 
-    bool ThereIsIntersectionAlongThePath(const Vec3 &LinePointStart,
-                                         const Vec3 &LinePointEnd,
-                                         const Vec3 &obstacleCoords,
+    bool ThereIsIntersectionAlongThePath(const Vec3 &line_start,
+                                         const Vec3 &line_end,
                                          double droneRadius,
-                                         double obstacleRadius,
-                                         double obstacleHeight) const override;
+                                         const Object &obstacle) const override;
 
 };

@@ -7,10 +7,12 @@
 
 bool BinarySearchIntersection::ThereIsIntersectionAlongThePath(const Vec3 &line_start,
                                                                const Vec3 &line_end,
-                                                               const Vec3 &obstacleCoords,
                                                                double droneRadius,
-                                                               double obstacleRadius,
-                                                               double obstacleHeight) const {
+                                                               const Object &obstacle) const {
+
+    const Vec3 &obstacleCoords = obstacle.coords;
+    double obstacleRadius = obstacle.radius;
+    double obstacleHeight = obstacle.height;
 
     double current_step = Vec3::distance_between_two_vec3(line_end, line_start);
     double iter_num = 8;
@@ -61,12 +63,12 @@ bool BinarySearchIntersection::ThereIsIntersectionAlongThePath(const Vec3 &line_
                I also find it quiet humongous. Also, I am writing this pretty tired after midnight, and I don't really
                want to split this condition into smaller ones, so let's just forget about it. It works amazingly.
            */
-            if (obstacleHeight > 0 and !(((line_start.z > cylinder_top_point.z + droneRadius and line_end.z > cylinder_top_point.z + droneRadius)
+            if (obstacleHeight > 0.0 and !(((line_start.z > cylinder_top_point.z + droneRadius and line_end.z > cylinder_top_point.z + droneRadius)
             and (closest_point == cylinder_top_point and middle_point.z - droneRadius/2.0 > cylinder_top_point.z)) or
             ((line_start.z < cylinder_bottom_point.z - droneRadius and line_end.z < cylinder_bottom_point.z - droneRadius)
             and (closest_point == cylinder_bottom_point and middle_point.z + droneRadius < cylinder_bottom_point.z))))
                 return true;
-            else if (obstacleHeight <= 0) // if obstacle is a sphere
+            else if (obstacleHeight <= 0.0) // if obstacle is a sphere, then also true
                 return true;
         }
 

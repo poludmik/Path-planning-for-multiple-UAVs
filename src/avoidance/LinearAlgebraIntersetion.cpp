@@ -6,10 +6,12 @@
 
 bool LinearAlgebraIntersection::ThereIsIntersectionAlongThePath(const Vec3 &LinePointStart,
                                                                 const Vec3 &LinePointEnd,
-                                                                const Vec3 &obstacleCoords,
                                                                 double droneRadius,
-                                                                double obstacleRadius,
-                                                                double obstacleHeight) const {
+                                                                const Object &obstacle) const {
+    Vec3 obstacleCoords = obstacle.coords;
+    double obstacleHeight = obstacle.height;
+    double obstacleRadius = obstacle.radius;
+
     Vec3 LinePointStartNew(LinePointStart);
     Vec3 LinePointEndNew(LinePointEnd);
     Vec3 obstacleCoordsNew(obstacleCoords);

@@ -73,11 +73,11 @@ int main(int argc, char **argv)
     my_world.add_obstacle("cylinder", 0.4, standing_center, 3.5);
     Vec3 standing_center1(0, 2, 0);
     my_world.add_obstacle("cylinder", 0.3, standing_center1, 4);
-    Vec3 standing_center2(0, -2, 0);
+    Vec3 standing_center2(0, -2.5, 0);
     my_world.add_obstacle("cylinder", 0.35, standing_center2, 3);
     Vec3 standing_center3(-2, 1, 0);
     //my_world.add_obstacle("cylinder", 0.4, standing_center3, 5);
-    Vec3 standing_center4(-2, -0, 0);
+    Vec3 standing_center4(-2, 0, 0);
     my_world.add_obstacle("cylinder", 0.4, standing_center4, 2);
     Vec3 standing_center5(2, 1, 0);
     my_world.add_obstacle("cylinder", 0.4, standing_center5, 5);
@@ -85,18 +85,20 @@ int main(int argc, char **argv)
 
     float neighbor_radius = 3;
 
-    for (Drone &drone : drones) {
+//    for (Drone &drone : drones) {
+//
+//        RRT_tree tree(drone.start_point, &my_world, neighbor_radius);
+//        drone.found_path = tree.find_path(RRTStarAlgorithm(), BinarySearchIntersection(), drone.goal_point,
+//                                          drone.goal_radius,
+//                                          drone.drone_radius);
+//
+//        drone.trajectory = Trajectory(drone.found_path, 0.2, 0.3);
+//    }
 
-        RRT_tree tree(drone.start_point, &my_world, neighbor_radius);
-        drone.found_path = tree.find_path(RRTStarAlgorithm(), BinarySearchIntersection(), drone.goal_point,
-                                          drone.goal_radius,
-                                          drone.drone_radius);
+    // performance mode is better for 3D, it is less constraining
+    //Trajectory::resolve_all_conflicts_with_new_trajectories(my_world, drones, false);
 
-        drone.trajectory = Trajectory(drone.found_path, 0.2, 0.3);
-    }
-
-    // performance mode is better for 3D
-    Trajectory::resolve_all_conflicts_with_new_trajectories(my_world, drones, false);
+    Trajectory::find_trajectories_without_time_collisions(my_world, drones, false);
 
     for (Drone &drone : drones) {
 

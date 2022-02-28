@@ -13,10 +13,8 @@ public:
 
     virtual bool ThereIsIntersectionAlongThePath(const Vec3 &line_start,
                                                  const Vec3 &line_end,
-                                                 const Vec3 &obstacleCoords,
                                                  double droneRadius,
-                                                 double obstacleRadius,
-                                                 double obstacleHeight) const = 0;
+                                                 const Object &obstacle) const  = 0;
 
 
     static bool DoesSphereIntersectSphere(const Vec3 &firstSphereCenter,

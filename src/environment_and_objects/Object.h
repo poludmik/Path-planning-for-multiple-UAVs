@@ -18,9 +18,6 @@ public:
     std::string type;
     double radius;
     Vec3 coords;
-    bool is_goal = false;
-    bool is_start = false;
-    bool is_obstacle = false;
     double height;
 
     void print_out_info() const;
@@ -29,12 +26,14 @@ public:
     
     void set_as_a_start();
 
-    void set_as_an_obstacle();
-    
-    void finish_being_goal();
-    
-    static bool are_intersecting(const Object &obj1, const Object &obj2);
-    
+    bool is_goal() const {
+        return is_a_goal;
+    }
+
+    bool is_start() const {
+        return is_a_start;
+    }
+
     Object(const World* pBigWorld, const std::string &type, double radius,
            const Vec3 &given_coords);
     
@@ -47,7 +46,10 @@ public:
     ~Object();
 
 private:
+
     const World* pBigWorld;
+    bool is_a_goal = false;
+    bool is_a_start = false;
     
     static double distance_between_two_centers(const Object &obj1, const Object &obj2);
 };

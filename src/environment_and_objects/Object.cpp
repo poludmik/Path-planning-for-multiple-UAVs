@@ -6,8 +6,8 @@
 
 void Object::print_out_info() const {
 	std::cout << "name: " << type << std::endl;
-    std::cout << "IsGoal: " << is_goal << std::endl;
-    std::cout << "IsStart: " << is_start << std::endl;
+    std::cout << "IsGoal: " << is_a_goal << std::endl;
+    std::cout << "IsStart: " << is_a_start << std::endl;
     std::cout << "Radius: " << radius << std::endl;
     std::cout << "Height: " << height << std::endl;
 	std::cout << "x: " << coords.x << std::endl;
@@ -56,18 +56,12 @@ Object::Object(const Object &obj) { // copy constructor
 	radius = obj.radius;
 	coords = obj.coords;
     height = obj.height;
-    is_goal = obj.is_goal;
-    is_start = obj.is_start;
-    is_obstacle = obj.is_obstacle;
+    is_a_goal = obj.is_a_goal;
+    is_a_start = obj.is_a_start;
 }
 
 Object::~Object() {
 //	std::cout << "Object '" << name << "' has been destroyed." << std::endl;
-}
-
-bool Object::are_intersecting(const Object &obj1, const Object &obj2) {
-	if (Object::distance_between_two_centers(obj1, obj2) <= (obj1.radius/2 + obj2.radius/2))
-	{ return true; } else { return false; }
 }
 
 double Object::distance_between_two_centers(const Object &obj1, const Object &obj2) {
@@ -76,13 +70,9 @@ double Object::distance_between_two_centers(const Object &obj1, const Object &ob
 			    pow(obj1.coords.z - obj2.coords.z, 2));
 }
 
-void Object::set_as_a_start() { is_start = true;}
+void Object::set_as_a_start() { is_a_start = true;}
 
-void Object::set_as_a_goal() { is_goal = true; }
-
-void Object::set_as_an_obstacle() { is_obstacle = true; }
-
-void Object::finish_being_goal() { is_goal = false; }
+void Object::set_as_a_goal() { is_a_goal = true; }
 
 Object::Object(const World *pBigWorld, const std::string &type, double radius, const Vec3 &given_coords,
                const double height) {

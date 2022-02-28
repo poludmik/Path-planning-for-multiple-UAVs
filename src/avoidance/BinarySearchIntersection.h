@@ -13,9 +13,7 @@ public:
 
     bool ThereIsIntersectionAlongThePath(const Vec3 &line_start,
                                          const Vec3 &line_end,
-                                         const Vec3 &obstacleCoords,
                                          double droneRadius,
-                                         double obstacleRadius,
-                                         double obstacleHeight) const override;
+                                         const Object &obstacle) const override;
 
 };
