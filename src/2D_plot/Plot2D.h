@@ -31,17 +31,17 @@ public:
                                                   const std::vector<Vec3> &path,
                                                   const Vec3 &goal,
                                                   double goal_radius,
-                                                  const std::vector<Object> &obstacles);
+                                                  const std::vector<std::shared_ptr<Object>> &obstacles);
 
     static void write_multiple_trajectories_to_json_file(const std::vector<Drone> &drones,
                                                          const std::string& filename,
-                                                         const std::vector<Object> &obstacles,
+                                                         const std::vector<std::shared_ptr<Object>> &obstacles,
                                                          const std::string &graph_title);
 
 private:
 
     static void write_obstacles_to_json_file(nlohmann::json &j_structure,
-                                             const std::vector<Object> &obstacles);
+                                             const std::vector<std::shared_ptr<Object>> &obstacles);
 
 
 };

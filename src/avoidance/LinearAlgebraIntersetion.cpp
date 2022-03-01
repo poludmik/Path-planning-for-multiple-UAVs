@@ -9,14 +9,17 @@ bool LinearAlgebraIntersection::ThereIsIntersectionAlongThePath(const Vec3 &Line
                                                                 double droneRadius,
                                                                 const Object &obstacle) const {
     Vec3 obstacleCoords = obstacle.coords;
-    double obstacleHeight = obstacle.height;
     double obstacleRadius = obstacle.radius;
 
     Vec3 LinePointStartNew(LinePointStart);
     Vec3 LinePointEndNew(LinePointEnd);
     Vec3 obstacleCoordsNew(obstacleCoords);
 
-    if (obstacleHeight > 0) { // if the obstacle is a cylinder
+    bool isCylinder = false;
+    double obstacleHeight = 0.0;
+    if (auto c = dynamic_cast<const Cylinder*>(&obstacle)) {
+        isCylinder = true;
+        obstacleHeight = c->height;
         LinePointStartNew.z = 0;
         LinePointEndNew.z = 0;
         obstacleCoordsNew.z = 0;
@@ -47,7 +50,7 @@ bool LinearAlgebraIntersection::ThereIsIntersectionAlongThePath(const Vec3 &Line
     const double SqrLengthSphereToLine = SpherePtToIntersect | copy2;
 
     if (SqrLengthSphereToLine <= pow(obstacleRadius, 2)) {
-        if (obstacleHeight > 0) { // is a cylinder
+        if (isCylinder) { // is a cylinder
 
             double bottom_of_a_cylinder = obstacleCoords.z - (obstacleHeight / 2.0);
             double top_of_a_cylinder = obstacleCoords.z + (obstacleHeight / 2.0);

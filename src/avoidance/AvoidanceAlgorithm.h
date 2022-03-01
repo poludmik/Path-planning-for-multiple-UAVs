@@ -8,6 +8,7 @@
 #include "../tree_structure/Node.h"
 #include "../environment_and_objects/World.h"
 
+
 class AvoidanceAlgorithm {
 public:
 
@@ -16,14 +17,12 @@ public:
                                                  double droneRadius,
                                                  const Object &obstacle) const  = 0;
 
-
     static bool DoesSphereIntersectSphere(const Vec3 &firstSphereCenter,
                                           const Vec3 &secondSphereCenter,
                                           double firstSphereRadius,
                                           double secondSphereRadius) {
         return Vec3::distance_between_two_vec3(firstSphereCenter, secondSphereCenter) <= firstSphereRadius + secondSphereRadius;
     }
-
 
     static bool line_intersects_sphere(const Vec3 &p1, const Vec3 &p2, const Vec3 &center, double radius) {
         Vec3 p3 = center;

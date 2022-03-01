@@ -70,17 +70,23 @@ int main(int argc, char **argv)
     drones.emplace_back(4, start4, goal4, goal_radius, drone_radius);
 
     Vec3 standing_center(0, 0, 0);
-    my_world.add_obstacle("cylinder", 0.4, standing_center, 3.5);
+    my_world.add_obstacle(new Cylinder(0.4, standing_center, 3.5));
     Vec3 standing_center1(0, 2, 0);
-    my_world.add_obstacle("cylinder", 0.3, standing_center1, 4);
+    my_world.add_obstacle(new Cylinder(0.3, standing_center1, 4));
     Vec3 standing_center2(0, -2.5, 0);
-    my_world.add_obstacle("cylinder", 0.35, standing_center2, 3);
+    my_world.add_obstacle(new Cylinder(0.35, standing_center2, 3));
+    Vec3 standing_center6(0, -3.5, 0);
+    my_world.add_obstacle(new Cylinder(0.35, standing_center6, 3));
+    Vec3 standing_center7(0, -4.5, 0);
+    my_world.add_obstacle(new Cylinder(0.35, standing_center7, 3));
     Vec3 standing_center3(-2, 1, 0);
-    //my_world.add_obstacle("cylinder", 0.4, standing_center3, 5);
+    //my_world.add_obstacle(ObjectType::CYLINDER", 0.4, standing_center3, 5);
     Vec3 standing_center4(-2, 0, 0);
-    my_world.add_obstacle("cylinder", 0.4, standing_center4, 2);
+    my_world.add_obstacle(new Cylinder(0.4, standing_center4, 2));
     Vec3 standing_center5(2, 1, 0);
-    my_world.add_obstacle("cylinder", 0.4, standing_center5, 5);
+    my_world.add_obstacle(new Cylinder(0.4, standing_center5, 5));
+    Vec3 standing_center666(0, 1, 1);
+    my_world.add_obstacle(new Sphere(2, standing_center666));
 
 
     float neighbor_radius = 3;
@@ -105,14 +111,14 @@ int main(int argc, char **argv)
         for (const auto &point_in_time: drone.trajectory.time_points) {
             // printf("%lf\n", point_in_time.second);
             //printf("%lf %lf %lf\n", point_in_time.first.x, point_in_time.first.y, point_in_time.first.z);
-            my_world.add_object(0.05, point_in_time.first);
+            my_world.add_object(new Sphere(0.05, point_in_time.first));
         }
 
-        my_world.add_object(drone.goal_radius, drone.goal_point);
-        my_world.add_object(drone.drone_radius, drone.start_point);
+        my_world.add_object(new Sphere(drone.goal_radius, drone.goal_point));
+        my_world.add_object(new Sphere(drone.drone_radius, drone.start_point));
         auto k = my_world.objects.size();
-        my_world.objects[k - 2].set_as_a_goal();
-        my_world.objects[k - 1].set_as_a_start();
+        my_world.objects[k - 2]->set_as_a_goal();
+        my_world.objects[k - 1]->set_as_a_start();
 
         World::publish_trajectory(vis_pub, drone.trajectory, std::to_string(drone.uav_id));
 

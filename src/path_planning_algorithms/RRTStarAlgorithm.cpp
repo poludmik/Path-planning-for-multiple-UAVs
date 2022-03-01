@@ -55,7 +55,6 @@ std::vector<Vec3> RRTStarAlgorithm::find_path_according_to_alg(const World *worl
         auto closest = Node::find_the_closest_node(rnd_point, root);
 
 
-
         double distance_to_closest = Vec3::distance_between_two_vec3(rnd_point, closest->coords);
         if (distance_to_closest > 1.5) continue;
 
@@ -77,7 +76,7 @@ std::vector<Vec3> RRTStarAlgorithm::find_path_according_to_alg(const World *worl
                     if (avoid_alg.ThereIsIntersectionAlongThePath(neighbor->coords,
                                                                   rnd_point,
                                                                   droneRadius,
-                                                                  obst)){
+                                                                  *obst)){
                         is_inside_an_obstacle = true;
                         break;
                     }
@@ -102,7 +101,7 @@ std::vector<Vec3> RRTStarAlgorithm::find_path_according_to_alg(const World *worl
                 if (avoid_alg.ThereIsIntersectionAlongThePath(closest->coords,
                                                               rnd_point,
                                                               droneRadius,
-                                                              obst)){
+                                                              *obst)){
                     is_inside_an_obstacle = true;
                     break;
                 }
@@ -124,7 +123,7 @@ std::vector<Vec3> RRTStarAlgorithm::find_path_according_to_alg(const World *worl
                     if (avoid_alg.ThereIsIntersectionAlongThePath(neighbor->coords,
                                                                   rnd_point,
                                                                   droneRadius,
-                                                                  obst)){
+                                                                  *obst)){
                         is_inside_an_obstacle = true;
                         break;
                     }

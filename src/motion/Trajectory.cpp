@@ -120,15 +120,13 @@ void Trajectory::find_trajectories_without_time_collisions(World &global_world, 
         drones[i].found_path = tree.find_path(RRTStarAlgorithm(),
                                               BinarySearchIntersection(),
                                               drones[i].goal_point,
-                                              drones[1].goal_radius,
-                                              drones[1].drone_radius);
+                                              drones[i].goal_radius,
+                                              drones[i].drone_radius);
 
         drones[i].trajectory = Trajectory(drones[i].found_path, 0.2, 0.3);
 
 
-
-        // resolve conflicts with previous ones
-
+        // now resolve conflicts with previous ones
         World local_world = global_world;
         std::vector<Vec3> intersects_with_one;
         std::pair<std::vector<Vec3>, int> intersects_and_last_good;
@@ -161,15 +159,15 @@ void Trajectory::find_trajectories_without_time_collisions(World &global_world, 
                 for (const auto &point: intersects_with_one) {
                     point.printout();
                     zero_conflicts = false;
-                    local_world.add_obstacle("sphere", drones[prev].drone_radius, point);
+                    local_world.add_obstacle(new Sphere(drones[prev].drone_radius, point));
                     //global_world.add_object("sphere", drones[prev].drone_radius, point);
                 }
             }
 
             for (const Drone &drone: drones) {
                 if (drone.goal_point == drones[i].goal_point) continue;
-                local_world.add_obstacle("sphere", drone.goal_radius, drone.goal_point);
-                local_world.add_obstacle("sphere", drone.goal_radius, drone.start_point);
+                local_world.add_obstacle(new Sphere(drone.goal_radius, drone.goal_point));
+                local_world.add_obstacle(new Sphere(drone.drone_radius, drone.start_point));
             }
 
             if (min_last_good == -1) {
@@ -187,14 +185,14 @@ void Trajectory::find_trajectories_without_time_collisions(World &global_world, 
             Vec3 new_starting_point = drones[i].trajectory.time_points[min_last_good].first;
 
             for (auto const &x: local_world.obstacles) {
-                if (AvoidanceAlgorithm::DoesSphereIntersectSphere(x.coords,
+                if (AvoidanceAlgorithm::DoesSphereIntersectSphere(x->coords,
                                                                   drones[i].trajectory.time_points[min_last_good].first,
-                                                                  x.radius,
+                                                                  x->radius,
                                                                   drones[i].drone_radius)) {
 
                     std::cout << "The start point is occupied, error.\n";
                     std::cout << "Obstacle:";
-                    x.coords.printout();
+                    x->coords.printout();
                     break;
                 }
             }
@@ -229,9 +227,9 @@ unsigned long Trajectory::last_good_index_of_a_trajectory(World &local_world,
         Vec3 start = drone.trajectory.time_points[min_last_good].first;
         for (auto const &x: local_world.obstacles) {
 
-            if (AvoidanceAlgorithm::DoesSphereIntersectSphere(x.coords,
+            if (AvoidanceAlgorithm::DoesSphereIntersectSphere(x->coords,
                                                               start,
-                                                              x.radius,
+                                                              x->radius,
                                                               drone.drone_radius)) {
                 flag = true;
                 break;

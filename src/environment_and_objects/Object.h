@@ -9,18 +9,11 @@
 #include <iostream>
 #include <cmath>
 #include "../math/Vec3.h"
-#include "World.h"
-
 
 class Object{
 public:
-    
-    std::string type;
     double radius;
     Vec3 coords;
-    double height;
-
-    void print_out_info() const;
     
     void set_as_a_goal();
     
@@ -34,22 +27,10 @@ public:
         return is_a_start;
     }
 
-    Object(const World* pBigWorld, const std::string &type, double radius,
-           const Vec3 &given_coords);
+    Object(double radius, const Vec3 &given_coords);
     
-    Object(const World* pBigWorld, double radius, const Vec3 &given_coords);
-
-    Object(const World* pBigWorld, const std::string &type, double radius, const Vec3 &given_coords, double height);
-    
-    Object (const Object& obj);
-    
-    ~Object();
-
+    virtual ~Object() {}
 private:
-
-    const World* pBigWorld;
     bool is_a_goal = false;
     bool is_a_start = false;
-    
-    static double distance_between_two_centers(const Object &obj1, const Object &obj2);
 };

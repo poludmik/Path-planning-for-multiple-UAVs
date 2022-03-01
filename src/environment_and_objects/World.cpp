@@ -3,28 +3,18 @@
 //
 
 #include "World.h"
-#include "Object.h"
 #include <visualization_msgs/MarkerArray.h>
 #include "../motion/Trajectory.h"
 
-void World::add_object(const std::string &type, double radius,
-                       const Vec3 &given_coords) {
-	objects.emplace_back(this, type, radius, given_coords);
-}
-
-void World::add_object(double radius, const Vec3 &given_coords) {
-	objects.emplace_back(this, radius, given_coords);
-}
-
 void World::publish_world(const ros::Publisher &publisher) const {
-    auto publish_one_array = [&](const std::vector<Object> &array) {
+    auto publish_one_array = [&](const std::vector<std::shared_ptr<Object>> &array) {
         int count = 0;
         visualization_msgs::MarkerArray markerArray;
         ros::Rate rate(100);
         for (auto ptr = array.begin(); ptr < array.end(); ptr++){
             visualization_msgs::Marker localMarker;
             //array[count].print_out_info();
-            fill_out_default_marker(localMarker, count, array[count]);
+            fill_out_default_marker(localMarker, count, *array[count]);
             ++count;
             while (publisher.getNumSubscribers() < 1) {
                 if (!ros::ok()) {
@@ -44,7 +34,7 @@ void World::publish_world(const ros::Publisher &publisher) const {
 
     //publish_one_array(objects);
     //publish_one_array(obstacles);
-    std::vector<Object> both = obstacles;
+    std::vector<std::shared_ptr<Object>> both = obstacles;
     both.insert(both.end(), objects.begin(), objects.end());
 
     publish_one_array(both);
@@ -60,20 +50,21 @@ void World::fill_out_default_marker(visualization_msgs::Marker &marker,
                                     const Object &obj) {
 	const Vec3 &given_coords = obj.coords;
 	double const size = obj.radius;
-	const std::string &type = obj.type;
 	
 	marker.header.frame_id = "map"; //"uav1/fcu"; //   uav1/local_origin;
 	marker.header.stamp = ros::Time::now();
-	marker.ns = type;
 	marker.id = id;
 
-     if (type == "cylinder") {
-         marker.type = visualization_msgs::Marker::CYLINDER;
-         marker.scale.z = obj.height;
-     } else {
-         marker.type = visualization_msgs::Marker::SPHERE;
-         marker.scale.z = size * 2;
-     }
+    if (auto c = dynamic_cast<const Cylinder*>(&obj)) {
+        marker.ns = "Cylinder";
+        marker.type = visualization_msgs::Marker::CYLINDER;
+        marker.scale.z = c->height;
+    }
+    else {
+        marker.ns = "Sphere";
+        marker.type = visualization_msgs::Marker::SPHERE;
+        marker.scale.z = size * 2;
+    }
 
     marker.action = visualization_msgs::Marker::ADD;
 	marker.pose.position.x = given_coords.x;
@@ -140,18 +131,6 @@ void World::publish_path(const ros::Publisher &publisher, const std::vector<Vec3
     publisher.publish(line_strip);
 }
 
-void World::add_obstacle(double radius, const Vec3 &given_coords) {
-    obstacles.emplace_back(this, radius, given_coords);
-}
-
-void World::add_obstacle(const std::string &type, double radius, const Vec3 &given_coords) {
-    obstacles.emplace_back(this, type, radius, given_coords);
-}
-
-void World::add_obstacle(const std::string &type, double radius, const Vec3 &given_coords, const double height) {
-    obstacles.emplace_back(this, type, radius, given_coords, height);
-}
-
 void World::publish_trajectory(const ros::Publisher &publisher, const Trajectory &trajectory, const std::string &number) {
 
     ros::Rate rate(1000);
@@ -193,4 +172,12 @@ void World::publish_trajectory(const ros::Publisher &publisher, const Trajectory
     }
 
     publish_path(publisher, points, number);
+}
+
+void World::add_object(Object *newObj) {
+    objects.emplace_back(newObj);
+}
+
+void World::add_obstacle(Object *newObj) {
+    obstacles.emplace_back(newObj);
 }

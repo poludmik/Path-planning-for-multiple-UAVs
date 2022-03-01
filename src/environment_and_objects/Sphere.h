@@ -3,13 +3,11 @@
 //
 
 #pragma once
-
 #include "Object.h"
-
 
 class Sphere : public Object {
 
-
+public:
+    Sphere(double radius, const Vec3 &givenCoords) : Object(radius, givenCoords) {}
 
 };
-

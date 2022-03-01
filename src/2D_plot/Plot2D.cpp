@@ -10,7 +10,7 @@ void Plot2D::write_tree_structure_to_json_file(Node *root,
                                                const std::vector<Vec3> &path,
                                                const Vec3 &goal,
                                                const double goal_radius,
-                                               const std::vector<Object> &obstacles) {
+                                               const std::vector<std::shared_ptr<Object>> &obstacles) {
     std::queue<Node *> my_queue;
 
     my_queue.push(root);
@@ -76,7 +76,7 @@ void Plot2D::write_tree_structure_to_json_file(Node *root,
 
 void Plot2D::write_multiple_trajectories_to_json_file(const std::vector<Drone> &drones,
                                                       const std::string &filename,
-                                                      const std::vector<Object> &obstacles,
+                                                      const std::vector<std::shared_ptr<Object>> &obstacles,
                                                       const std::string &graph_title) {
     nlohmann::json j_structure;
 
@@ -118,11 +118,12 @@ void Plot2D::write_multiple_trajectories_to_json_file(const std::vector<Drone> &
 }
 
 
-void Plot2D::write_obstacles_to_json_file(nlohmann::json &j_structure, const std::vector<Object> &obstacles) {
+void Plot2D::write_obstacles_to_json_file(nlohmann::json &j_structure, const std::vector<std::shared_ptr<Object>> &obstacles) {
 
     unsigned int idx = 0;
 
-    for (const auto &x : obstacles){
+    for (const auto &p : obstacles){
+        const auto &x = *p;
         j_structure["obstacle" + std::to_string(idx)] = {x.radius, x.coords.x, x.coords.y, x.coords.z};
         ++idx;
     }

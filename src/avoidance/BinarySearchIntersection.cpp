@@ -12,11 +12,17 @@ bool BinarySearchIntersection::ThereIsIntersectionAlongThePath(const Vec3 &line_
 
     const Vec3 &obstacleCoords = obstacle.coords;
     double obstacleRadius = obstacle.radius;
-    double obstacleHeight = obstacle.height;
 
     double current_step = Vec3::distance_between_two_vec3(line_end, line_start);
     double iter_num = 8;
     double minimal_step = current_step / (pow(2, iter_num) + 1);
+
+    bool isCylinder = false;
+    double obstacleHeight = 0.0;
+    if (auto c = dynamic_cast<const Cylinder*>(&obstacle)) {
+        isCylinder = true;
+        obstacleHeight = c->height;
+    }
 
     std::vector<Vec3> end_points;
     end_points.push_back(line_start);
@@ -48,7 +54,7 @@ bool BinarySearchIntersection::ThereIsIntersectionAlongThePath(const Vec3 &line_
                             (end_points[0].z + end_points[1].z) / 2);
         current_step = current_step / 2;
 
-        if (obstacleHeight > 0.0) // cylinder
+        if (isCylinder) // cylinder
             closest_point = find_closest_point_on_a_cylinder_axis(middle_point, cylinder_bottom_point, cylinder_top_point);
         else
             closest_point = obstacleCoords;
@@ -63,12 +69,12 @@ bool BinarySearchIntersection::ThereIsIntersectionAlongThePath(const Vec3 &line_
                I also find it quiet humongous. Also, I am writing this pretty tired after midnight, and I don't really
                want to split this condition into smaller ones, so let's just forget about it. It works amazingly.
            */
-            if (obstacleHeight > 0.0 and !(((line_start.z > cylinder_top_point.z + droneRadius and line_end.z > cylinder_top_point.z + droneRadius)
+            if (isCylinder and !(((line_start.z > cylinder_top_point.z + droneRadius and line_end.z > cylinder_top_point.z + droneRadius)
             and (closest_point == cylinder_top_point and middle_point.z - droneRadius/2.0 > cylinder_top_point.z)) or
             ((line_start.z < cylinder_bottom_point.z - droneRadius and line_end.z < cylinder_bottom_point.z - droneRadius)
             and (closest_point == cylinder_bottom_point and middle_point.z + droneRadius < cylinder_bottom_point.z))))
                 return true;
-            else if (obstacleHeight <= 0.0) // if obstacle is a sphere, then also true
+            else if (!isCylinder) // if obstacle is a sphere, then also true
                 return true;
         }
 

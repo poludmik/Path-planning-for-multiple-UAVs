@@ -55,7 +55,7 @@ std::vector<Vec3> RRTAlgorithm::find_path_according_to_alg(const World *world_pt
             if (avoid_alg.ThereIsIntersectionAlongThePath(closest->coords,
                                                           rnd_point,
                                                           droneRadius,
-                                                          obst)){
+                                                          *obst)){
                 is_inside_an_obstacle = true;
                 break;
             }
