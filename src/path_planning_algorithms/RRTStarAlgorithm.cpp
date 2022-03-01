@@ -17,7 +17,7 @@ std::vector<Vec3> RRTStarAlgorithm::find_path_according_to_alg(const World *worl
                                                                double neighbor_radius,
                                                                double droneRadius) const {
 
-    int min_iters = 3000;
+    int min_iters = 4000;
 
     Vec3 center = (start_point + goal_point) / 2.0;
 
@@ -27,28 +27,13 @@ std::vector<Vec3> RRTStarAlgorithm::find_path_according_to_alg(const World *worl
 
     bool is_inside_an_obstacle = false;
 
-    // if there is a straight line solution to the goal from the start
-    //    for (const auto& obst : world_ptr->obstacles) {
-    //        if (Vec3::DoesLineSegmentIntersectSphere(goal_point, start_point,
-    //                                                 obst.coords, obst.radius)){
-    //            is_inside_an_obstacle = true;
-    //            break;
-    //        }
-    //    }
-    //    if (!is_inside_an_obstacle) {
-    //        auto closest = Node::find_the_closest_node(goal_point, root);
-    //        closest->add_child(goal_point);
-    //        return find_way_from_goal_to_root(closest->children.back().get());
-    //    }
-
-
     // Main search
     size_t i = 0;
     while (true) {
 
         Vec3 rnd_point = Vec3::random_vec3(center.x - dist_to_goal, center.x + dist_to_goal,
                                            center.y - dist_to_goal, center.y + dist_to_goal,
-                                           0.2,2);
+                                           0.3,3);
 
         is_inside_an_obstacle = false;
 
@@ -134,31 +119,9 @@ std::vector<Vec3> RRTStarAlgorithm::find_path_according_to_alg(const World *worl
             }
         }
 
-//        is_inside_an_obstacle = false;
-//
-//        // if there is a straight line solution to the goal from newly added point
-//        //        for (const auto& obst : world_ptr->obstacles) {
-//        //            if (Vec3::DoesLineSegmentIntersectSphere(goal_point, rnd_point,
-//        //                                                     obst.coords, obst.radius)){
-//        //                is_inside_an_obstacle = true;
-//        //                break;
-//        //            }
-//        //        }
-//        //        if (is_inside_an_obstacle) {
-//        //            if (Vec3::distance_between_two_vec3(rnd_point, goal_point) < goal_radius) {
-//        //                return find_way_from_goal_to_root(closest->children.back().get());
-//        //            }
-//        //        }
-//        //        else {
-//        //            closest->children.back()->add_child(goal_point);
-//        //            return find_way_from_goal_to_root(closest->children.back()->children.back().get());
-//        //        }
-//
         ++i;
 
         neighbors.clear();
-
-        //if (i % 1000 == 0) std::cout << i << "\n";
 
         if (Vec3::distance_between_two_vec3(rnd_point, goal_point) < goal_radius) {
 

@@ -72,7 +72,7 @@ std::pair<std::vector<Vec3>, int> Trajectory::find_intersects_of_two_trajectorie
 
     std::vector<Vec3> intersection_points;
 
-    double time_epsilon = 0.001;
+    double time_epsilon = 0.21;
     bool found_intersection = false;
     int last_good = -1;
     int idx = 0;
@@ -112,11 +112,24 @@ std::pair<std::vector<Vec3>, int> Trajectory::find_intersects_of_two_trajectorie
 void Trajectory::find_trajectories_without_time_collisions(World &global_world, std::vector<Drone> &drones,
                                                            bool performance_mode) {
 
+    std::cout << "Started finding trajectories for multiple drones.\n";
+
     for (int i = 0; i < drones.size(); ++i) {
+
+        std::cout << "\nFinding path for the drone indexed: " << std::to_string(i) << "\n";
+
+        World local_world = global_world;
 
         // find initial trajectory
         double neighbor_radius = 2;
-        RRT_tree tree(drones[i].start_point, &global_world, neighbor_radius);
+
+        for (const Drone &drone: drones) {
+            if (drone.goal_point == drones[i].goal_point) continue;
+            local_world.add_obstacle(new Sphere(drone.goal_radius, drone.goal_point));
+            local_world.add_obstacle(new Sphere(drone.drone_radius, drone.start_point));
+        }
+
+        RRT_tree tree(drones[i].start_point, &local_world, neighbor_radius);
         drones[i].found_path = tree.find_path(RRTStarAlgorithm(),
                                               BinarySearchIntersection(),
                                               drones[i].goal_point,
@@ -125,17 +138,13 @@ void Trajectory::find_trajectories_without_time_collisions(World &global_world, 
 
         drones[i].trajectory = Trajectory(drones[i].found_path, 0.2, 0.3);
 
-
         // now resolve conflicts with previous ones
-        World local_world = global_world;
         std::vector<Vec3> intersects_with_one;
         std::pair<std::vector<Vec3>, int> intersects_and_last_good;
 
         bool zero_conflicts = false;
 
         while (!zero_conflicts) {
-
-            std::cout << "\nWhile resolving drone index:" << std::to_string(i) << "\n";
 
             zero_conflicts = true;
 
@@ -155,26 +164,20 @@ void Trajectory::find_trajectories_without_time_collisions(World &global_world, 
                     min_last_good = intersects_and_last_good.second;
                 }
 
-                std::cout << "**All the obstacles**:\n";
                 for (const auto &point: intersects_with_one) {
-                    point.printout();
+                    // point.printout(); // conflicting points
                     zero_conflicts = false;
                     local_world.add_obstacle(new Sphere(drones[prev].drone_radius, point));
-                    //global_world.add_object("sphere", drones[prev].drone_radius, point);
+                    // global_world.add_object(new Sphere(drones[prev].drone_radius, point)); // to visualise the conflicts
                 }
             }
 
-            for (const Drone &drone: drones) {
-                if (drone.goal_point == drones[i].goal_point) continue;
-                local_world.add_obstacle(new Sphere(drone.goal_radius, drone.goal_point));
-                local_world.add_obstacle(new Sphere(drone.drone_radius, drone.start_point));
-            }
-
-            if (min_last_good == -1) {
+            if (zero_conflicts) {
                 // no collisions
-                std::cout << "No collisions found.\n";
+                std::cout << "No collisions with previous trajectories were found.\n";
                 continue;
             }
+            std::cout << "*** Solving conflicts with previous trajectories.\n";
 
             if (performance_mode) {
                 min_last_good = last_good_index_of_a_trajectory(local_world, drones[i], min_last_good);

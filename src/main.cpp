@@ -50,16 +50,16 @@ int main(int argc, char **argv)
     double goal_radius = 0.5;
     double drone_radius = 0.5;
 
-    Vec3 start1(-3.5, 2, 1);
+    Vec3 start1(-4.5, 2, 1);
     Vec3 goal1(3.5, 2, 1);
 
-    Vec3 start2(-3.4, 0.8, 1);
+    Vec3 start2(-4.5, 0.8, 1);
     Vec3 goal2(3.5, -0.8, 1);
 
-    Vec3 start3(-3.5, -0.8, 1);
+    Vec3 start3(-4.5, -0.8, 1);
     Vec3 goal3(3.5, 0.8,1);
 
-    Vec3 start4(-3.5, -2.3, 1);
+    Vec3 start4(-4.5, -2.3, 1);
     Vec3 goal4(3.5, -2.3, 1);
 
     std::vector<Drone> drones;
@@ -85,8 +85,26 @@ int main(int argc, char **argv)
     my_world.add_obstacle(new Cylinder(0.4, standing_center4, 2));
     Vec3 standing_center5(2, 1, 0);
     my_world.add_obstacle(new Cylinder(0.4, standing_center5, 5));
-    Vec3 standing_center666(0, 1, 1);
-    my_world.add_obstacle(new Sphere(2, standing_center666));
+    Vec3 standing_center8(2, -1, 0);
+    my_world.add_obstacle(new Cylinder(0.2, standing_center8, 3.5));
+    Vec3 standing_center9(-2, -2, 0);
+    my_world.add_obstacle(new Cylinder(0.4, standing_center9, 1.5));
+
+    Vec3 standing_center10(0, 3, 0);
+    my_world.add_obstacle(new Cylinder(0.35, standing_center10, 3));
+    Vec3 standing_center11(0, 4, 0);
+    my_world.add_obstacle(new Cylinder(0.35, standing_center11, 3));
+    Vec3 standing_center12(0, 5, 0);
+    my_world.add_obstacle(new Cylinder(0.35, standing_center12, 3));
+
+    Vec3 standing_center13(-3, 1, 0);
+    my_world.add_obstacle(new Cylinder(0.6, standing_center13, 2.5));
+
+    Vec3 standing_center666(0, 1, 2.5);
+    my_world.add_obstacle(new Cylinder(1, standing_center666, 0.7));
+
+    Vec3 standing_center667(0, 1, 0);
+    my_world.add_obstacle(new Cylinder(1, standing_center667, 0.7));
 
 
     float neighbor_radius = 3;
@@ -104,7 +122,7 @@ int main(int argc, char **argv)
     // performance mode is better for 3D, it is less constraining
     //Trajectory::resolve_all_conflicts_with_new_trajectories(my_world, drones, false);
 
-    Trajectory::find_trajectories_without_time_collisions(my_world, drones, false);
+    Trajectory::find_trajectories_without_time_collisions(my_world, drones, true);
 
     for (Drone &drone : drones) {
 
