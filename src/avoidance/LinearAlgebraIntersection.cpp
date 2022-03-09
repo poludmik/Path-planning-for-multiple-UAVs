@@ -2,7 +2,7 @@
 // Created by micha on 11/28/2021.
 //
 
-#include "../avoidance/LinearAlgebraIntersetion.h"
+#include "../avoidance/LinearAlgebraIntersection.h"
 
 bool LinearAlgebraIntersection::ThereIsIntersectionAlongThePath(const Vec3 &LinePointStart,
                                                                 const Vec3 &LinePointEnd,

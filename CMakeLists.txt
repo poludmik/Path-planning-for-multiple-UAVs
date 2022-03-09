@@ -56,8 +56,19 @@ add_executable(planner src/main.cpp
 		src/avoidance/AvoidanceAlgorithm.h
 		src/avoidance/BinarySearchIntersection.cpp
 		src/avoidance/BinarySearchIntersection.h
-		src/avoidance/LinearAlgebraIntersetion.cpp
-		src/avoidance/LinearAlgebraIntersetion.h src/motion/MotionMethods.cpp src/motion/MotionMethods.h src/motion/Drone.cpp src/motion/Drone.h src/motion/Trajectory.cpp src/motion/Trajectory.h src/2D_plot/Plot2D.cpp src/2D_plot/Plot2D.h src/environment_and_objects/Sphere.h src/environment_and_objects/Cylinder.h)
+		src/avoidance/LinearAlgebraIntersection.cpp
+		src/avoidance/LinearAlgebraIntersection.h
+		src/motion/MotionMethods.cpp
+		src/motion/MotionMethods.h
+		src/motion/Drone.cpp
+		src/motion/Drone.h
+		src/motion/Trajectory.cpp
+		src/motion/Trajectory.h
+		src/2D_plot/Plot2D.cpp
+		src/2D_plot/Plot2D.h
+		src/environment_and_objects/Sphere.h
+		src/environment_and_objects/Cylinder.h
+		src/simulation/TestSelector.cpp src/simulation/TestSelector.h)
 
 target_link_libraries(planner PRIVATE nlohmann_json::nlohmann_json)
 

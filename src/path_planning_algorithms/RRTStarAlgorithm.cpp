@@ -19,13 +19,15 @@ std::vector<Vec3> RRTStarAlgorithm::find_path_according_to_alg(const World *worl
 
     int min_iters = 4000;
 
+    std::cout << "Started RRT* search:\n";
+
     Vec3 center = (start_point + goal_point) / 2.0;
 
     std::vector<std::shared_ptr<Node>> reached_goal_nodes;
 
     double dist_to_goal = Vec3::distance_between_two_vec3(start_point, goal_point);
 
-    bool is_inside_an_obstacle = false;
+    bool is_inside_an_obstacle;
 
     // Main search
     size_t i = 0;
@@ -33,9 +35,7 @@ std::vector<Vec3> RRTStarAlgorithm::find_path_according_to_alg(const World *worl
 
         Vec3 rnd_point = Vec3::random_vec3(center.x - dist_to_goal, center.x + dist_to_goal,
                                            center.y - dist_to_goal, center.y + dist_to_goal,
-                                           0.3,3);
-
-        is_inside_an_obstacle = false;
+                                           0.2,3);
 
         auto closest = Node::find_the_closest_node(rnd_point, root);
 
@@ -123,6 +123,10 @@ std::vector<Vec3> RRTStarAlgorithm::find_path_according_to_alg(const World *worl
 
         neighbors.clear();
 
+        if (i % 2000 == 0) {
+            std::cout << i << "\n";
+        }
+
         if (Vec3::distance_between_two_vec3(rnd_point, goal_point) < goal_radius) {
 
             if (best_neighbor != nullptr) {
@@ -139,11 +143,12 @@ std::vector<Vec3> RRTStarAlgorithm::find_path_according_to_alg(const World *worl
                 }
 
                 if (i < min_iters) continue;
-
+                std::cout << "\n";
                 return Algorithm::find_way_from_goal_to_root(best_in_goal);
             }
 
             if (i < min_iters) continue;
+            std::cout << "\n";
             return Algorithm::find_way_from_goal_to_root(closest->children.back().get());
         }
     }

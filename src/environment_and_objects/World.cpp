@@ -14,7 +14,7 @@ void World::publish_world(const ros::Publisher &publisher) const {
         for (auto ptr = array.begin(); ptr < array.end(); ptr++){
             visualization_msgs::Marker localMarker;
             //array[count].print_out_info();
-            fill_out_default_marker(localMarker, count, *array[count]);
+            this->fill_out_default_marker(localMarker, count, *array[count]);
             ++count;
             while (publisher.getNumSubscribers() < 1) {
                 if (!ros::ok()) {
@@ -32,8 +32,6 @@ void World::publish_world(const ros::Publisher &publisher) const {
         rate.sleep();
     };
 
-    //publish_one_array(objects);
-    //publish_one_array(obstacles);
     std::vector<std::shared_ptr<Object>> both = obstacles;
     both.insert(both.end(), objects.begin(), objects.end());
 
@@ -47,11 +45,11 @@ World::~World() {
 
 void World::fill_out_default_marker(visualization_msgs::Marker &marker,
                                     uint8_t id,
-                                    const Object &obj) {
+                                    const Object &obj) const{
 	const Vec3 &given_coords = obj.coords;
 	double const size = obj.radius;
 	
-	marker.header.frame_id = "map"; //"uav1/fcu"; //   uav1/local_origin;
+	marker.header.frame_id = frame_id; // "uav1/fcu"; // uav1/local_origin; "map";
 	marker.header.stamp = ros::Time::now();
 	marker.id = id;
 
@@ -96,7 +94,7 @@ void World::fill_out_default_marker(visualization_msgs::Marker &marker,
 void World::publish_path(const ros::Publisher &publisher, const std::vector<Vec3>& points, const std::string &number) {
 
     visualization_msgs::Marker line_strip;
-    line_strip.header.frame_id = "map"; //"uav1/fcu"; // ;
+    line_strip.header.frame_id = frame_id; // "uav1/fcu"; // "map";
     line_strip.ns = "path" + number;
     line_strip.header.stamp = ros::Time::now();
     line_strip.type = visualization_msgs::Marker::LINE_STRIP;
@@ -137,7 +135,7 @@ void World::publish_trajectory(const ros::Publisher &publisher, const Trajectory
 
     std::vector<Vec3> points;
     visualization_msgs::Marker text_marker;
-    text_marker.header.frame_id = "map"; //"uav1/fcu"; // ;
+    text_marker.header.frame_id = frame_id; //"uav1/fcu"; // "map";
     text_marker.type = visualization_msgs::Marker::TEXT_VIEW_FACING;
     text_marker.action = visualization_msgs::Marker::ADD;
     text_marker.id = 0;
@@ -180,4 +178,8 @@ void World::add_object(Object *newObj) {
 
 void World::add_obstacle(Object *newObj) {
     obstacles.emplace_back(newObj);
+}
+
+World::World(const std::string &frame_id) {
+    this->frame_id = frame_id;
 }

@@ -19,7 +19,6 @@ class Trajectory;
 
 class World{
 public:
-    // Data Members
     std::vector<std::shared_ptr<Object>> objects;
     std::vector<std::shared_ptr<Object>> obstacles;
 
@@ -29,19 +28,21 @@ public:
 
     void publish_world(const ros::Publisher &publisher) const;
 
-    static void publish_path(const ros::Publisher &publisher, const std::vector<Vec3>& points, const std::string &number);
+    void publish_path(const ros::Publisher &publisher, const std::vector<Vec3>& points, const std::string &number);
 
-    static void publish_trajectory(const ros::Publisher &publisher,
+    void publish_trajectory(const ros::Publisher &publisher,
                                           const Trajectory &trajectory,
                                           const std::string &number);
 
-    World()=default;
+    explicit World(const std::string &frame_id);;
     
     ~World();
 
-private:
 
-    static void fill_out_default_marker(visualization_msgs::Marker& marker,
+private:
+    std::string frame_id;
+
+    void fill_out_default_marker(visualization_msgs::Marker& marker,
                                         uint8_t id,
-                                        const Object &obj);
+                                        const Object &obj) const;
 };
