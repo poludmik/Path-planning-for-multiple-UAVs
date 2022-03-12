@@ -27,7 +27,8 @@
 
 enum TestCase {
     FIND_TRAJECTORIES,
-    GO_THROUGH_TRAJECTORIES
+    GO_THROUGH_TRAJECTORIES,
+    ONE_DRONE_THROUGH_FOREST
 };
 
 class TestSelector {
@@ -40,5 +41,6 @@ private:
 
     static void fly_through_found_paths();
 
+    static void one_drone_through_forest();
 };
 

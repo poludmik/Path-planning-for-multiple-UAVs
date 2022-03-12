@@ -12,6 +12,9 @@ void TestSelector::run_simulation(const TestCase test_case) {
         case FIND_TRAJECTORIES:
             basic_trajectory_search();
             break;
+        case ONE_DRONE_THROUGH_FOREST:
+            one_drone_through_forest();
+            break;
         default:
             std::cout << "The simulation under the given name hasn't been found." << std::endl;
     }
@@ -200,4 +203,94 @@ void TestSelector::fly_through_found_paths() {
     // MotionMethods::go_through_a_trajectory(drones[1], drones[1].trajectory.trajectory_points, 0.5);
 
     std::cout << "End of the simulation." << std::endl;
+}
+
+
+void TestSelector::one_drone_through_forest() {
+
+    // VELOCITY CONTROL
+    size_t uav_id = 1;
+    std::string vel_pub_topic = "/uav" + std::to_string(uav_id) + "/control_manager/velocity_reference";
+
+    ros::NodeHandle n;
+    ros::Rate rate(10);
+    mrs_msgs::UavState::ConstPtr cur_uav_state;
+
+
+    // MARKER RVIZ
+    ros::NodeHandle markers_node_publisher;
+    ros::Publisher vis_pub = markers_node_publisher.advertise<visualization_msgs::Marker>
+            ("visualization_marker", 10);
+
+    ros::NodeHandle markers_array_node_publisher;
+    ros::Publisher vis_array_pub = markers_array_node_publisher.advertise<visualization_msgs::MarkerArray>
+            ("visualization_marker_array", 300);
+
+    World my_world("uav1/fcu");
+
+    double goal_radius = 0.5;
+    double drone_radius = 0.3;
+
+    Vec3 start_local(0, 0, 0); // in local coordinates
+    Vec3 goal_local(5, 0, 0);
+
+    std::vector<Drone> drones;
+    drones.emplace_back(1, start_local, goal_local, goal_radius, drone_radius);
+
+    Vec3 curr_pos_odom;
+    Vec3 init_pos_odom;
+    Vec3 curr_pos_relative_to_local_0 = start_local;
+
+    while (ros::ok()) {
+        if (drones[0].ready) {
+            cur_uav_state = drones[0].uav_state;
+            curr_pos_odom = Vec3(cur_uav_state->pose.position.x,
+                                 cur_uav_state->pose.position.y,
+                                 cur_uav_state->pose.position.z);
+            init_pos_odom = curr_pos_odom;
+            break;
+        }
+    }
+
+    bool finished = false;
+
+    while(!finished && ros::ok()) {
+
+        cur_uav_state = drones[0].uav_state;
+
+        curr_pos_odom = Vec3(cur_uav_state->pose.position.x,
+                             cur_uav_state->pose.position.y,
+                             cur_uav_state->pose.position.z);
+
+        if (Vec3::distance_between_two_vec3(curr_pos_relative_to_local_0, goal_local) <= goal_radius) {
+            finished = true;
+            continue;
+        }
+
+
+        // TODO, locate obstacles around.
+
+
+        // TODO, add obstacles to the local world.
+        World local_world_relative_to_uav = my_world;
+        for (const auto &obstacle : obstacles) {
+            local_world_relative_to_uav.add_obstacle(new Cylinder(0.4, obstacle.center, 3.5));
+        }
+
+
+        // Find path from the current point
+        drones[0].goal_point = drones[0].goal_point - curr_pos_relative_to_local_0;
+        drones[0].start_point = Vec3(0,0,0);
+        Trajectory::find_trajectories_without_time_collisions(local_world_relative_to_uav, drones, false);
+
+
+        // Go through the first N points
+        const int N = 5;
+        drones[0].trajectory.trajectory_points.resize(N);
+        curr_pos_relative_to_local_0 = curr_pos_relative_to_local_0 + drones[0].trajectory.trajectory_points.back();
+        MotionMethods::go_through_a_trajectory(drones[0], drones[0].trajectory.trajectory_points, 0.2);
+
+        ros::spinOnce();
+        rate.sleep();
+    }
 }
