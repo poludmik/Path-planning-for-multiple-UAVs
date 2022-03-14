@@ -14,7 +14,7 @@ void MotionMethods::go_to_point_proportional(Drone &drone, const Vec3& point){
 
     while (ros::ok()) {
 
-        if (drone.ready) {
+        if (drone.ready_map[ready_modules::ODOMETRY]) {
 
             cur_uav_state = drone.uav_state;
 
