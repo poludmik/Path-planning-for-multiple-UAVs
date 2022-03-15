@@ -297,6 +297,7 @@ void TestSelector::one_drone_through_forest() {
     }
 }
 
+
 void TestSelector::test_bumper() {
 
     ros::NodeHandle n;
@@ -328,6 +329,15 @@ void TestSelector::test_bumper() {
             }
 
             std::cout << "end\n";
+
+            std::vector<std::shared_ptr<Object>> obstacles = Detection::get_obstacles_around_the_drone(drone);
+
+            for (const auto &obstacle : obstacles) {
+                my_world.add_object(obstacle.get());
+            }
+
+            my_world.publish_world(vis_array_pub);
+
             break;
         }
         ros::spinOnce();

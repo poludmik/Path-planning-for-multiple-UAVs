@@ -22,6 +22,7 @@
 #include "../motion/Trajectory.h"
 #include "../2D_plot/Plot2D.h"
 #include "../motion/MotionMethods.h"
+#include "../avoidance/obstacle_detection/Detection.h"
 
 #pragma once
 

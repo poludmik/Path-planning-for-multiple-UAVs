@@ -68,7 +68,10 @@ add_executable(planner src/main.cpp
 		src/2D_plot/Plot2D.h
 		src/environment_and_objects/Sphere.h
 		src/environment_and_objects/Cylinder.h
-		src/simulation/TestSelector.cpp src/simulation/TestSelector.h)
+		src/simulation/TestSelector.cpp
+		src/simulation/TestSelector.h
+		src/avoidance/obstacle_detection/Detection.cpp
+		src/avoidance/obstacle_detection/Detection.h)
 
 target_link_libraries(planner PRIVATE nlohmann_json::nlohmann_json)
 

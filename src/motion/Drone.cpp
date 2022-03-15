@@ -43,7 +43,7 @@ void Drone::bumperCallback(const mrs_msgs::ObstacleSectors_<std::allocator<void>
     if (!number_of_sectors) number_of_sectors = sectors_state->n_horizontal_sectors;
 }
 
-bool Drone::isReady() { // All the ready_map values are true.
+bool Drone::isReady() const { // All the ready_map values are true.
     return (std::all_of(std::begin(ready_map),std::end(ready_map),[](const auto &pair) {
                 return pair.second;
             }

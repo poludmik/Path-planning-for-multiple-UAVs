@@ -74,5 +74,5 @@ public:
 
     void bumperCallback(mrs_msgs::ObstacleSectors::ConstPtr const &msg);
 
-    bool isReady();
+    bool isReady() const;
 };
