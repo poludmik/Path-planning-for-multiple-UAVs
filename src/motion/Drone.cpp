@@ -11,6 +11,7 @@ Drone::Drone(const size_t uav_id, const Vec3 &start_point, const Vec3 &goal_poin
     this->goal_radius = goal_radius;
     this->drone_radius = drone_radius;
     this->number_of_sectors = 0;
+    this->world = std::unique_ptr<World>(new World("uav" + std::to_string(uav_id) + "/fcu"));
 
     std::string odom_sub_topic = "/uav" + std::to_string(uav_id) + "/odometry/uav_state";
     std::string bumper_sub_topic = "/uav" + std::to_string(uav_id) +  "/bumper/obstacle_sectors";
@@ -49,3 +50,4 @@ bool Drone::isReady() const { // All the ready_map values are true.
             }
     ));
 }
+

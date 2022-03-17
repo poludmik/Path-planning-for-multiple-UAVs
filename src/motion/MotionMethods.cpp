@@ -62,6 +62,16 @@ void MotionMethods::go_to_the_point(Drone &drone, const Vec3 &point) {
 void MotionMethods::go_through_a_trajectory(Drone &drone, const std::vector<Vec3> &path, const double dt) {
     std::vector<mrs_msgs::Reference> array;
 
+    ros::Rate rate(10);
+
+    ros::spinOnce();
+    rate.sleep();
+
+    mrs_msgs::UavState::ConstPtr cur_uav_state = drone.uav_state;
+    Vec3 start_odom(cur_uav_state->pose.position.x,
+                    cur_uav_state->pose.position.y,
+                    cur_uav_state->pose.position.z);
+
     for (const auto &point : path) {
         mrs_msgs::Reference reference;
         reference.position.x = point.x;
@@ -76,4 +86,24 @@ void MotionMethods::go_through_a_trajectory(Drone &drone, const std::vector<Vec3
     drone.cmd_trajectory.header.frame_id = drone.local_frame_id;
     drone.cmd_trajectory.dt = dt; // time between trajectory points
     drone.trajectory_pub.publish(drone.cmd_trajectory);
+
+
+    std::cout << "Started flying.\n";
+    Vec3 curr_pos_odom(cur_uav_state->pose.position.x - start_odom.x,
+                         cur_uav_state->pose.position.y - start_odom.y,
+                         cur_uav_state->pose.position.z - start_odom.z);
+    while (Vec3::distance_between_two_vec3(curr_pos_odom, path.back()) > 0.1) {
+
+        // std::cout << "\nodom_position: ";
+        // curr_pos_odom.printout();
+        // std::cout << ", goal: ";
+        // path.back().printout();
+        cur_uav_state = drone.uav_state;
+        curr_pos_odom = Vec3(cur_uav_state->pose.position.x - start_odom.x,
+                           cur_uav_state->pose.position.y - start_odom.y,
+                           cur_uav_state->pose.position.z - start_odom.z);
+        ros::spinOnce();
+        rate.sleep();
+    }
+
 }

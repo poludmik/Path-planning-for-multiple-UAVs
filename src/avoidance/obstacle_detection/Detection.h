@@ -13,7 +13,9 @@ class Detection {
 
 public:
 
-    static void get_obstacles_around_the_drone(const Drone &drone, World &drones_world) {
+    static void update_obstacles_around_the_drone(Drone &drone) {
+
+        drone.world->obstacles.clear();
 
         double radius_obst;
         std::vector<double> sectors = drone.sectors_state->sectors;
@@ -31,13 +33,13 @@ public:
                 continue;
             }
 
-            radius_obst = distance * angle_constant;
+            radius_obst = std::min(0.8, distance * angle_constant);
 
             // std::cout << current_angle << "\n";
             x = (distance + radius_obst) * cos(current_angle * PI / 180.0); // parameter in radians
             y = (distance + radius_obst) * sin(current_angle * PI / 180.0);
 
-            drones_world.add_obstacle(new Cylinder(radius_obst, Vec3(x, y, -1), 3));
+            drone.world->add_obstacle(new Cylinder(radius_obst, Vec3(x, y, -1), 3));
             current_angle += single_angle_sector;
         }
     }

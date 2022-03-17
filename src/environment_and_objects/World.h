@@ -35,9 +35,10 @@ public:
                                           const std::string &number);
 
     explicit World(const std::string &frame_id);;
+
+    World() = default;
     
     ~World();
-
 
 private:
     std::string frame_id;

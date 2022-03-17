@@ -36,7 +36,7 @@ void World::publish_world(const ros::Publisher &publisher) const {
     both.insert(both.end(), objects.begin(), objects.end());
 
     publish_one_array(both);
-    std::cout << "published\n";
+    std::cout << "Published world.\n";
 }
 
 World::~World() {
@@ -88,7 +88,7 @@ void World::fill_out_default_marker(visualization_msgs::Marker &marker,
         marker.color.g = 0.0;
         marker.color.b = 0.0;
     }
-	marker.lifetime = ros::Duration(40);
+	marker.lifetime = ros::Duration(7);
 }
 
 void World::publish_path(const ros::Publisher &publisher, const std::vector<Vec3>& points, const std::string &number) {
@@ -127,6 +127,7 @@ void World::publish_path(const ros::Publisher &publisher, const std::vector<Vec3
         sleep(1);
     }
     publisher.publish(line_strip);
+    std::cout << "Published path.\n";
 }
 
 void World::publish_trajectory(const ros::Publisher &publisher, const Trajectory &trajectory, const std::string &number) {

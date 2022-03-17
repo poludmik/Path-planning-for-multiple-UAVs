@@ -210,14 +210,9 @@ void TestSelector::fly_through_found_paths() {
 
 void TestSelector::one_drone_through_forest() {
 
-    // VELOCITY CONTROL
-    size_t uav_id = 1;
-    std::string vel_pub_topic = "/uav" + std::to_string(uav_id) + "/control_manager/velocity_reference";
-
     ros::NodeHandle n;
     ros::Rate rate(10);
     mrs_msgs::UavState::ConstPtr cur_uav_state;
-
 
     // MARKER RVIZ
     ros::NodeHandle markers_node_publisher;
@@ -228,69 +223,89 @@ void TestSelector::one_drone_through_forest() {
     ros::Publisher vis_array_pub = markers_array_node_publisher.advertise<visualization_msgs::MarkerArray>
             ("visualization_marker_array", 300);
 
-    World my_world("uav1/fcu");
-
-    double goal_radius = 0.5;
+    double starting_goal_radius = 0.5;
+    double goal_radius;
     double drone_radius = 0.3;
 
     Vec3 start_local(0, 0, 0); // in local coordinates
-    Vec3 goal_local(5, 0, 0);
+    Vec3 goal_local(6, -1, 0);
 
-    std::vector<Drone> drones;
-    drones.emplace_back(1, start_local, goal_local, goal_radius, drone_radius);
+    Drone drone(1, start_local, goal_local, starting_goal_radius, drone_radius);
 
     Vec3 curr_pos_odom;
     Vec3 init_pos_odom;
     Vec3 curr_pos_relative_to_local_0 = start_local;
 
     while (ros::ok()) {
-        if (drones[0].ready_map[ready_modules::ODOMETRY]) {
-            cur_uav_state = drones[0].uav_state;
+        if (drone.isReady()) {
+            std::cout << "Drone is ready." << std::endl;
+            cur_uav_state = drone.uav_state;
             curr_pos_odom = Vec3(cur_uav_state->pose.position.x,
                                  cur_uav_state->pose.position.y,
                                  cur_uav_state->pose.position.z);
             init_pos_odom = curr_pos_odom;
             break;
         }
+        ros::spinOnce();
+        rate.sleep();
     }
 
     bool finished = false;
 
     while(!finished && ros::ok()) {
 
-        cur_uav_state = drones[0].uav_state;
+        goal_radius = starting_goal_radius * Vec3::distance_between_two_vec3(curr_pos_relative_to_local_0, goal_local) / goal_local.norm();
+        std::cout << "Goal radius is " << goal_radius << ".\n";
+
+        std::cout << "here." << std::endl;
+        cur_uav_state = drone.uav_state;
 
         curr_pos_odom = Vec3(cur_uav_state->pose.position.x,
                              cur_uav_state->pose.position.y,
                              cur_uav_state->pose.position.z);
 
-        if (Vec3::distance_between_two_vec3(curr_pos_relative_to_local_0, goal_local) <= goal_radius) {
+        if (Vec3::distance_between_two_vec3(curr_pos_relative_to_local_0, goal_local) <= (goal_radius + 0.1)) {
             finished = true;
+            std::cout << "Finished.\n";
             continue;
         }
 
+        Detection::update_obstacles_around_the_drone(drone); // Locate obstacles around.
 
-        // TODO, locate obstacles around.
+        drone.goal_point = goal_local - curr_pos_relative_to_local_0; // Find path from the current point
+        drone.start_point = Vec3(0,0,0);
 
+        std::cout << "\ncurr_pos_relative_to_local_0 = ";
+        curr_pos_relative_to_local_0.printout();
+        std::cout << "\nSearching >> \nStart: ";
+        drone.start_point.printout();
+        std::cout << "Goal: ";
+        drone.goal_point.printout();
+        drone.world->objects.clear();
+        drone.world->add_object(new Sphere(drone.goal_radius, drone.goal_point));
+        drone.world->add_object(new Sphere(drone.drone_radius, drone.start_point));
+        auto k = drone.world->objects.size();
+        drone.world->objects[k - 2]->set_as_a_goal();
+        drone.world->objects[k - 1]->set_as_a_start();
 
-        // TODO, add obstacles to the local world.
-//        World local_world_relative_to_uav = my_world;
-//        for (const auto &obstacle : obstacles) {
-//            local_world_relative_to_uav.add_obstacle(new Cylinder(0.4, obstacle.center, 3.5));
-//        }
+        drone.world->publish_world(vis_array_pub);
 
-
-        // Find path from the current point
-        drones[0].goal_point = drones[0].goal_point - curr_pos_relative_to_local_0;
-        drones[0].start_point = Vec3(0,0,0);
-//        Trajectory::find_trajectories_without_time_collisions(local_world_relative_to_uav, drones, false);
-
+        RRT_tree tree(drone.start_point, drone.world.get(), 3);
+        drone.found_path = tree.find_path(RRTStarAlgorithm(),
+                                              BinarySearchIntersection(),
+                                              drone.goal_point,
+                                              drone.goal_radius,
+                                              drone.drone_radius);
+        drone.trajectory = Trajectory(drone.found_path, 0.2, 0.3);
+        drone.world->publish_trajectory(vis_pub, drone.trajectory, std::to_string(drone.uav_id));
 
         // Go through the first N points
         const int N = 5;
-        drones[0].trajectory.trajectory_points.resize(N);
-        curr_pos_relative_to_local_0 = curr_pos_relative_to_local_0 + drones[0].trajectory.trajectory_points.back();
-        MotionMethods::go_through_a_trajectory(drones[0], drones[0].trajectory.trajectory_points, 0.2);
+        drone.trajectory.trajectory_points.resize(N);
+        curr_pos_relative_to_local_0 = curr_pos_relative_to_local_0 + drone.trajectory.trajectory_points.back();
+        MotionMethods::go_through_a_trajectory(drone, drone.trajectory.trajectory_points, 0.7);
+
+        std::cout << "********* Ending cycle *******\n";
 
         ros::spinOnce();
         rate.sleep();
@@ -312,8 +327,6 @@ void TestSelector::test_bumper() {
     ros::Publisher vis_array_pub = markers_array_node_publisher.advertise<visualization_msgs::MarkerArray>
             ("visualization_marker_array", 300);
 
-    World my_world("uav1/fcu");
-
     Drone drone(1, Vec3(0,0,0), Vec3(5,0,0), 0.5, 0.5);
 
     std::cout << "Start\n";
@@ -328,8 +341,8 @@ void TestSelector::test_bumper() {
                 std::cout << distance << ", ";
             }
             std::cout << "end\n";
-            Detection::get_obstacles_around_the_drone(drone, my_world);
-            my_world.publish_world(vis_array_pub);
+            Detection::update_obstacles_around_the_drone(drone);
+            drone.world->publish_world(vis_array_pub);
             break;
         }
         ros::spinOnce();

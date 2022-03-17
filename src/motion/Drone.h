@@ -44,6 +44,8 @@ public:
 
     uint32_t number_of_sectors;
 
+    std::unique_ptr<World> world;
+
     std::vector<Vec3> found_path;
 
     Trajectory trajectory;
