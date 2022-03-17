@@ -327,17 +327,9 @@ void TestSelector::test_bumper() {
             for (const auto &distance: sectors) {
                 std::cout << distance << ", ";
             }
-
             std::cout << "end\n";
-
-            std::vector<std::shared_ptr<Object>> obstacles = Detection::get_obstacles_around_the_drone(drone);
-
-            for (const auto &obstacle : obstacles) {
-                my_world.add_object(obstacle.get());
-            }
-
+            Detection::get_obstacles_around_the_drone(drone, my_world);
             my_world.publish_world(vis_array_pub);
-
             break;
         }
         ros::spinOnce();
