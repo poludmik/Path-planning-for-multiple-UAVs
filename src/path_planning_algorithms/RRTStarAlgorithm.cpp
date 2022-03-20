@@ -35,7 +35,7 @@ std::vector<Vec3> RRTStarAlgorithm::find_path_according_to_alg(const World *worl
 
         Vec3 rnd_point = Vec3::random_vec3(center.x - dist_to_goal, center.x + dist_to_goal,
                                            center.y - dist_to_goal, center.y + dist_to_goal,
-                                           center.y - goal_radius, center.y + dist_to_goal);
+                                           0, 0);
 
         auto closest = Node::find_the_closest_node(rnd_point, root);
 

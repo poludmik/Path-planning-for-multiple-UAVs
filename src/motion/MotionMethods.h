@@ -20,6 +20,7 @@
 
 #include "../math/Vec3.h"
 #include "Drone.h"
+#include "../math/Orientation.h"
 
 class MotionMethods {
 public:

@@ -208,6 +208,7 @@ void TestSelector::fly_through_found_paths() {
     std::cout << "End of the simulation." << std::endl;
 }
 
+
 void TestSelector::one_drone_through_forest() {
 
     ros::NodeHandle n;
@@ -224,11 +225,10 @@ void TestSelector::one_drone_through_forest() {
             ("visualization_marker_array", 300);
 
     double starting_goal_radius = 0.5;
-    double goal_radius;
-    double drone_radius = 0.3;
+    double drone_radius = 0.6;
 
     Vec3 start_local(0, 0, 0); // in local coordinates
-    Vec3 goal_local(6, -1, 0);
+    Vec3 goal_local(5, 0, 0);
 
     Drone drone(1, start_local, goal_local, starting_goal_radius, drone_radius);
 
@@ -251,20 +251,16 @@ void TestSelector::one_drone_through_forest() {
     }
 
     bool finished = false;
-
     while(!finished && ros::ok()) {
 
-        goal_radius = starting_goal_radius * Vec3::distance_between_two_vec3(curr_pos_relative_to_local_0, goal_local) / goal_local.norm();
-        std::cout << "Goal radius is " << goal_radius << ".\n";
-
-        std::cout << "here." << std::endl;
         cur_uav_state = drone.uav_state;
 
         curr_pos_odom = Vec3(cur_uav_state->pose.position.x,
                              cur_uav_state->pose.position.y,
                              cur_uav_state->pose.position.z);
 
-        if (Vec3::distance_between_two_vec3(curr_pos_relative_to_local_0, goal_local) <= (goal_radius + 0.1)) {
+        std::cout << "distance to goal=" << Vec3::distance_between_two_vec3(curr_pos_relative_to_local_0, goal_local) << ", goal_radius=" << starting_goal_radius << "\n";
+        if (Vec3::distance_between_two_vec3(curr_pos_relative_to_local_0, goal_local) <= (starting_goal_radius)) {
             finished = true;
             std::cout << "Finished.\n";
             continue;
@@ -273,11 +269,12 @@ void TestSelector::one_drone_through_forest() {
         Detection::update_obstacles_around_the_drone(drone); // Locate obstacles around.
 
         drone.goal_point = goal_local - curr_pos_relative_to_local_0; // Find path from the current point
+        drone.goal_radius = std::max(0.2, starting_goal_radius * Vec3::distance_between_two_vec3(curr_pos_relative_to_local_0, goal_local) / goal_local.norm());
         drone.start_point = Vec3(0,0,0);
 
         std::cout << "\ncurr_pos_relative_to_local_0 = ";
         curr_pos_relative_to_local_0.printout();
-        std::cout << "\nSearching >> \nStart: ";
+        std::cout << "\n>>> Searching >>> \nStart: ";
         drone.start_point.printout();
         std::cout << "Goal: ";
         drone.goal_point.printout();
@@ -299,16 +296,24 @@ void TestSelector::one_drone_through_forest() {
         drone.trajectory = Trajectory(drone.found_path, 0.2, 0.3);
         drone.world->publish_trajectory(vis_pub, drone.trajectory, std::to_string(drone.uav_id));
 
-        // Go through the first N points
-        const int N = 5;
-        drone.trajectory.trajectory_points.resize(N);
+        // Go through the first N points of a found trajectory
+        const int N = 4;
+        if (N < drone.trajectory.trajectory_points.size())
+            drone.trajectory.trajectory_points.resize(N);
+
+        std::cout << "Current path length = " << drone.trajectory.trajectory_points.size() << ".\n";
         curr_pos_relative_to_local_0 = curr_pos_relative_to_local_0 + drone.trajectory.trajectory_points.back();
+        std::cout << "Approval:\n";
+        // std::cin.get();
         MotionMethods::go_through_a_trajectory(drone, drone.trajectory.trajectory_points, 0.7);
 
-        std::cout << "********* Ending cycle *******\n";
+        std::cout << "********* Finished cycle *******\n\n";
 
         ros::spinOnce();
         rate.sleep();
+        for (int i = 0; i < 25; ++i) {
+            rate.sleep();
+        }
     }
 }
 

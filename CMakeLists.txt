@@ -71,7 +71,7 @@ add_executable(planner src/main.cpp
 		src/simulation/TestSelector.cpp
 		src/simulation/TestSelector.h
 		src/avoidance/obstacle_detection/Detection.cpp
-		src/avoidance/obstacle_detection/Detection.h)
+		src/avoidance/obstacle_detection/Detection.h src/math/Orientation.cpp src/math/Orientation.h)
 
 target_link_libraries(planner PRIVATE nlohmann_json::nlohmann_json)
 

@@ -16,7 +16,7 @@ Drone::Drone(const size_t uav_id, const Vec3 &start_point, const Vec3 &goal_poin
     std::string odom_sub_topic = "/uav" + std::to_string(uav_id) + "/odometry/uav_state";
     std::string bumper_sub_topic = "/uav" + std::to_string(uav_id) +  "/bumper/obstacle_sectors";
     odom_sub  = n.subscribe(odom_sub_topic, 100, &Drone::odomCallback, this);
-    bumper_sub  = n.subscribe(bumper_sub_topic, 100, &Drone::bumperCallback, this);
+    bumper_sub  = n.subscribe(bumper_sub_topic, 1, &Drone::bumperCallback, this);
 
     std::string vel_pub_topic  = "/uav" + std::to_string(uav_id) + "/control_manager/velocity_reference";
     std::string reference_pub_topic  = "/uav" + std::to_string(uav_id) + "/control_manager/reference";

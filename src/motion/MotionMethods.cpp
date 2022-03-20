@@ -4,6 +4,8 @@
 
 #include "MotionMethods.h"
 
+#define PI 3.14159265
+
 void MotionMethods::go_to_point_proportional(Drone &drone, const Vec3& point){
 
     ros::Rate rate(10);
@@ -60,6 +62,9 @@ void MotionMethods::go_to_the_point(Drone &drone, const Vec3 &point) {
 }
 
 void MotionMethods::go_through_a_trajectory(Drone &drone, const std::vector<Vec3> &path, const double dt) {
+    /*
+     * Publish command to fly along the trajectory and wait for the finish.
+     * */
     std::vector<mrs_msgs::Reference> array;
 
     ros::Rate rate(10);
@@ -92,18 +97,31 @@ void MotionMethods::go_through_a_trajectory(Drone &drone, const std::vector<Vec3
     Vec3 curr_pos_odom(cur_uav_state->pose.position.x - start_odom.x,
                          cur_uav_state->pose.position.y - start_odom.y,
                          cur_uav_state->pose.position.z - start_odom.z);
-    while (Vec3::distance_between_two_vec3(curr_pos_odom, path.back()) > 0.1) {
 
-        // std::cout << "\nodom_position: ";
-        // curr_pos_odom.printout();
-        // std::cout << ", goal: ";
-        // path.back().printout();
+    double heading = Orientation::get_heading_in_rad_from_quaternion(cur_uav_state->pose.orientation.x,
+                                                                     cur_uav_state->pose.orientation.y,
+                                                                     cur_uav_state->pose.orientation.z,
+                                                                     cur_uav_state->pose.orientation.w);
+    //if (heading < 0.0) // (-PI, PI> to <0; 2*PI)
+    //    heading = heading + PI;
+
+    Vec3 goal_local = path.back();
+    goal_local = Orientation::rotate_vector_around_z(goal_local, heading);
+
+    std::cout << "Flying.\n";
+    while (Vec3::distance_between_two_vec3(curr_pos_odom, goal_local) > 0.05) {
+
+//        std::cout << "\nOdom_position: ";
+//        curr_pos_odom.printout();
+//        std::cout << "Goal: ";
+//        goal_local.printout();
         cur_uav_state = drone.uav_state;
+
         curr_pos_odom = Vec3(cur_uav_state->pose.position.x - start_odom.x,
                            cur_uav_state->pose.position.y - start_odom.y,
                            cur_uav_state->pose.position.z - start_odom.z);
+
         ros::spinOnce();
         rate.sleep();
     }
-
 }
