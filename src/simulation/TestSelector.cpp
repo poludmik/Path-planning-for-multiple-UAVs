@@ -225,10 +225,10 @@ void TestSelector::one_drone_through_forest() {
             ("visualization_marker_array", 300);
 
     double starting_goal_radius = 0.5;
-    double drone_radius = 0.6;
+    double drone_radius = 0.3;
 
     Vec3 start_local(0, 0, 0); // in local coordinates
-    Vec3 goal_local(5, 0, 0);
+    Vec3 goal_local(20, 0, 0);
 
     Drone drone(1, start_local, goal_local, starting_goal_radius, drone_radius);
 
@@ -266,11 +266,11 @@ void TestSelector::one_drone_through_forest() {
             continue;
         }
 
-        Detection::update_obstacles_around_the_drone(drone); // Locate obstacles around.
-
         drone.goal_point = goal_local - curr_pos_relative_to_local_0; // Find path from the current point
-        drone.goal_radius = std::max(0.2, starting_goal_radius * Vec3::distance_between_two_vec3(curr_pos_relative_to_local_0, goal_local) / goal_local.norm());
+        // drone.goal_radius = std::max(0.3, starting_goal_radius * Vec3::distance_between_two_vec3(curr_pos_relative_to_local_0, goal_local) / goal_local.norm());
         drone.start_point = Vec3(0,0,0);
+
+        Detection::update_obstacles_around_the_drone(drone); // Locate obstacles around.
 
         std::cout << "\ncurr_pos_relative_to_local_0 = ";
         curr_pos_relative_to_local_0.printout();

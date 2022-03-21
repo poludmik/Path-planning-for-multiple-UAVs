@@ -109,7 +109,7 @@ void MotionMethods::go_through_a_trajectory(Drone &drone, const std::vector<Vec3
     goal_local = Orientation::rotate_vector_around_z(goal_local, heading);
 
     std::cout << "Flying.\n";
-    while (Vec3::distance_between_two_vec3(curr_pos_odom, goal_local) > 0.05) {
+    while (Vec3::distance_between_two_vec3(curr_pos_odom, goal_local) > 0.1) {
 
 //        std::cout << "\nOdom_position: ";
 //        curr_pos_odom.printout();

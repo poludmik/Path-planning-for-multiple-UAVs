@@ -15,6 +15,5 @@ public:
 
     static void update_obstacles_around_the_drone(Drone &drone);
 
-
 };
 
