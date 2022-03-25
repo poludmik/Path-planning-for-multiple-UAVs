@@ -1,0 +1,72 @@
+name: simulation
+root: ./
+startup_window: status
+pre_window: export UAV_NAME=uav1; export RUN_TYPE=simulation; export UAV_TYPE=f450; export WORLD_NAME=simulation; export SENSORS="garmin_down"
+windows:
+  - roscore:
+      layout: tiled
+      panes:
+        - roscore
+        
+  - gazebo:
+      layout: tiled
+      panes:
+        - waitForRos; roslaunch mrs_simulation simulation.launch world_name:=forest gui:=true
+        - waitForOdometry; gz camera -c gzclient_camera -f uav1; history -s gz camera -c gzclient_camera -f uav1
+        
+  - status:
+      layout: tiled
+      panes:
+        - waitForSimulation; roslaunch mrs_uav_status status.launch
+        
+  - bumper:
+      layout: tiled
+      panes:
+        - waitForRos; roslaunch mrs_bumper bumper.launch
+        - waitForRos; rostopic echo /$UAV_NAME/bumper/obstacle_sectors
+        
+  - run:
+      layout: tiled
+      panes:
+        - waitForRos; catkin build
+        
+  - spawn:
+      layout: tiled
+      panes:
+        - waitForSimulation; rosservice call /mrs_drone_spawner/spawn "1 --f450 --enable-rangefinder --enable-ouster --ouster-model OS1-32 --use-gpu-ray"
+        
+  - control:
+      layout: tiled
+      panes:
+        - waitForOdometry; roslaunch mrs_uav_general core.launch
+        
+  - takeoff:
+      layout: tiled
+      panes:
+        - waitForSimulation; roslaunch mrs_uav_general automatic_start.launch
+        - 'waitForControl;
+          rosservice call /$UAV_NAME/mavros/cmd/arming 1;
+          sleep 2;
+          rosservice call /$UAV_NAME/mavros/set_mode 0 offboard'
+          
+  - goto:
+      layout: tiled
+      panes:
+        - 'history -s rosservice call /$UAV_NAME/control_manager/goto \"goal: \[0.0, 10.0, 1.5, 0.0\]\"'
+        
+  - rviz:
+      layout: tiled
+      panes:
+        - waitForControl; roslaunch mrs_uav_testing rviz.launch
+        - waitForControl; roslaunch mrs_rviz_plugins load_robot.launch
+        
+  - easy_control:
+      layout: tiled
+      panes:
+        - waitForControl; waitForControl; roslaunch mrs_uav_general logitech_joystick.launch
+        - waitForControl; waitForControl; roslaunch mrs_rviz_plugins rviz_interface.launch
+        
+  - layout:
+      layout: tiled
+      panes:
+        - waitForControl; sleep 3; ~/.i3/layout_manager.sh ./layout.json

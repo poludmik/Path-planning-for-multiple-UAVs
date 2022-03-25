@@ -228,7 +228,7 @@ void TestSelector::one_drone_through_forest() {
     double drone_radius = 0.3;
 
     Vec3 start_local(0, 0, 0); // in local coordinates
-    Vec3 goal_local(20, 0, 0);
+    Vec3 goal_local(12, 0, 0);
 
     Drone drone(1, start_local, goal_local, starting_goal_radius, drone_radius);
 
@@ -293,11 +293,11 @@ void TestSelector::one_drone_through_forest() {
                                               drone.goal_point,
                                               drone.goal_radius,
                                               drone.drone_radius);
-        drone.trajectory = Trajectory(drone.found_path, 0.2, 0.3);
+        drone.trajectory = Trajectory(drone.found_path, 0.2, 0.25);
         drone.world->publish_trajectory(vis_pub, drone.trajectory, std::to_string(drone.uav_id));
 
         // Go through the first N points of a found trajectory
-        const int N = 4;
+        const int N = 5;
         if (N < drone.trajectory.trajectory_points.size())
             drone.trajectory.trajectory_points.resize(N);
 
@@ -311,7 +311,7 @@ void TestSelector::one_drone_through_forest() {
 
         ros::spinOnce();
         rate.sleep();
-        for (int i = 0; i < 25; ++i) {
+        for (int i = 0; i < 10; ++i) {
             rate.sleep();
         }
     }

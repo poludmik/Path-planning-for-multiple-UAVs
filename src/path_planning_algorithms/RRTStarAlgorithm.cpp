@@ -17,7 +17,7 @@ std::vector<Vec3> RRTStarAlgorithm::find_path_according_to_alg(const World *worl
                                                                double neighbor_radius,
                                                                double droneRadius) const {
 
-    int min_iters = 2000;
+    int min_iters = 1000; // Fewer iterations actually helps with keeping the distance around the obstacles.
 
     std::cout << "Started RRT* search:\n";
 

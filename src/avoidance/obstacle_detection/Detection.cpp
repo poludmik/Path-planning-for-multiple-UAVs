@@ -30,10 +30,13 @@ void Detection::update_obstacles_around_the_drone(Drone &drone) {
             current_angle += single_angle_sector;
             continue;
         }
+        // 30 sectors and this setup is alright
 
         radius_obst = std::max(min_obst_radius, std::min(0.8, distance * angle_constant));
-        if (radius_obst + drone.drone_radius > distance)
+        if (radius_obst + drone.drone_radius > distance){
+            std::cout << "Cutting the obstacle.**********\n";
             radius_obst = distance - drone.drone_radius - 0.08;
+        }
 
         // std::cout << current_angle << "\n";
         x = (distance) * cos(current_angle * PI / 180.0); // parameter in radians
