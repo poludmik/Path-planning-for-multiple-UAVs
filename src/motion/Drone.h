@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <mrs_lib/param_loader.h>
 #include <mrs_msgs/UavState.h>
 #include <mrs_msgs/VelocityReferenceStamped.h>
 #include <mrs_msgs/ReferenceStamped.h>
@@ -70,7 +71,7 @@ public:
     std::string global_frame_id;
 
 
-    Drone(size_t uav_id, const Vec3 &start_point, const Vec3 &goal_point, double goal_radius, double drone_radius);
+    Drone(bool real_world, size_t uav_id, const Vec3 &start_point, const Vec3 &goal_point, double goal_radius, double drone_radius);
 
     void odomCallback(mrs_msgs::UavState::ConstPtr const &msg);
 

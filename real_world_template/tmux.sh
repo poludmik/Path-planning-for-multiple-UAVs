@@ -14,7 +14,7 @@ fi
 source $HOME/.bashrc
 
 # change this to your liking
-PROJECT_NAME=Mikhails_planner
+PROJECT_NAME=drone_planner
 
 # do not change this
 MAIN_DIR=~/"bag_files"
@@ -26,6 +26,8 @@ pre_input="mkdir -p $MAIN_DIR/$PROJECT_NAME; export WORLD_FILE=./world.yaml"
 # 'name' 'command'
 # DO NOT PUT SPACES IN THE NAMES
 input=(
+  'Bumper' 'waitForOffboard; waitForRos; roslaunch mrs_bumper bumper.launch
+'
   'Rosbag' 'waitForOffboard; ./record.sh
 '
   'NodeChecker' 'waitForRos; roslaunch mrs_uav_general node_crash_checker.launch

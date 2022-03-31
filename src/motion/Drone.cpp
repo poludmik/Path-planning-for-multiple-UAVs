@@ -4,29 +4,40 @@
 
 #include "Drone.h"
 
-Drone::Drone(const size_t uav_id, const Vec3 &start_point, const Vec3 &goal_point, const double goal_radius, const double drone_radius) {
+Drone::Drone(bool real_world, const size_t uav_id, const Vec3 &start_point, const Vec3 &goal_point, const double goal_radius, const double drone_radius) {
+
+    std::string uav_name;
+    if (real_world) {
+        mrs_lib::ParamLoader param_loader(n, "drone_planner"); // Doesn't work
+        param_loader.loadParam("uav_name", uav_name);
+    } else {
+        uav_name = "uav" + std::to_string(uav_id);
+    }
+
     this->uav_id = uav_id;
     this->start_point = start_point;
     this->goal_point = goal_point;
     this->goal_radius = goal_radius;
     this->drone_radius = drone_radius;
     this->number_of_sectors = 0;
-    this->world = std::unique_ptr<World>(new World("uav" + std::to_string(uav_id) + "/fcu"));
+    this->world = std::unique_ptr<World>(new World(uav_name + "/fcu"));
 
-    std::string odom_sub_topic = "/uav" + std::to_string(uav_id) + "/odometry/uav_state";
-    std::string bumper_sub_topic = "/uav" + std::to_string(uav_id) +  "/bumper/obstacle_sectors";
+    std::string odom_sub_topic = "/" + uav_name + "/odometry/uav_state";
+    std::string bumper_sub_topic = "/" + uav_name + "/bumper/obstacle_sectors";
     odom_sub  = n.subscribe(odom_sub_topic, 100, &Drone::odomCallback, this);
     bumper_sub  = n.subscribe(bumper_sub_topic, 1, &Drone::bumperCallback, this);
 
-    std::string vel_pub_topic  = "/uav" + std::to_string(uav_id) + "/control_manager/velocity_reference";
-    std::string reference_pub_topic  = "/uav" + std::to_string(uav_id) + "/control_manager/reference";
-    std::string trajectory_pub_topic  = "/uav" + std::to_string(uav_id) + "/control_manager/trajectory_reference";
+    std::string vel_pub_topic  = "/" + uav_name + "/control_manager/velocity_reference";
+    std::string reference_pub_topic  = "/" + uav_name + "/control_manager/reference";
+    std::string trajectory_pub_topic  = "/" + uav_name + "/control_manager/trajectory_reference";
     vel_pub   = n.advertise<mrs_msgs::VelocityReferenceStamped>(vel_pub_topic, 100);
     goto_pub = n.advertise<mrs_msgs::ReferenceStamped>(reference_pub_topic, 100);
     trajectory_pub = n.advertise<mrs_msgs::TrajectoryReference>(trajectory_pub_topic, 100);
 
-    local_frame_id = "uav" + std::to_string(uav_id) + "/fcu";
-    global_frame_id = "uav" + std::to_string(uav_id) + "/local_origin";
+    local_frame_id = uav_name + "/fcu";
+    global_frame_id = uav_name + "/local_origin";
+
+    std::cout << "Drone with name: " << uav_name << " initialized." << std::endl;
 }
 
 void Drone::odomCallback(const mrs_msgs::UavState_<std::allocator<void>>::ConstPtr &msg) {

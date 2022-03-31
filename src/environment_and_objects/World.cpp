@@ -183,4 +183,5 @@ void World::add_obstacle(Object *newObj) {
 
 World::World(const std::string &frame_id) {
     this->frame_id = frame_id;
+    std::cout << "World instance created.\n";
 }
