@@ -92,8 +92,6 @@ void MotionMethods::go_through_a_trajectory(Drone &drone, const std::vector<Vec3
     drone.cmd_trajectory.dt = dt; // time between trajectory points
     drone.trajectory_pub.publish(drone.cmd_trajectory);
 
-
-    std::cout << "Started flying.\n";
     Vec3 curr_pos_odom(cur_uav_state->pose.position.x - start_odom.x,
                          cur_uav_state->pose.position.y - start_odom.y,
                          cur_uav_state->pose.position.z - start_odom.z);

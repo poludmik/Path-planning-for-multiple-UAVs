@@ -26,6 +26,12 @@ pre_input="mkdir -p $MAIN_DIR/$PROJECT_NAME; export WORLD_FILE=./world.yaml"
 # 'name' 'command'
 # DO NOT PUT SPACES IN THE NAMES
 input=(
+  'Program' 'waitForRos; rosrun drone_planner planner
+'
+  'StartUp' 'waitForRos; 
+'
+  'Lidar' 'waitForRos;
+'
   'Bumper' 'waitForOffboard; waitForRos; roslaunch mrs_bumper bumper.launch
 '
   'Rosbag' 'waitForOffboard; ./record.sh

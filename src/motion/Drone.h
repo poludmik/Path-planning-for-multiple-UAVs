@@ -25,9 +25,12 @@
 
 #include "../motion/Trajectory.h"
 
+#include "drone_planner/StartExecution.h"
+
 enum ready_modules {
     ODOMETRY,
-    BUMPER
+    BUMPER,
+    START
 };
 
 class Drone {
@@ -53,7 +56,8 @@ public:
 
     std::unordered_map<ready_modules, bool> ready_map = {
             {ready_modules::ODOMETRY, false},
-            {ready_modules::BUMPER, false}
+            {ready_modules::BUMPER, false},
+            {ready_modules::START, false}
     };
 
     ros::NodeHandle n;
@@ -67,6 +71,7 @@ public:
     ros::Publisher  vel_pub;
     ros::Publisher  goto_pub;
     ros::Publisher  trajectory_pub;
+    ros::ServiceServer service;
     std::string local_frame_id;
     std::string global_frame_id;
 
@@ -78,4 +83,6 @@ public:
     void bumperCallback(mrs_msgs::ObstacleSectors::ConstPtr const &msg);
 
     bool isReady() const;
+
+    bool responseCallback(drone_planner::StartExecution::Request &req, drone_planner::StartExecution::Response &res);
 };

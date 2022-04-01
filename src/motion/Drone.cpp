@@ -8,7 +8,7 @@ Drone::Drone(bool real_world, const size_t uav_id, const Vec3 &start_point, cons
 
     std::string uav_name;
     if (real_world) {
-        mrs_lib::ParamLoader param_loader(n, "drone_planner"); // Doesn't work
+        mrs_lib::ParamLoader param_loader(n, "drone_planner"); // Doesn't work without real uav
         param_loader.loadParam("uav_name", uav_name);
     } else {
         uav_name = "uav" + std::to_string(uav_id);
@@ -33,6 +33,8 @@ Drone::Drone(bool real_world, const size_t uav_id, const Vec3 &start_point, cons
     vel_pub   = n.advertise<mrs_msgs::VelocityReferenceStamped>(vel_pub_topic, 100);
     goto_pub = n.advertise<mrs_msgs::ReferenceStamped>(reference_pub_topic, 100);
     trajectory_pub = n.advertise<mrs_msgs::TrajectoryReference>(trajectory_pub_topic, 100);
+
+    service = n.advertiseService("StartExecution", &Drone::responseCallback, this);
 
     local_frame_id = uav_name + "/fcu";
     global_frame_id = uav_name + "/local_origin";
@@ -60,5 +62,12 @@ bool Drone::isReady() const { // All the ready_map values are true.
                 return pair.second;
             }
     ));
+}
+
+bool
+Drone::responseCallback(drone_planner::StartExecution::Request &req, drone_planner::StartExecution::Response &res) {
+    ready_map.at(START) = true;
+    res.confirmation = "Okay...\n";
+    return true;
 }
 

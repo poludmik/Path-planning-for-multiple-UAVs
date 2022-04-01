@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_PREFIX_PATH "/opt/ros/noetic;${CMAKE_MODULE_PATH};")
 #set(mrs_msgs_DIR "/home/misha/mrs_workspace/src/uav_core/ros_packages/mrs_msgs/msg")
 set(mrs_msgs_DIR "/home/misha/mrs_workspace/devel/share/mrs_msgs/cmake")
+#set(mrs_msgs_DIR "/home/misha/workspace/src/")
 set(mrs_lib_DIR "/home/misha/mrs_workspace/devel/share/mrs_lib/cmake")
 
 find_package(catkin REQUIRED COMPONENTS
@@ -16,10 +17,16 @@ find_package(catkin REQUIRED COMPONENTS
 	message_generation
 )
 
+add_service_files(
+		FILES
+		StartExecution.srv
+)
+
 generate_messages(
-	DEPENDENCIES
+		DEPENDENCIES
 		std_msgs
 		geometry_msgs
+
 )
 
 catkin_package(
@@ -73,7 +80,9 @@ add_executable(planner src/main.cpp
 		src/simulation/TestSelector.cpp
 		src/simulation/TestSelector.h
 		src/avoidance/obstacle_detection/Detection.cpp
-		src/avoidance/obstacle_detection/Detection.h src/math/Orientation.cpp src/math/Orientation.h)
+		src/avoidance/obstacle_detection/Detection.h
+		src/math/Orientation.cpp
+		src/math/Orientation.h)
 
 target_link_libraries(planner PRIVATE nlohmann_json::nlohmann_json)
 
