@@ -35,4 +35,6 @@ public:
     explicit RRT_tree(Vec3 &coords, World *ptr_to_world, double neighbor_radius);
 
     static std::vector<Vec3> find_way_from_goal_to_root(Node *last_goal_p);
+
+    static void printout_the_path(const std::vector<Vec3> &path);
 };

@@ -25,3 +25,10 @@ std::vector<Vec3> RRT_tree::find_way_from_goal_to_root(Node* last_goal_p) {
 	return way;
 }
 
+void RRT_tree::printout_the_path(const std::vector<Vec3> &path) {
+    std::cout << "\nPath:\n";
+    for (const Vec3 &point : path)
+        point.printout();
+    std::cout << std::endl;
+}
+

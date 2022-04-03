@@ -299,7 +299,7 @@ void TestSelector::one_drone_through_forest() {
     bool finished = false;
     while(!finished && ros::ok()) {
 
-        std::cout << "distance to goal=" << Vec3::distance_between_two_vec3(curr_pos_relative_to_local_0, goal_local) << ", goal_radius=" << starting_goal_radius << "\n";
+        std::cout << "Distance to goal=" << Vec3::distance_between_two_vec3(curr_pos_relative_to_local_0, goal_local) << ", goal_radius=" << starting_goal_radius << "\n";
         if (Vec3::distance_between_two_vec3(curr_pos_relative_to_local_0, goal_local) <= (starting_goal_radius)) {
             finished = true;
             std::cout << "Finished.\n";
@@ -326,6 +326,7 @@ void TestSelector::one_drone_through_forest() {
 
         // drone.world->publish_world(vis_array_pub);
 
+        std::cout << "Finding a path...\n";
         RRT_tree tree(drone.start_point, drone.world.get(), 3);
         drone.found_path = tree.find_path(RRTStarAlgorithm(),
                                               BinarySearchIntersection(),
@@ -333,6 +334,7 @@ void TestSelector::one_drone_through_forest() {
                                               drone.goal_radius,
                                               drone.drone_radius);
         drone.trajectory = Trajectory(drone.found_path, 0.2, 0.25);
+        RRT_tree::printout_the_path(drone.found_path);
 
         // drone.world->publish_trajectory(vis_pub, drone.trajectory, std::to_string(drone.uav_id));
 
@@ -341,7 +343,7 @@ void TestSelector::one_drone_through_forest() {
         if (N < drone.trajectory.trajectory_points.size())
             drone.trajectory.trajectory_points.resize(N);
 
-        std::cout << "Current path length = " << drone.trajectory.trajectory_points.size() << ".\n";
+        std::cout << "Number of points to fly = " << drone.trajectory.trajectory_points.size() << ".\n";
         curr_pos_relative_to_local_0 = curr_pos_relative_to_local_0 + drone.trajectory.trajectory_points.back();
         std::cout << "Started flying.\n";
         MotionMethods::go_through_a_trajectory(drone, drone.trajectory.trajectory_points, 0.7);
