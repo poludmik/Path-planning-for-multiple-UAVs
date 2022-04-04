@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(drone_planner)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_PREFIX_PATH "/opt/ros/noetic;${CMAKE_MODULE_PATH};")
+#set(CMAKE_CXX_STANDARD 17)
+#set(CMAKE_PREFIX_PATH "/opt/ros/noetic;${CMAKE_MODULE_PATH};")
 #set(mrs_msgs_DIR "/home/misha/mrs_workspace/src/uav_core/ros_packages/mrs_msgs/msg")
-set(mrs_msgs_DIR "/home/misha/mrs_workspace/devel/share/mrs_msgs/cmake")
+#set(mrs_msgs_DIR "/home/misha/mrs_workspace/devel/share/mrs_msgs/cmake")
 #set(mrs_msgs_DIR "/home/misha/workspace/src/")
-set(mrs_lib_DIR "/home/misha/mrs_workspace/devel/share/mrs_lib/cmake")
+#set(mrs_lib_DIR "/home/misha/mrs_workspace/devel/share/mrs_lib/cmake")
 
 find_package(catkin REQUIRED COMPONENTS
 	roscpp
@@ -30,7 +30,7 @@ generate_messages(
 )
 
 catkin_package(
-	CATKIN_DEPENDS message_runtime
+	CATKIN_DEPENDS mrs_lib roscpp std_msgs message_runtime
 )
 
 include(FetchContent)

@@ -9,7 +9,8 @@
 	<license>TODO</license>
 
 	<depend>roscpp</depend>
-	<depend>mrs_msgs</depend>
+  <depend>std_msgs</depend>
+	<depend>mrs_lib</depend>
 	<depend>message_generation</depend>
 	<depend>message_runtime</depend>
 	<buildtool_depend>catkin</buildtool_depend>
