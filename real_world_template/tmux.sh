@@ -20,7 +20,7 @@ PROJECT_NAME=drone_planner
 MAIN_DIR=~/"bag_files"
 
 # following commands will be executed first in each window
-pre_input="mkdir -p $MAIN_DIR/$PROJECT_NAME; export WORLD_FILE=./world.yaml"
+pre_input="mkdir -p $MAIN_DIR/$PROJECT_NAME"
 
 # define commands
 # 'name' 'command'
@@ -28,9 +28,8 @@ pre_input="mkdir -p $MAIN_DIR/$PROJECT_NAME; export WORLD_FILE=./world.yaml"
 input=(
   'Program' 'waitForRos; rosrun drone_planner planner
 '
-  'StartUp' 'waitForRos; 
-'
-  'Lidar' 'waitForRos;
+  'StartUp' 'waitForRos;  rosservice call /StartExecution'
+  'Lidar' 'waitForRos; roslaunch ouster_ros uav.launch
 '
   'Bumper' 'waitForOffboard; waitForRos; roslaunch mrs_bumper bumper.launch
 '

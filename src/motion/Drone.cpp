@@ -46,6 +46,7 @@ void Drone::odomCallback(const mrs_msgs::UavState_<std::allocator<void>>::ConstP
     std::mutex uav_state_mutex;
     std::lock_guard<std::mutex> lock(uav_state_mutex);
     uav_state = msg;
+    ROS_INFO_THROTTLE(1.0, "[%s]: odom coming", ros::this_node::getName().c_str());
     ready_map[ODOMETRY] = true;
 }
 
@@ -54,6 +55,7 @@ void Drone::bumperCallback(const mrs_msgs::ObstacleSectors_<std::allocator<void>
     std::lock_guard<std::mutex> lock(uav_bumper_mutex);
     sectors_state = msg;
     ready_map[BUMPER] = true;
+    ROS_INFO_THROTTLE(1.0, "[%s]: bumper arriving ", ros::this_node::getName().c_str());
     if (!number_of_sectors) number_of_sectors = sectors_state->n_horizontal_sectors;
 }
 

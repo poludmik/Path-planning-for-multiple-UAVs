@@ -249,7 +249,7 @@ void TestSelector::test_bumper() {
 
 void TestSelector::one_drone_through_forest() {
 
-    uint8_t drone_id = 69;
+    uint8_t drone_id = 99;
     bool real_world_test = false;
 
     ros::NodeHandle n;
