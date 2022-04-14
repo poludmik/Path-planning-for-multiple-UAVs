@@ -39,7 +39,7 @@ Drone::Drone(bool real_world, const size_t uav_id, const Vec3 &start_point, cons
     local_frame_id = uav_name + "/fcu";
     global_frame_id = uav_name + "/local_origin";
 
-    std::cout << "Drone with name: " << uav_name << " initialized." << std::endl;
+    //std::cout << "Drone with name: " << uav_name << " initialized." << std::endl;
 }
 
 void Drone::odomCallback(const mrs_msgs::UavState_<std::allocator<void>>::ConstPtr &msg) {

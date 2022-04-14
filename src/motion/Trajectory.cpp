@@ -112,11 +112,11 @@ std::pair<std::vector<Vec3>, int> Trajectory::find_intersects_of_two_trajectorie
 void Trajectory::find_trajectories_without_time_collisions(World &global_world, std::vector<Drone> &drones,
                                                            bool performance_mode) {
 
-    std::cout << "Started finding trajectories for multiple drones.\n";
+    //std::cout << "Started finding trajectories for multiple drones.\n";
 
     for (int i = 0; i < drones.size(); ++i) {
 
-        std::cout << "\nFinding path for the drone indexed: " << std::to_string(i) << "\n";
+        //std::cout << "\nFinding path for the drone indexed: " << std::to_string(i) << "\n";
 
         World local_world = global_world;
 
@@ -174,7 +174,7 @@ void Trajectory::find_trajectories_without_time_collisions(World &global_world, 
 
             if (zero_conflicts) {
                 // no collisions
-                std::cout << "No collisions with previous trajectories were found.\n";
+                //std::cout << "No collisions with previous trajectories were found.\n";
                 continue;
             }
             std::cout << "*** Solving conflicts with previous trajectories.\n";
@@ -248,4 +248,14 @@ unsigned long Trajectory::last_good_index_of_a_trajectory(World &local_world,
 
     return min_last_good;
 
+}
+
+double Trajectory::get_path_length() {
+    double length = 0;
+    Vec3 last_point = trajectory_points[0];
+    for (const Vec3 &point : trajectory_points){
+        length += Vec3::distance_between_two_vec3(point, last_point);
+        last_point = point;
+    }
+    return length;
 }

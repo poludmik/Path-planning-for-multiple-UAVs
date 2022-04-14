@@ -36,11 +36,11 @@ void World::publish_world(const ros::Publisher &publisher) const {
     both.insert(both.end(), objects.begin(), objects.end());
 
     publish_one_array(both);
-    std::cout << "Published world.\n";
+    //std::cout << "Published world.\n";
 }
 
 World::~World() {
-	std::cout << "World instance destroyed." << std::endl;
+	//std::cout << "World instance destroyed." << std::endl;
 }
 
 void World::fill_out_default_marker(visualization_msgs::Marker &marker,
@@ -127,7 +127,7 @@ void World::publish_path(const ros::Publisher &publisher, const std::vector<Vec3
         sleep(1);
     }
     publisher.publish(line_strip);
-    std::cout << "Published path.\n";
+    //std::cout << "Published path.\n";
 }
 
 void World::publish_trajectory(const ros::Publisher &publisher, const Trajectory &trajectory, const std::string &number) {
@@ -183,5 +183,5 @@ void World::add_obstacle(Object *newObj) {
 
 World::World(const std::string &frame_id) {
     this->frame_id = frame_id;
-    std::cout << "World instance created.\n";
+    //std::cout << "World instance created.\n";
 }

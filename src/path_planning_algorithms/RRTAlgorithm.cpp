@@ -37,17 +37,18 @@ std::vector<Vec3> RRTAlgorithm::find_path_according_to_alg(const World *world_pt
 //    }
 
     // Main search
+    size_t nodes_num = 0;
     while (true) {
         Vec3 rnd_point = Vec3::random_vec3(center.x - dist_to_goal, center.x + dist_to_goal,
                                            center.y - dist_to_goal, center.y + dist_to_goal,
-                                           0, center.z + dist_to_goal);
+                                           0.2, 3);
         //.0, 0);
 
         is_inside_an_obstacle = false;
 
         auto closest = Node::find_the_closest_node(rnd_point, root);
 
-        if (Vec3::distance_between_two_vec3(rnd_point, closest->coords) > 2.0) continue;
+        if (Vec3::distance_between_two_vec3(rnd_point, closest->coords) > 1.5) continue;
 
 
 
@@ -88,8 +89,10 @@ std::vector<Vec3> RRTAlgorithm::find_path_according_to_alg(const World *world_pt
         }
         */
 
+        ++nodes_num;
 
         if (Vec3::distance_between_two_vec3(rnd_point, goal_point) < goal_radius) {
+            std::cout << "Nodes: " << nodes_num;
             return find_way_from_goal_to_root(closest->children.back().get());
         }
     }

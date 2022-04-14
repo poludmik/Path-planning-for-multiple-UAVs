@@ -17,9 +17,9 @@ std::vector<Vec3> RRTStarAlgorithm::find_path_according_to_alg(const World *worl
                                                                double neighbor_radius,
                                                                double droneRadius) const {
 
-    int min_iters = 1000; // Fewer iterations actually helps with keeping the distance around the obstacles.
+    int min_iters = 50; // Fewer iterations actually helps with keeping the distance around the obstacles.
 
-    std::cout << "Started RRT* search:\n";
+    // std::cout << "Started RRT* search:\n";
 
     Vec3 center = (start_point + goal_point) / 2.0;
 
@@ -30,12 +30,12 @@ std::vector<Vec3> RRTStarAlgorithm::find_path_according_to_alg(const World *worl
     bool is_inside_an_obstacle;
 
     // Main search
-    size_t i = 0;
+    size_t nodes_num = 0;
     while (true) {
 
         Vec3 rnd_point = Vec3::random_vec3(center.x - dist_to_goal, center.x + dist_to_goal,
                                            center.y - dist_to_goal, center.y + dist_to_goal,
-                                           0, 0);
+                                           0.2, 3);
 
         auto closest = Node::find_the_closest_node(rnd_point, root);
 
@@ -119,13 +119,13 @@ std::vector<Vec3> RRTStarAlgorithm::find_path_according_to_alg(const World *worl
             }
         }
 
-        ++i;
+        ++nodes_num;
 
         neighbors.clear();
 
-        if (i % 2000 == 0) {
-            std::cout << i << "\n";
-        }
+        // if (nodes_num % 2000 == 0) {
+        //     std::cout << nodes_num << "\n";
+        // }
 
         if (Vec3::distance_between_two_vec3(rnd_point, goal_point) < goal_radius) {
 
@@ -142,13 +142,13 @@ std::vector<Vec3> RRTStarAlgorithm::find_path_according_to_alg(const World *worl
                     }
                 }
 
-                if (i < min_iters) continue;
-                std::cout << "\n";
+                if (nodes_num < min_iters) continue;
+                std::cout << "Nodes: " << nodes_num;
                 return Algorithm::find_way_from_goal_to_root(best_in_goal);
             }
 
-            if (i < min_iters) continue;
-            std::cout << "\n";
+            if (nodes_num < min_iters) continue;
+            std::cout << "Nodes: " << nodes_num;
             return Algorithm::find_way_from_goal_to_root(closest->children.back().get());
         }
     }
