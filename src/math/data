@@ -1,0 +1,427 @@
+RRT*:
+4617 10.7688 412.381
+5612 10.4753 593.579
+1446 10.979  72.8506
+2509 11.5304 154.439
+762  10.4976 32.801
+601  11.5318 27.4014
+1368 13.6311 65.322
+697  11.4729 30.0593
+2483 10.6871 156.736
+6399 10.5717 782.126
+Nodes: 2377, path_len: 11.3839, time: 144.505
+Nodes: 772,  path_len: 10.7282, time: 34.2812
+Nodes: 4175, path_len: 10.7687, time: 371.936
+Nodes: 1219, path_len: 10.9478, time: 58.7128
+Nodes: 2616, path_len: 11.0233, time: 160.091
+Nodes: 3557, path_len: 10.8082, time: 276.374
+Nodes: 3180, path_len: 10.4136, time: 215.219
+Nodes: 5792, path_len: 10.9854, time: 681.147
+Nodes: 1119, path_len: 10.6501, time: 52.1824
+Nodes: 2025, path_len: 10.941,  time: 107.286
+Nodes: 1546, path_len: 10.9408, time: 72.9703
+Nodes: 5479, path_len: 10.8127, time: 585.689
+Nodes: 3604, path_len: 10.7381, time: 271.439
+Nodes: 1475, path_len: 10.6825, time: 73.3329
+Nodes: 747,  path_len: 10.7619, time: 36.1275
+Nodes: 1148, path_len: 10.7642, time: 51.6223
+Nodes: 1067, path_len: 11.0708, time: 49.7658
+Nodes: 2585, path_len: 12.1528, time: 164.249
+Nodes: 4828, path_len: 11.0146, time: 475.582
+Nodes: 1502, path_len: 11.892,  time: 77.6231
+Nodes: 1658, path_len: 12.6638, time: 87.8768
+Nodes: 3850, path_len: 11.2979, time: 292.571
+Nodes: 2598, path_len: 11.1608, time: 163.205
+Nodes: 2937, path_len: 11.6684, time: 191.765
+Nodes: 1017, path_len: 10.6569, time: 45.196
+Nodes: 527,  path_len: 11.2239, time: 24.6846
+Nodes: 3086, path_len: 11.4313, time: 213.155
+Nodes: 2724, path_len: 10.3676, time: 183.781
+Nodes: 629,  path_len: 11.3121, time: 26.4139
+Nodes: 2687, path_len: 10.6613, time: 176.011
+Nodes: 3407, path_len: 10.2036, time: 257.368
+Nodes: 2000, path_len: 10.0477, time: 115.021
+Nodes: 1432, path_len: 11.4287, time: 73.11
+Nodes: 4312, path_len: 10.6411, time: 377.214
+Nodes: 3657, path_len: 10.7574, time: 281.845
+Nodes: 923,  path_len: 10.7395, time: 47.563
+Nodes: 2056, path_len: 11.1364, time: 114.225
+Nodes: 3173, path_len: 10.4811, time: 224.114
+Nodes: 919,  path_len: 11.9119, time: 38.2072
+Nodes: 3508, path_len: 9.95378, time: 268.832
+Nodes: 2049, path_len: 11.3131, time: 109.871
+Nodes: 2120, path_len: 11.0669, time: 118.897
+Nodes: 2273, path_len: 11.0891, time: 134.026
+Nodes: 1794, path_len: 9.96418, time: 93.7253
+Nodes: 1386, path_len: 11.5544, time: 70.8052
+Nodes: 1350, path_len: 12.0041, time: 64.175
+Nodes: 1277, path_len: 10.9449, time: 59.8249
+Nodes: 1967, path_len: 10.9198, time: 116.525
+Nodes: 7257, path_len: 11.1591, time: 941.353
+Nodes: 3580, path_len: 10.6354, time: 281.579
+Nodes: 2061, path_len: 11.3744, time: 108.892
+Nodes: 1974, path_len: 11.0446, time: 108.506
+Nodes: 6042, path_len: 11.0707, time: 725.678
+Nodes: 1855, path_len: 10.7099, time: 94.9477
+Nodes: 572,  path_len: 11.7529, time: 26.6619
+Nodes: 2592, path_len: 11.2291, time: 154.414
+Nodes: 771,  path_len: 11.4769, time: 36.593
+Nodes: 2662, path_len: 11.6615, time: 163.624
+Nodes: 1822, path_len: 12.1535, time: 93.9537
+Nodes: 2900, path_len: 11.2943, time: 193.105
+Nodes: 3656, path_len: 10.6083, time: 276.725
+Nodes: 4663, path_len: 10.3501, time: 466.132
+Nodes: 1454, path_len: 10.982,  time: 76.1741
+Nodes: 1579, path_len: 10.7285, time: 82.6499
+Nodes: 1300, path_len: 11.3698, time: 63.2239
+Nodes: 3813, path_len: 11.2408, time: 303.56
+Nodes: 3427, path_len: 10.7675, time: 259.019
+Nodes: 4004, path_len: 10.4866, time: 335.011
+Nodes: 1597, path_len: 12.642,  time: 75.2595
+Nodes: 1306, path_len: 10.7372, time: 60.2319
+Nodes: 2797, path_len: 10.4203, time: 173.788
+Nodes: 5594, path_len: 10.5295, time: 601.206
+Nodes: 974,  path_len: 10.7885, time: 43.3999
+Nodes: 5800, path_len: 10.069,  time: 670.245
+Nodes: 650,  path_len: 12.4219, time: 28.837
+Nodes: 1670, path_len: 11.3631, time: 85.7707
+Nodes: 750,  path_len: 12.926,  time: 32.1585
+Nodes: 3440, path_len: 11.1144, time: 245.837
+Nodes: 1264, path_len: 11.1772, time: 64.1774
+Nodes: 846,  path_len: 12.3955, time: 43.2684
+Nodes: 1065, path_len: 14.237,  time: 46.1715
+Nodes: 1650, path_len: 11.7821, time: 88.8465
+Nodes: 1181, path_len: 10.8273, time: 55.7184
+Nodes: 3661, path_len: 10.2347, time: 287.324
+Nodes: 3751, path_len: 11.0177, time: 306.469
+Nodes: 1098, path_len: 11.867,  time: 47.9012
+Nodes: 700,  path_len: 11.0639, time: 32.7612
+Nodes: 3046, path_len: 10.4464, time: 215.899
+Nodes: 2856, path_len: 11.2188, time: 181.978
+Nodes: 1696, path_len: 10.4039, time: 89.6497
+Mean_len: 11.1201.
+Mean_time: 185.265.
+St_dev_len: 0.716886.
+St_dev_time: 186.816.
+End of the simulation.
+
+**************************************************
+RRT:
+2363 30.4182 62.2736
+823  13.9266 24.4124
+1075 14.1057 32.6869
+1709 20.5328 41.8258
+2191 26.8105 59.656
+2523 14.7748 65.6948
+2042 20.16   49.4019
+1182 18.9987 37.4006
+2441 21.6002 62.5806
+1327 26.7231 34.6009
+2391 25.0512 62.7161
+Nodes: 780,  path_len: 22.4153, time: 21.9772
+Nodes: 2429, path_len: 30.8257, time: 64.5824
+Nodes: 4175, path_len: 33.2039, time: 130.805
+Nodes: 7461, path_len: 35.9262, time: 355.46
+Nodes: 4168, path_len: 19.4039, time: 125.794
+Nodes: 1276, path_len: 18.5387, time: 33.9095
+Nodes: 610,  path_len: 18.3797, time: 18.4953
+Nodes: 2032, path_len: 19.7156, time: 52.9699
+Nodes: 948,  path_len: 19.5217, time: 25.803
+Nodes: 2561, path_len: 14.1461, time: 70.2675
+Nodes: 4830, path_len: 19.7043, time: 156.672
+Nodes: 3586, path_len: 30.701,  time: 101.386
+Nodes: 4337, path_len: 17.3096, time: 134.002
+Nodes: 2420, path_len: 20.1185, time: 59.4306
+Nodes: 1669, path_len: 21.8336, time: 40.9983
+Nodes: 2629, path_len: 23.3871, time: 69.7465
+Nodes: 4452, path_len: 15.6405, time: 136.994
+Nodes: 885,  path_len: 18.5216, time: 28.913
+Nodes: 2040, path_len: 15.2378, time: 52.9696
+Nodes: 2007, path_len: 29.0492, time: 53.3959
+Nodes: 1356, path_len: 18.6324, time: 37.0705
+Nodes: 2294, path_len: 31.5208, time: 59.964
+Nodes: 4875, path_len: 19.6154, time: 159.057
+Nodes: 2076, path_len: 23.7794, time: 53.7154
+Nodes: 3586, path_len: 27.974,  time: 103.233
+Nodes: 3303, path_len: 21.8488, time: 91.8154
+Nodes: 1182, path_len: 20.9753, time: 30.4466
+Nodes: 2725, path_len: 22.3319, time: 71.4988
+Nodes: 8546, path_len: 26.8124, time: 468.931
+Nodes: 1168, path_len: 16.1247, time: 33.4648
+Nodes: 3217, path_len: 30.1985, time: 87.2168
+Nodes: 1034, path_len: 17.9845, time: 32.0421
+Nodes: 2160, path_len: 22.698,  time: 53.6805
+Nodes: 1431, path_len: 21.5621, time: 38.1872
+Nodes: 3252, path_len: 19.3126, time: 87.265
+Nodes: 911,  path_len: 18.7655, time: 23.3977
+Nodes: 3104, path_len: 22.3459, time: 78.0843
+Nodes: 2657, path_len: 15.2395, time: 64.5536
+Nodes: 6939, path_len: 29.722,  time: 302.974
+Nodes: 3306, path_len: 14.6593, time: 89.4365
+Nodes: 2580, path_len: 19.6989, time: 73.8527
+Nodes: 2080, path_len: 18.736,  time: 52.5973
+Nodes: 1831, path_len: 29.2336, time: 52.703
+Nodes: 3846, path_len: 15.9209, time: 112.877
+Nodes: 1406, path_len: 19.216,  time: 38.6802
+Nodes: 1997, path_len: 30.2134, time: 49.9219
+Nodes: 1712, path_len: 19.9297, time: 44.9416
+Nodes: 2125, path_len: 18.6376, time: 53.3783
+Nodes: 5847, path_len: 32.7125, time: 230.214
+Nodes: 4541, path_len: 28.4966, time: 143.69
+Nodes: 1759, path_len: 21.9878, time: 42.9913
+Nodes: 3167, path_len: 18.1644, time: 85.8305
+Nodes: 1803, path_len: 24.4001, time: 47.3584
+Nodes: 5061, path_len: 21.2714, time: 171.435
+Nodes: 594,  path_len: 17.8549, time: 18.8994
+Nodes: 2578, path_len: 16.3683, time: 63.5917
+Nodes: 3053, path_len: 24.5935, time: 82.5399
+Nodes: 6481, path_len: 19.1147, time: 268.616
+Nodes: 2011, path_len: 22.8349, time: 51.4284
+Nodes: 1574, path_len: 21.6358, time: 35.9737
+Nodes: 3824, path_len: 23.8503, time: 108.796
+Nodes: 4705, path_len: 19.0372, time: 149.661
+Nodes: 1408, path_len: 13.854,  time: 36.8004
+Nodes: 2538, path_len: 31.9646, time: 64.3845
+Nodes: 2433, path_len: 25.0856, time: 65.1682
+Nodes: 1774, path_len: 16.7384, time: 48.4502
+Nodes: 1579, path_len: 27.2688, time: 43.451
+Nodes: 1262, path_len: 34.4631, time: 32.7247
+Nodes: 4122, path_len: 24.292,  time: 121.833
+Nodes: 3169, path_len: 29.445,  time: 89.826
+Nodes: 1399, path_len: 22.7762, time: 36.0536
+Nodes: 4266, path_len: 25.2523, time: 131.954
+Nodes: 3879, path_len: 33.6813, time: 114.753
+Nodes: 1010, path_len: 17.9637, time: 27.3703
+Nodes: 772,  path_len: 17.6026, time: 23.6447
+Nodes: 6489, path_len: 16.9751, time: 270.909
+Nodes: 3987, path_len: 18.4393, time: 117.528
+Nodes: 5280, path_len: 21.5696, time: 187.877
+Nodes: 403,  path_len: 14.7689, time: 16.0585
+Nodes: 2160, path_len: 20.957,  time: 55.1492
+Nodes: 5267, path_len: 22.3055, time: 198.583
+Nodes: 3235, path_len: 19.2461, time: 88.0287
+Nodes: 4745, path_len: 19.7475, time: 155.255
+Nodes: 2731, path_len: 19.5452, time: 76.6628
+Nodes: 1609, path_len: 27.2464, time: 44.7797
+Nodes: 6081, path_len: 17.8357, time: 242.064
+Nodes: 3603, path_len: 21.5567, time: 103.435
+Nodes: 1088, path_len: 17.1233, time: 29.697
+Nodes: 3085, path_len: 24.6105, time: 86.1655
+Mean_len: 22.0501.
+Mean_time: 87.2244.
+St_dev_len: 5.32939.
+St_dev_time: 75.3477.
+End of the simulation.
+
+
+RRT* with binary search times:
+, time: 45.0668
+, time: 307.261
+, time: 40.991
+, time: 593.029
+, time: 142.169
+, time: 243.973
+, time: 212.452
+, time: 338.322
+, time: 211.549
+, time: 61.4206
+, time: 184.703
+, time: 69.6196
+, time: 99.6027
+, time: 177.388
+, time: 218.281
+, time: 333.85
+, time: 60.8214
+, time: 1799.76
+, time: 162.027
+, time: 52.5511
+, time: 183.496
+, time: 163.613
+, time: 69.225
+, time: 68.0345
+, time: 72.8031
+, time: 405.123
+, time: 587.953
+, time: 1083.47
+, time: 190.497
+, time: 119.095
+, time: 43.8762
+, time: 93.0612
+, time: 425.934
+, time: 114.917
+, time: 44.2118
+, time: 255.496
+, time: 103.81
+, time: 90.2447
+, time: 999.635
+, time: 116.708
+, time: 188.592
+, time: 57.0857
+, time: 103.547
+, time: 94.7947
+, time: 96.2491
+, time: 190.374
+, time: 350.888
+, time: 43.8491
+, time: 208.087
+, time: 197.733
+, time: 45.8316
+, time: 461.177
+, time: 22.4502
+, time: 79.0371
+, time: 52.6456
+, time: 109.294
+, time: 137.054
+, time: 320.645
+, time: 371.978
+, time: 235.349
+, time: 115.811
+, time: 125.239
+, time: 80.3047
+, time: 2571.75
+, time: 272.317
+, time: 24.5736
+, time: 32.6322
+, time: 55.2557
+, time: 279.753
+, time: 26.9649
+, time: 67.2511
+, time: 563.506
+, time: 103.522
+, time: 351.815
+, time: 929.569
+, time: 195.324
+, time: 851.756
+, time: 76.5164
+, time: 174.823
+, time: 228.867
+, time: 296.528
+, time: 94.5599
+, time: 58.3387
+, time: 58.2411
+, time: 141.611
+, time: 156.17
+, time: 177.807
+, time: 140.71
+, time: 56.4495
+, time: 581.239
+, time: 209.949
+, time: 64.138
+, time: 91.8476
+, time: 431.564
+, time: 162.44
+, time: 205.866
+, time: 77.842
+, time: 45.4908
+, time: 136.097
+, time: 128.911
+Mean_len: 11.0974.
+Mean_time: 243.961.
+St_dev_len: 0.881871.
+St_dev_time: 350.323.
+
+RRT* with dot drone times:
+, time: 360.713
+, time: 182.006
+, time: 156.704
+, time: 19.0228
+, time: 54.4217
+, time: 47.6461
+, time: 94.1779
+, time: 270.042
+, time: 141.061
+, time: 105.264
+, time: 37.7855
+, time: 130.45
+, time: 192.509
+, time: 97.912
+, time: 38.5423
+, time: 75.8417
+, time: 39.7665
+, time: 59.9405
+, time: 59.8409
+, time: 40.943
+, time: 47.7343
+, time: 18.4227
+, time: 59.2676
+, time: 115.467
+, time: 57.4558
+, time: 269.877
+, time: 55.238
+, time: 51.1394
+, time: 31.3901
+, time: 20.7895
+, time: 60.2718
+, time: 54.8834
+, time: 107.803
+, time: 142.48
+, time: 174.968
+, time: 90.1904
+, time: 148.343
+, time: 46.0659
+, time: 87.8531
+, time: 219.177
+, time: 30.8239
+, time: 144.871
+, time: 103.354
+, time: 33.6652
+, time: 91.9854
+, time: 17.117
+, time: 50.8061
+, time: 160.786
+, time: 749.539
+, time: 124.469
+, time: 142
+, time: 54.3763
+, time: 84.7959
+, time: 2304.16
+, time: 470.883
+, time: 42.6874
+, time: 51.3189
+, time: 86.2958
+, time: 503.057
+, time: 196.373
+, time: 284.097
+, time: 76.3048
+, time: 133.543
+, time: 46.2975
+, time: 52.0299
+, time: 1918.7
+, time: 25.7923
+, time: 113.547
+, time: 49.1793
+, time: 103.405
+, time: 1099.62
+, time: 132.57
+, time: 53.7316
+, time: 27.3753
+, time: 432.196
+, time: 57.5361
+, time: 35.7135
+, time: 99.9868
+, time: 36.0571
+, time: 87.1801
+, time: 24.2555
+, time: 60.6073
+, time: 85.3974
+, time: 342.694
+, time: 87.5382
+, time: 70.4179
+, time: 76.7802
+, time: 492.069
+, time: 542.396
+, time: 250.123
+, time: 53.2117
+, time: 167.328
+, time: 388.408
+, time: 462.025
+, time: 197.518
+, time: 42.1992
+, time: 118.947
+, time: 50.2421
+, time: 198.801
+, time: 116.373
+Mean_len: 10.9677.
+Mean_time: 181.99.
+St_dev_len: 0.60389.
+St_dev_time: 323.487.
