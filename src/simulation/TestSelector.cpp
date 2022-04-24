@@ -269,7 +269,7 @@ void TestSelector::one_drone_through_forest() {
     double drone_radius = 0.3;
 
     Vec3 start_local(0, 0, 0); // in local coordinates
-    Vec3 goal_local(3, 0, 0);
+    Vec3 goal_local(6, 0, 0);
 
     Drone drone(real_world_test, drone_id, start_local, goal_local, starting_goal_radius, drone_radius);
 

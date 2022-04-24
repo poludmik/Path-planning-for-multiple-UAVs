@@ -35,6 +35,8 @@ input=(
 '
   'Rosbag' 'waitForOffboard; ./record.sh
 '
+  'Rviz' 'waitForControl; roslaunch mrs_uav_testing rviz.launch
+'
   'NodeChecker' 'waitForRos; roslaunch mrs_uav_general node_crash_checker.launch
 '
   'Nimbro' 'waitForRos; roslaunch mrs_uav_general nimbro.launch custom_config:=./custom_configs/nimbro.yaml custom_config_uav_names:=./custom_configs/uav_names.yaml
