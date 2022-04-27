@@ -324,7 +324,10 @@ void TestSelector::one_drone_through_forest() {
         drone.world->objects[k - 2]->set_as_a_goal();
         drone.world->objects[k - 1]->set_as_a_start();
 
+
+        // TODO uncomment to have RViz (obstacles)
         // drone.world->publish_world(vis_array_pub);
+
 
         std::cout << "Finding a path...\n";
         RRT_tree tree(drone.start_point, drone.world.get(), 3);
@@ -336,7 +339,10 @@ void TestSelector::one_drone_through_forest() {
         drone.trajectory = Trajectory(drone.found_path, 0.2, 0.25);
         RRT_tree::printout_the_path(drone.found_path);
 
+
+        // TODO uncomment to have RViz (trajectory)
         // drone.world->publish_trajectory(vis_pub, drone.trajectory, std::to_string(drone.uav_id));
+
 
         // Go through the first N points of a found trajectory
         const int N = 4;
