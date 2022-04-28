@@ -1,0 +1,3 @@
+fallback:
+  n_horizontal_sectors: 32
+  vertical_fov: !degrees 20

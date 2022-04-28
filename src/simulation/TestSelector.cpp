@@ -249,7 +249,7 @@ void TestSelector::test_bumper() {
 
 void TestSelector::one_drone_through_forest() {
 
-    uint8_t drone_id = 99;
+    uint8_t drone_id = 14;
     bool real_world_test = false;
 
     ros::NodeHandle n;
@@ -266,10 +266,10 @@ void TestSelector::one_drone_through_forest() {
             ("visualization_marker_array", 300);
 
     double starting_goal_radius = 0.5;
-    double drone_radius = 0.3;
+    double drone_radius = 0.4;
 
     Vec3 start_local(0, 0, 0); // in local coordinates
-    Vec3 goal_local(6, 0, 0);
+    Vec3 goal_local(25, 0, 0);
 
     Drone drone(real_world_test, drone_id, start_local, goal_local, starting_goal_radius, drone_radius);
 
@@ -326,7 +326,7 @@ void TestSelector::one_drone_through_forest() {
 
 
         // TODO uncomment to have RViz (obstacles)
-        // drone.world->publish_world(vis_array_pub);
+        drone.world->publish_world(vis_array_pub);
 
 
         std::cout << "Finding a path...\n";
@@ -341,8 +341,7 @@ void TestSelector::one_drone_through_forest() {
 
 
         // TODO uncomment to have RViz (trajectory)
-        // drone.world->publish_trajectory(vis_pub, drone.trajectory, std::to_string(drone.uav_id));
-
+        drone.world->publish_trajectory(vis_pub, drone.trajectory, std::to_string(drone.uav_id));
 
         // Go through the first N points of a found trajectory
         const int N = 4;

@@ -8,14 +8,14 @@ takeoff:
     controller: "Se3Controller"
     tracker: "MpcTracker"
 
-  takeoff_height: 2.5
+  takeoff_height: 1.5
 
 # periodically checks if min height was exceeded
 # if so, retakes control and descends below it
 min_height_checking:
 
   enabled: true
-  min_height: 1.5 # [m]
+  min_height: 0.5 # [m]
   safety_height_offset: 0.25 # how much higher to ascend above the min height
 
 landing:

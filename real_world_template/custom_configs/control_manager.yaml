@@ -7,7 +7,6 @@ safety:
 
     ehover: true
     eland: true
-    failsafe: true
 
 Se3Controller:
   address: "mrs_uav_controllers/Se3Controller"
