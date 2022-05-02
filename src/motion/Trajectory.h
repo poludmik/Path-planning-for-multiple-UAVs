@@ -45,6 +45,8 @@ public:
                                                             std::vector<Drone> &drones,
                                                             bool performance_mode);
 
+    double get_path_length();
+
 private:
 
     static std::pair<std::vector<Vec3>, int> find_intersects_of_two_trajectories(const Trajectory &priority_traj,

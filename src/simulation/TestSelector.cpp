@@ -18,9 +18,101 @@ void TestSelector::run_simulation(const TestCase test_case) {
         case TEST_BUMPER:
             test_bumper();
             break;
+        case COMPARISONS:
+            statistical_comparisons();
+            break;
         default:
             std::cout << "The simulation under the given name hasn't been found." << std::endl;
     }
+}
+
+void TestSelector::statistical_comparisons() {
+
+    // VELOCITY CONTROL
+    size_t uav_id = 1;
+    std::string vel_pub_topic  = "/uav" + std::to_string(uav_id) + "/control_manager/velocity_reference";
+
+    ros::NodeHandle n;
+    ros::Publisher  vel_pub   = n.advertise<mrs_msgs::VelocityReferenceStamped>(vel_pub_topic, 100);
+
+    ros::Rate rate(10);
+
+    // MARKER RVIZ
+    ros::NodeHandle markers_node_publisher;
+    ros::Publisher vis_pub = markers_node_publisher.advertise<visualization_msgs::Marker>
+            ("visualization_marker", 10);
+
+    ros::NodeHandle markers_array_node_publisher;
+    ros::Publisher vis_array_pub = markers_array_node_publisher.advertise<visualization_msgs::MarkerArray>
+            ("visualization_marker_array", 300);
+
+    Vec3 start1(-5, 0, 1);
+    Vec3 goal1(5, 0, 1);
+
+    double goal_radius = 0.5;
+    double drone_radius = 0.3;
+
+    int iter_num = 100;
+
+    std::vector<double> path_lengths;
+    std::vector<double> times;
+
+    for (int i = 0; i < iter_num; ++i) {
+
+        World my_world("map");
+
+        std::vector<Drone> drones;
+        drones.emplace_back(false, 1, start1, goal1, goal_radius, drone_radius);
+
+        for (int j = 0; j < 12; ++j){
+            Vec3 standing_center = Vec3::random_vec3(-4, 4, -4.2, 4.2, 0, 0);
+            my_world.add_obstacle(new Cylinder(0.4, standing_center, 3.5));
+        }
+
+        bool performance_mode = true;
+
+        ros::WallTime start, end;
+        start = ros::WallTime::now();
+
+        // performance mode is better for 3D, it is less constraining
+        Trajectory::find_trajectories_without_time_collisions(my_world, drones, performance_mode);
+
+        end = ros::WallTime::now();
+
+        double execution_time = (end - start).toNSec() * 1e-6;
+        times.push_back(execution_time);
+
+        for (Drone &drone: drones) {
+
+            for (const auto &point_in_time: drone.trajectory.time_points) {
+                my_world.add_object(new Sphere(0.05, point_in_time.first));
+            }
+
+            my_world.add_object(new Sphere(drone.goal_radius, drone.goal_point));
+            my_world.add_object(new Sphere(drone.drone_radius, drone.start_point));
+            auto k = my_world.objects.size();
+            my_world.objects[k - 2]->set_as_a_goal();
+            my_world.objects[k - 1]->set_as_a_start();
+
+            my_world.publish_trajectory(vis_pub, drone.trajectory, std::to_string(drone.uav_id));
+
+            ros::spinOnce();
+            rate.sleep();
+        }
+
+        path_lengths.push_back(drones[0].trajectory.get_path_length());
+        std::cout << ", path_len: " << drones[0].trajectory.get_path_length();
+        std::cout << ", time: " << execution_time;
+
+
+        my_world.publish_world(vis_array_pub);
+    }
+
+    std::cout << "Mean_len: " << StatisticalAnalysis::get_mean(path_lengths) << ".\n";
+    std::cout << "Mean_time: " << StatisticalAnalysis::get_mean(times) << ".\n";
+    std::cout << "St_dev_len: " << StatisticalAnalysis::get_standard_deviation(path_lengths) << ".\n";
+    std::cout << "St_dev_time: " << StatisticalAnalysis::get_standard_deviation(times) << ".\n";
+    std::cout << "End of the simulation." << std::endl;
 }
 
 void TestSelector::basic_trajectory_search() {
@@ -363,4 +455,5 @@ void TestSelector::one_drone_through_forest() {
         }
     }
 }
+
 

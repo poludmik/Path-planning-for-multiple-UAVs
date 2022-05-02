@@ -23,6 +23,7 @@
 #include "../2D_plot/Plot2D.h"
 #include "../motion/MotionMethods.h"
 #include "../avoidance/obstacle_detection/Detection.h"
+#include "../math/StatisticalAnalysis.h"
 
 #pragma once
 
@@ -30,14 +31,14 @@ enum TestCase {
     FIND_TRAJECTORIES,
     GO_THROUGH_TRAJECTORIES,
     ONE_DRONE_THROUGH_FOREST,
-    TEST_BUMPER
+    TEST_BUMPER,
+    COMPARISONS
 };
 
 class TestSelector {
 
 public:
     static void run_simulation(TestCase test_case);
-
 private:
     static void basic_trajectory_search();
 
@@ -46,5 +47,7 @@ private:
     static void one_drone_through_forest();
 
     static void test_bumper();
+
+    static void statistical_comparisons();
 };
 
