@@ -341,7 +341,7 @@ void TestSelector::test_bumper() {
 
 void TestSelector::one_drone_through_forest() {
 
-    uint8_t drone_id = 99;
+    uint8_t drone_id = 1;
     bool real_world_test = false;
 
     ros::NodeHandle n;
@@ -418,7 +418,7 @@ void TestSelector::one_drone_through_forest() {
 
 
         // TODO uncomment to have RViz (obstacles)
-        // drone.world->publish_world(vis_array_pub);
+         drone.world->publish_world(vis_array_pub);
 
 
         std::cout << "Finding a path...\n";
@@ -433,7 +433,7 @@ void TestSelector::one_drone_through_forest() {
 
 
         // TODO uncomment to have RViz (trajectory)
-        // drone.world->publish_trajectory(vis_pub, drone.trajectory, std::to_string(drone.uav_id));
+         drone.world->publish_trajectory(vis_pub, drone.trajectory, std::to_string(drone.uav_id));
 
 
         // Go through the first N points of a found trajectory
