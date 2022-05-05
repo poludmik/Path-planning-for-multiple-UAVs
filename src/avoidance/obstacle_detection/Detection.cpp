@@ -21,9 +21,9 @@ void Detection::update_obstacles_around_the_drone(Drone &drone) {
     double min_obst_radius;
 
     if (drone.drone_radius <= 1.0)
-        min_obst_radius = 1.0 - drone.drone_radius;
+        min_obst_radius = 1.6 - drone.drone_radius;
     else
-        min_obst_radius = 0.5;
+        min_obst_radius = 1.0;
 
     for (auto &distance : sectors) {
         if (distance <= 0.0) {

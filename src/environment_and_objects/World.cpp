@@ -16,13 +16,6 @@ void World::publish_world(const ros::Publisher &publisher) const {
             //array[count].print_out_info();
             this->fill_out_default_marker(localMarker, count, *array[count]);
             ++count;
-            while (publisher.getNumSubscribers() < 1) {
-                if (!ros::ok()) {
-                    std::cout << "Cannot publish, !ros::ok.\n";
-                }
-                ROS_WARN_ONCE("Waiting for at least one single sub.");
-                sleep(1);
-            }
             markerArray.markers.push_back(localMarker);
             //publisher.publish(localMarker);
         }
@@ -119,13 +112,6 @@ void World::publish_path(const ros::Publisher &publisher, const std::vector<Vec3
         line_strip.points.push_back(p);
     }
     line_strip.lifetime = ros::Duration(40);
-    while (publisher.getNumSubscribers() < 1) {
-        if (!ros::ok()) {
-            std::cout << "Cannot publish, !ros::ok.\n";
-        }
-        ROS_WARN_ONCE("Waiting for at least one single sub.");
-        sleep(1);
-    }
     publisher.publish(line_strip);
     //std::cout << "Published path.\n";
 }
@@ -158,13 +144,6 @@ void World::publish_trajectory(const ros::Publisher &publisher, const Trajectory
         text_marker.pose.position.y = time_point.first.y;
         text_marker.pose.position.z = time_point.first.z + 0.12;
 
-        while (publisher.getNumSubscribers() < 1) {
-            if (!ros::ok()) {
-                std::cout << "Cannot publish text, !ros::ok.\n";
-            }
-            ROS_WARN_ONCE("Waiting for at least one single sub.");
-            sleep(1);
-        }
         publisher.publish(text_marker);
         ros::spinOnce();
         rate.sleep();

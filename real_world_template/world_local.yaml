@@ -1,0 +1,52 @@
+#
+## DEFINITION OF THE ARENA
+#
+
+utm_origin_units: 1 # 0 - UTM, 1 - Latitude Longitude
+# !!! BEWARE !!!: the lat&lon and UTM coordinates below might be wrong
+# !!! do NOT just switch utm_origin_units from 0<->1, the other form
+# !!! might not be updated or even set correctly in the first place.
+utm_origin_x: 0
+utm_origin_y: 0
+utm_origin_lat: 47.397743
+utm_origin_lon: 8.545594
+
+init_gps_origin_local: true # origin of gps_origin will be in the position of UAV at odometry launch
+init_gps_offset_x: 0.0 # initial position of UAV relative to gps_origin when init_gps_origin_local is enabled
+init_gps_offset_y: 0.0 # initial position of UAV relative to gps_origin when init_gps_origin_local is enabled
+
+safety_area:
+
+  use_safety_area: true
+
+  frame_name: "local_origin"
+
+  polygon_obstacles:
+    # loaded as a vector of matrices
+    # each matrix has polygon vertices in columns
+    # [[M1], [M2]]
+    enabled: false
+    data: [1, 10, 10, 1,    5, 8, 5,
+           1, 1, 10, 10,    5, 5, 8,]
+    rows: 2 # each matrix has two rows
+    cols: [4, 3] # nums of cols of each matrix
+
+  point_obstacles:
+    # loaded as a vector of matrices
+    # x, y, radius
+    enabled: false
+    # [x1, y1, radisu1, height1,
+    #  x2, y2, radius2, height2]
+    data: [-5.0, -5.0, 2, 2,
+           -10.0, -10.0, 4, 2]
+    rows: 1 # each matrix has a single row
+    cols: [4, 4] # nums of cols of each matrix
+
+  # convex polygon CCW
+  safety_area: [-40, -40,
+  40, -40,
+  40, 40,
+  -40, 40]
+
+  max_height: 4.0
+  min_height: 0.0

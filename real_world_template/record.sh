@@ -25,6 +25,9 @@ exclude=(
 # Every topic containing "h264"
 '(.*)h264(.*)'
 
+'(.*)os_nodelet(.*)'
+'(.*)os_cloud_nodelet(.*)'
+
 )
 
 # file's header

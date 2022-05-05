@@ -1,4 +1,4 @@
-safety_timeout: 10.0 # [s]
+safety_timeout: 5.0 # [s]
 
 topic_check:
 

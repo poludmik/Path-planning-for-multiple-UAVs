@@ -20,33 +20,35 @@ PROJECT_NAME=drone_planner
 MAIN_DIR=~/"bag_files"
 
 # following commands will be executed first in each window
-pre_input="mkdir -p $MAIN_DIR/$PROJECT_NAME"
+pre_input="mkdir -p $MAIN_DIR/$PROJECT_NAME; export ODOMETRY_TYPE='aloam'; export WORLD='local'"
 
 # define commands
 # 'name' 'command'
 # DO NOT PUT SPACES IN THE NAMES
 input=(
-  'Program' 'waitForRos; rosrun drone_planner planner
-'
-  'StartUp' 'waitForRos;  rosservice call /StartExecution'
-  'Lidar' 'waitForRos; roslaunch ouster_ros uav.launch
-'
-  'Bumper' 'waitForOffboard; waitForRos; roslaunch mrs_bumper bumper.launch
-'
   'Rosbag' 'waitForOffboard; ./record.sh
-'
-  'Rviz' 'waitForControl; roslaunch mrs_uav_testing rviz.launch
 '
   'NodeChecker' 'waitForRos; roslaunch mrs_uav_general node_crash_checker.launch
 '
-  'Nimbro' 'waitForRos; roslaunch mrs_uav_general nimbro.launch custom_config:=./custom_configs/nimbro.yaml custom_config_uav_names:=./custom_configs/uav_names.yaml
-'
   'Sensors' 'waitForRos; roslaunch mrs_uav_general sensors.launch
+'
+  'Lidar' 'waitForRos; roslaunch ouster_ros uav.launch
+'
+  'PclFilter' 'waitForRos; roslaunch mrs_pcl_tools pcl_filter.launch topic_3d_lidar_in:=/'"$UAV_NAME"'/os_cloud_nodelet/points custom_config:=./custom_configs/ouster_filter.yaml name_suffix:=ouster
+'
+  'PclALoam' 'waitForRos; waitForOdometry; roslaunch mrs_pcl_tools pcl_filter.launch topic_3d_lidar_in:=/'"$UAV_NAME"'/os_cloud_nodelet/points custom_config:=./custom_configs/ouster_filter_aloam.yaml name_suffix:=aloam
+'
+  'Aloam' 'waitForRos; roslaunch aloam_slam aloam.launch points_topic:=/'"$UAV_NAME"'/pcl_filter_aloam/points_processed points_proc_diag_topic:=/'"$UAV_NAME"'/pcl_filter_aloam/diagnostics
+'
+  'Bumper' 'waitForRos; roslaunch mrs_bumper bumper.launch custom_config:=./custom_configs/bumper.yaml
 '
   'Status' 'waitForRos; roslaunch mrs_uav_status status.launch
 '
-  'Control' 'waitForRos; roslaunch mrs_uav_general core.launch config_constraint_manager:=./custom_configs/constraint_manager.yaml config_control_manager:=./custom_configs/control_manager.yaml config_mpc_tracker:=./custom_configs/mpc_tracker.yaml config_odometry:=./custom_configs/odometry.yaml config_uav_manager:=./custom_configs/uav_manager.yaml config_uav_names:=./custom_configs/uav_names.yaml config_landoff_tracker:=./custom_configs/landoff_tracker.yaml
+  'Control' 'waitForRos; roslaunch mrs_uav_general core.launch config_constraint_manager:=./custom_configs/constraint_manager.yaml config_control_manager:=./custom_configs/control_manager.yaml config_mpc_tracker:=./custom_configs/mpc_tracker.yaml config_odometry:=./custom_configs/odometry.yaml config_uav_manager:=./custom_configs/uav_manager.yaml config_landoff_tracker:=./custom_configs/landoff_tracker.yaml
 '
+  'Planner' 'waitForRos; rosrun drone_planner planner
+'
+  'StartUp' 'rosservice call /StartExecution'
   'AutoStart' 'waitForRos; roslaunch mrs_uav_general automatic_start.launch custom_config:=./custom_configs/automatic_start.yaml
 '
   'slow_odom' 'waitForRos; rostopic echo /'"$UAV_NAME"'/odometry/slow_odom
